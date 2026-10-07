@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mini Game Demo</title>
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Arial,sans-serif;background:#f6f7fb;color:#1f2937;min-height:100vh;display:grid;place-items:center;padding:24px}
+    .card{width:min(720px,94vw);background:white;border:1px solid #e5e7eb;border-radius:24px;padding:34px;box-shadow:0 18px 45px rgba(0,0,0,.08)}
+    h1{text-align:center;margin-top:0}
+    input{width:100%;padding:14px;border:1px solid #cbd5e1;border-radius:12px;font-size:17px}
+    button{border:0;border-radius:12px;padding:13px 18px;font-size:16px;font-weight:700;cursor:pointer}
+    .primary{background:#111827;color:white;width:100%;margin-top:12px}
+    .answer{width:100%;margin:8px 0;background:#eef2ff}
+    .hidden{display:none}
+    .top{display:flex;justify-content:space-between;gap:12px;margin-bottom:20px;font-weight:700}
+    #feedback{text-align:center;font-size:18px;font-weight:700;margin-top:14px}
+    .note{text-align:center;color:#64748b}
+  </style>
+</head>
+<body>
+  <main class="card">
+    <section id="start">
+      <h1>🎮 Mini Game Demo</h1>
+      <p class="note">Nested page + JavaScript test</p>
+      <input id="name" placeholder="Enter your name" />
+      <button class="primary" onclick="startGame()">Start</button>
+    </section>
+
+    <section id="game" class="hidden">
+      <div class="top"><span id="player"></span><span>Score: <span id="score">0</span>/1</span></div>
+      <h2>Choose the correct Past Simple form of <em>go</em>.</h2>
+      <button class="answer" onclick="answer(false)">goed</button>
+      <button class="answer" onclick="answer(true)">went</button>
+      <button class="answer" onclick="answer(false)">gone</button>
+      <div id="feedback"></div>
+    </section>
+  </main>
+
+  <script>
+    let answered=false;
+    function startGame(){
+      const n=document.getElementById('name').value.trim();
+      if(!n){alert('Please enter your name.');return;}
+      document.getElementById('player').textContent=n;
+      document.getElementById('start').classList.add('hidden');
+      document.getElementById('game').classList.remove('hidden');
+    }
+    function answer(correct){
+      if(answered)return;
+      answered=true;
+      if(correct){
+        document.getElementById('score').textContent='1';
+        document.getElementById('feedback').textContent='Correct! ✅ GitHub Pages + JavaScript are working.';
+      }else{
+        document.getElementById('feedback').textContent='Try again next time 🙂 The page logic is working.';
+      }
+    }
+  </script>
+</body>
+</html>
