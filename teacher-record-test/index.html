@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Teacher Records Test</title>
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:20px;font-family:Arial,sans-serif;background:#f6f7fb;color:#1f2937}
+.card{width:min(620px,94vw);background:white;border:1px solid #e5e7eb;border-radius:24px;padding:30px;box-shadow:0 18px 45px rgba(0,0,0,.08)}
+h1{margin-top:0}p{line-height:1.55;color:#64748b}input{width:100%;padding:14px;border:1px solid #cbd5e1;border-radius:12px;font-size:17px}
+button{width:100%;margin-top:12px;border:0;border-radius:12px;padding:14px;background:#111827;color:white;font-size:17px;font-weight:700;cursor:pointer}
+#status{margin-top:16px;font-weight:700}
+</style>
+</head>
+<body>
+<main class="card">
+  <h1>🧪 Teacher Records Test</h1>
+  <p>This page sends one test attempt (1/1) to the central Google Sheet.</p>
+  <input id="name" value="TEST - Tuan" aria-label="Student name">
+  <button id="send">Send test score</button>
+  <div id="status"></div>
+</main>
+<script src="/minigame/shared/teacher-records-config.js"></script>
+<script src="/minigame/shared/teacher-records.js"></script>
+<script>
+document.getElementById("send").onclick=async()=>{
+  const name=document.getElementById("name").value.trim();
+  if(!name)return alert("Enter a test name.");
+  const status=document.getElementById("status");
+  status.textContent="Sending…";
+  const result=await TeacherRecords.submit({
+    studentName:name,
+    gameTitle:"Teacher Records Connection Test",
+    score:1,
+    total:1,
+    durationSeconds:5
+  });
+  status.textContent=result.sent
+    ?"✅ Request sent. Now check the Google Sheet Records tab."
+    :"⚠️ Could not send. Check the endpoint/configuration.";
+};
+</script>
+</body>
+</html>
