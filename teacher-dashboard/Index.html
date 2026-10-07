@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <base target="_top">
+  <title>Mini Game Teacher Dashboard</title>
+  <style>
+    :root{
+      --bg:#f5f7fb;--panel:#fff;--ink:#1e293b;--muted:#64748b;--line:#e2e8f0;
+      --purple:#5b36d6;--purple2:#7657e8;--purpleSoft:#f0ebff;--green:#159567;
+      --yellow:#f5b83d;--danger:#d34a62;--shadow:0 15px 42px rgba(40,42,80,.09);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+    button,input,select{font:inherit}
+    .app{min-height:100vh;display:grid;grid-template-columns:270px minmax(0,1fr)}
+    aside{background:#241a55;color:white;padding:24px 16px;position:sticky;top:0;height:100vh;overflow:auto}
+    .brand{padding:8px 10px 22px}
+    .brand .eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#c7baff;font-weight:800}
+    .brand h1{font-size:23px;line-height:1.15;margin:7px 0 4px}
+    .brand p{font-size:13px;color:#cbd0ee;margin:0;line-height:1.5}
+    .sidebar-label{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:#9892bd;font-weight:800;margin:14px 10px 9px}
+    .game-list{display:grid;gap:7px}
+    .game-btn{width:100%;border:0;background:transparent;color:#e8e5ff;text-align:left;padding:12px;border-radius:13px;cursor:pointer;display:flex;justify-content:space-between;gap:9px;align-items:center}
+    .game-btn:hover{background:rgba(255,255,255,.08)}
+    .game-btn.active{background:linear-gradient(135deg,#6344dd,#7959ed);color:white;box-shadow:0 7px 18px rgba(0,0,0,.18)}
+    .game-btn .name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700}
+    .game-btn .count{font-size:12px;background:rgba(255,255,255,.14);padding:4px 7px;border-radius:999px;flex:none}
+    main{padding:28px;min-width:0}
+    .topbar{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;margin-bottom:20px}
+    .title-wrap .eyebrow{color:var(--purple);font-size:12px;letter-spacing:.11em;text-transform:uppercase;font-weight:900}
+    .title-wrap h2{margin:5px 0 4px;font-size:clamp(28px,4vw,42px);line-height:1.08}
+    .title-wrap p{margin:0;color:var(--muted)}
+    .top-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+    .btn{border:1px solid var(--line);background:white;border-radius:12px;padding:10px 13px;font-weight:750;color:#334155;cursor:pointer}
+    .btn:hover{border-color:#c4b8ef}
+    .btn.primary{background:var(--purple);border-color:var(--purple);color:white}
+    .cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin-bottom:17px}
+    .card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:var(--shadow)}
+    .card .label{color:var(--muted);font-size:13px;font-weight:700}
+    .card .value{font-size:30px;font-weight:850;margin-top:6px;letter-spacing:-.02em}
+    .filters{background:var(--panel);border:1px solid var(--line);border-radius:17px;padding:13px;display:grid;grid-template-columns:minmax(180px,1fr) auto auto;gap:9px;margin-bottom:13px}
+    .input,.select{border:1px solid var(--line);border-radius:11px;padding:11px 12px;background:white;color:var(--ink);min-width:0}
+    .table-card{background:var(--panel);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:var(--shadow)}
+    .table-head{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:15px 18px;border-bottom:1px solid var(--line)}
+    .table-head strong{font-size:16px}.table-head span{font-size:13px;color:var(--muted)}
+    .table-wrap{overflow:auto}
+    table{border-collapse:collapse;width:100%;min-width:850px}
+    th,td{padding:13px 16px;border-bottom:1px solid #edf1f5;text-align:left;white-space:nowrap}
+    th{background:#fafbfc;color:#64748b;font-size:11px;text-transform:uppercase;letter-spacing:.06em;position:sticky;top:0}
+    td{font-size:14px}
+    .student{font-weight:800}.muted{color:var(--muted)}
+    .score{font-weight:850}.pct{display:inline-block;border-radius:999px;padding:5px 9px;font-size:12px;font-weight:850;background:#eef2ff;color:#4e46b7}
+    .pct.high{background:#e8f8f0;color:#11714d}.pct.low{background:#fff0f2;color:#ae3a50}
+    .empty{padding:54px 20px;text-align:center;color:var(--muted)}
+    .loading{position:fixed;inset:0;background:rgba(245,247,251,.86);backdrop-filter:blur(2px);display:grid;place-items:center;z-index:30}
+    .loading.hidden{display:none}.loader{background:white;border:1px solid var(--line);border-radius:17px;padding:18px 24px;box-shadow:var(--shadow);font-weight:800;color:var(--purple)}
+    .error{background:#fff0f2;border:1px solid #ffcbd3;color:#9d2940;border-radius:14px;padding:13px;margin-bottom:14px;display:none}
+    .error.show{display:block}
+    .foot{color:#94a3b8;font-size:12px;margin-top:12px;text-align:right}
+    @media(max-width:980px){
+      .app{grid-template-columns:1fr}
+      aside{height:auto;position:static;padding:16px}
+      .brand{padding-bottom:10px}.game-list{display:flex;overflow:auto}.game-btn{width:auto;min-width:190px}
+      main{padding:18px}.cards{grid-template-columns:repeat(2,1fr)}
+    }
+    @media(max-width:650px){
+      .topbar{display:block}.top-actions{justify-content:flex-start;margin-top:13px}
+      .cards{grid-template-columns:1fr 1fr}.filters{grid-template-columns:1fr}.card .value{font-size:26px}
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside>
+    <div class="brand">
+      <div class="eyebrow">Teacher only</div>
+      <h1>🎓 Mini Game Dashboard</h1>
+      <p>Theo dõi điểm học viên theo từng game.</p>
+    </div>
+    <div class="sidebar-label">Games</div>
+    <div class="game-list" id="gameList"></div>
+  </aside>
+
+  <main>
+    <div class="topbar">
+      <div class="title-wrap">
+        <div class="eyebrow">Teacher Records</div>
+        <h2 id="pageTitle">All Games</h2>
+        <p id="pageSubtitle">Đang tải dữ liệu...</p>
+      </div>
+      <div class="top-actions">
+        <button class="btn" id="refreshBtn">↻ Refresh</button>
+        <button class="btn primary" id="exportBtn">Export CSV</button>
+      </div>
+    </div>
+
+    <div class="error" id="errorBox"></div>
+
+    <section class="cards">
+      <div class="card"><div class="label">Attempts</div><div class="value" id="attemptsValue">0</div></div>
+      <div class="card"><div class="label">Students</div><div class="value" id="studentsValue">0</div></div>
+      <div class="card"><div class="label">Average</div><div class="value" id="averageValue">0%</div></div>
+      <div class="card"><div class="label">Best</div><div class="value" id="bestValue">0%</div></div>
+    </section>
+
+    <section class="filters">
+      <input class="input" id="searchInput" placeholder="🔎 Search student / class...">
+      <select class="select" id="attemptMode">
+        <option value="all">All attempts</option>
+        <option value="latest">Latest per student</option>
+        <option value="best">Best per student</option>
+      </select>
+      <select class="select" id="sortMode">
+        <option value="newest">Newest first</option>
+        <option value="score">Highest score</option>
+        <option value="name">Student A–Z</option>
+      </select>
+    </section>
+
+    <section class="table-card">
+      <div class="table-head">
+        <strong>Student records</strong>
+        <span id="shownCount">0 rows</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Student</th><th>Class / Code</th><th>Score</th><th>%</th>
+              <th>Duration</th><th>Completed</th><th>Attempt</th>
+            </tr>
+          </thead>
+          <tbody id="recordsBody"></tbody>
+        </table>
+        <div class="empty" id="emptyState" hidden>No records found.</div>
+      </div>
+    </section>
+    <div class="foot" id="updatedAt"></div>
+  </main>
+</div>
+
+<div class="loading" id="loading"><div class="loader">Loading teacher records…</div></div>
+
+<script>
+const state={rows:[],game:"__ALL__"};
+const $=id=>document.getElementById(id);
+
+function esc(v){
+  return String(v??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[ch]));
+}
+function fmtDuration(sec){
+  sec=Number(sec)||0;
+  if(sec<60)return sec+"s";
+  const m=Math.floor(sec/60),s=sec%60;
+  return m+"m "+String(s).padStart(2,"0")+"s";
+}
+function keyStudent(r){
+  return (r.studentName||"").trim().toLowerCase()+"|"+(r.classCode||"").trim().toLowerCase();
+}
+function dateValue(r){
+  const candidates=[r.completedAt,r.submittedAt];
+  for(const x of candidates){const t=Date.parse(x);if(!Number.isNaN(t))return t}
+  return r.rowNumber||0;
+}
+function pctClass(p){return p>=85?"pct high":p<60?"pct low":"pct"}
+
+function buildSidebar(){
+  const counts=new Map();
+  state.rows.forEach(r=>counts.set(r.game,(counts.get(r.game)||0)+1));
+  const games=[...counts.keys()].filter(Boolean).sort((a,b)=>a.localeCompare(b));
+  const items=[{key:"__ALL__",label:"All Games",count:state.rows.length},...games.map(g=>({key:g,label:g,count:counts.get(g)}))];
+  $("gameList").innerHTML=items.map(x=>`
+    <button class="game-btn ${state.game===x.key?"active":""}" data-game="${esc(x.key)}">
+      <span class="name">${esc(x.label)}</span><span class="count">${x.count}</span>
+    </button>`).join("");
+  [...$("gameList").querySelectorAll(".game-btn")].forEach(btn=>btn.onclick=()=>{
+    state.game=btn.dataset.game;
+    buildSidebar();render();
+  });
+}
+function baseRows(){
+  return state.game==="__ALL__"?[...state.rows]:state.rows.filter(r=>r.game===state.game);
+}
+function selectedRows(){
+  let rows=baseRows();
+  const q=$("searchInput").value.trim().toLowerCase();
+  if(q)rows=rows.filter(r=>(r.studentName+" "+r.classCode).toLowerCase().includes(q));
+
+  const mode=$("attemptMode").value;
+  if(mode!=="all"){
+    const grouped=new Map();
+    rows.forEach(r=>{
+      const k=keyStudent(r),old=grouped.get(k);
+      if(!old){grouped.set(k,r);return}
+      if(mode==="latest" && dateValue(r)>dateValue(old))grouped.set(k,r);
+      if(mode==="best" && (r.percent>old.percent || (r.percent===old.percent && dateValue(r)>dateValue(old))))grouped.set(k,r);
+    });
+    rows=[...grouped.values()];
+  }
+
+  const sort=$("sortMode").value;
+  rows.sort((a,b)=>{
+    if(sort==="score")return b.percent-a.percent || dateValue(b)-dateValue(a);
+    if(sort==="name")return a.studentName.localeCompare(b.studentName)||dateValue(b)-dateValue(a);
+    return dateValue(b)-dateValue(a);
+  });
+  return rows;
+}
+function renderStats(){
+  const rows=baseRows();
+  const students=new Set(rows.map(keyStudent).filter(Boolean));
+  const avg=rows.length?Math.round(rows.reduce((s,r)=>s+r.percent,0)/rows.length):0;
+  const best=rows.length?Math.max(...rows.map(r=>r.percent)):0;
+  $("attemptsValue").textContent=rows.length;
+  $("studentsValue").textContent=students.size;
+  $("averageValue").textContent=avg+"%";
+  $("bestValue").textContent=best+"%";
+  $("pageTitle").textContent=state.game==="__ALL__"?"All Games":state.game;
+  $("pageSubtitle").textContent=state.game==="__ALL__"
+    ?"Tổng quan tất cả mini game"
+    :"Theo dõi attempts và điểm của học viên";
+}
+function renderTable(){
+  const rows=selectedRows();
+  $("shownCount").textContent=rows.length+" row"+(rows.length===1?"":"s");
+  $("emptyState").hidden=rows.length!==0;
+  $("recordsBody").innerHTML=rows.map(r=>`
+    <tr>
+      <td><span class="student">${esc(r.studentName||"—")}</span></td>
+      <td class="muted">${esc(r.classCode||"—")}</td>
+      <td><span class="score">${r.score}/${r.total}</span></td>
+      <td><span class="${pctClass(r.percent)}">${r.percent}%</span></td>
+      <td>${esc(fmtDuration(r.durationSeconds))}</td>
+      <td class="muted">${esc(r.completedAt||r.submittedAt||"—")}</td>
+      <td class="muted">${esc((r.attemptId||"").slice(0,8)||"—")}</td>
+    </tr>`).join("");
+}
+function render(){renderStats();renderTable()}
+function showError(message){
+  $("errorBox").textContent=message;$("errorBox").classList.add("show");
+}
+function load(){
+  $("loading").classList.remove("hidden");$("errorBox").classList.remove("show");
+  google.script.run
+    .withSuccessHandler(data=>{
+      state.rows=data.rows||[];
+      buildSidebar();render();
+      $("updatedAt").textContent="Updated: "+new Date(data.updatedAt).toLocaleString();
+      $("pageSubtitle").textContent=state.game==="__ALL__"
+        ?"Tổng quan tất cả mini game · "+(data.spreadsheetName||"")
+        :"Theo dõi attempts và điểm của học viên";
+      $("loading").classList.add("hidden");
+    })
+    .withFailureHandler(err=>{
+      $("loading").classList.add("hidden");
+      showError(err&&err.message?err.message:String(err));
+    })
+    .getDashboardData();
+}
+function csvCell(v){return '"'+String(v??"").replace(/"/g,'""')+'"'}
+function exportCsv(){
+  const rows=selectedRows();
+  if(!rows.length)return alert("No records to export.");
+  const data=[
+    ["Student Name","Class / Code","Game","Score","Total","Percent","Duration (sec)","Completed At","Attempt ID"],
+    ...rows.map(r=>[r.studentName,r.classCode,r.game,r.score,r.total,r.percent,r.durationSeconds,r.completedAt||r.submittedAt,r.attemptId])
+  ];
+  const csv=data.map(row=>row.map(csvCell).join(",")).join("\n");
+  const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"});
+  const url=URL.createObjectURL(blob),a=document.createElement("a");
+  a.href=url;a.download=(state.game==="__ALL__"?"all-games":state.game.replace(/[^a-z0-9]+/gi,"-").toLowerCase())+"-records.csv";
+  a.click();URL.revokeObjectURL(url);
+}
+$("searchInput").addEventListener("input",renderTable);
+$("attemptMode").addEventListener("change",renderTable);
+$("sortMode").addEventListener("change",renderTable);
+$("refreshBtn").onclick=load;
+$("exportBtn").onclick=exportCsv;
+load();
+</script>
+</body>
+</html>
