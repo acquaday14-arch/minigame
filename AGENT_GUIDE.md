@@ -16,11 +16,39 @@ This repository is a static GitHub Pages library for lightweight classroom Engli
 - One question/activity at a time.
 - Score and progress always visible during play.
 - Large text and buttons suitable for screen sharing and young learners.
-- Next, Back, Restart, and Sound On/Off controls.
-- Correct/incorrect feedback.
+- Next, Back, Restart, and Sound On/Off controls when appropriate.
+- Clear correct/incorrect feedback.
 - Final score screen.
 - Timer is optional. Use it only when the lesson request asks for one.
 - Avoid authentication, user accounts, databases, or backend features unless explicitly requested.
+
+## Visual / interaction template selection
+Read `STYLE_REFERENCES.md` before building a new game.
+
+Choose the closest local template:
+- `_template/index.html` = clean/simple base.
+- `_templates/present-tense-challenge/index.html` = playful arcade style for grammar, vocabulary, word order and multi-round challenges.
+- `_templates/was-were-did-quest/index.html` = picture-first purple quest style for image questions.
+
+Unless the user asks for a different look, prefer one of the two playful reference templates over the plain base.
+
+Preserve the reference feel:
+- playful rounded typography
+- bright but controlled pastel palette
+- strong visual hierarchy
+- responsive large controls
+- correct/wrong sound effects
+- small motion feedback such as pop, shake, progress animation and celebration
+- no heavy framework required
+
+## Picture games
+When images are central:
+- create or use a game-local `assets/` folder
+- use relative image paths
+- optimize assets for web
+- if AI images are generated, keep style consistent across the same game
+- never hotlink the old ChatGPT Sites
+- make image cards responsive and large enough for classroom viewing
 
 ## Content rules
 - Keep language appropriate to the learner level given by the user.
@@ -29,4 +57,4 @@ This repository is a static GitHub Pages library for lightweight classroom Engli
 - Preserve previous games.
 
 ## Template
-Use `_template/index.html` as the starting point for new games.
+Start from the selected LOCAL template and adapt content without breaking the existing interaction patterns.
