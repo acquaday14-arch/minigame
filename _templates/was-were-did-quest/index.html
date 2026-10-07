@@ -145,11 +145,14 @@
         <h1>Quest Complete, <span id="playerResult"></span>!</h1>
         <div class="result-score"><span id="finalPoints">0</span>/<span id="finalTotal">3</span></div>
         <p class="result-sub" id="resultMessage"></p>
+        <p class="result-sub" id="recordStatus"></p>
         <button class="btn" id="playAgainBtn">↻ Play Again</button>
       </div>
     </main>
 <div class="fx-particles" id="fxParticles" aria-hidden="true"></div>
     <div class="fx-round-toast hidden" id="roundToast" aria-hidden="true"><div class="fx-round-pill"><small>LEVEL UP ✨</small><span id="roundToastText"></span></div></div>
+<script src="/minigame/shared/teacher-records-config.js"></script>
+<script src="/minigame/shared/teacher-records.js"></script>
 <script>
 
 const placeholder = label => `
@@ -179,6 +182,7 @@ let player = "";
 let soundOn = true;
 let audioCtx = null;
 let roundTimer = null;
+let startedAt = null;
 const totalRounds = Math.max(...QUESTIONS.map(q=>q.round));
 $("total").textContent = QUESTIONS.length;
 const roundElement = () => $(MODE === "present" ? "roundPill" : "round");
@@ -247,6 +251,7 @@ function start(){
   const name=$("nameInput").value.trim();
   if(!name){alert("Please enter your name first.");$("nameInput").focus();return;}
   player=name;
+  startedAt=Date.now();
   pos=0;
   state.forEach(s=>s.choice=null);
   setScreen("gameScreen");
@@ -320,9 +325,10 @@ function next(){
 }
 function back(){if(pos>0){pos--;render();}}
 function restart(){
+  startedAt=Date.now();
   pos=0;state.forEach(s=>s.choice=null);setScreen("gameScreen");render();toastRound(QUESTIONS[0].round);
 }
-function finish(){
+async function finish(){
   setScreen("resultScreen");
   const score=points();
   $("playerResult").textContent=player;
@@ -332,6 +338,28 @@ function finish(){
   $("resultMessage").textContent = pct>=85 ? "Amazing! You're a grammar superstar!" : pct>=60 ? "Great effort! Keep practicing and level up!" : "Every try makes you stronger. Play again!";
   chime("finish");
   particles(100);
+
+  const preview = location.pathname.includes("/_templates/");
+  if(preview){
+    $("recordStatus").textContent="Template preview — score not sent.";
+    return;
+  }
+
+  $("recordStatus").textContent="Sending score to your teacher…";
+  if(window.TeacherRecords){
+    const result=await TeacherRecords.submit({
+      studentName:player,
+      gameTitle:document.title,
+      score,
+      total:QUESTIONS.length,
+      durationSeconds:startedAt ? Math.max(0,Math.round((Date.now()-startedAt)/1000)) : 0
+    });
+    $("recordStatus").textContent=result.sent
+      ? "✅ Score sent to your teacher."
+      : "⚠️ Score saved on this device, but could not be sent right now.";
+  }else{
+    $("recordStatus").textContent="⚠️ Teacher Records is unavailable.";
+  }
 }
 function toggleSound(){
   soundOn=!soundOn;
