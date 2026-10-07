@@ -57,6 +57,22 @@ Unless I ask for another style, make the game feel like the two saved reference 
 - If a game clearly needs original illustrations and I request AI images, generate them in a consistent style, store them in that game's `assets/` folder, optimize them for web, and integrate them using relative paths.
 - Never hotlink images from old ChatGPT Sites.
 
+## Teacher Records integration
+- Teacher Records is ON by default for every published game.
+- Reuse the existing shared files:
+  - `/minigame/shared/teacher-records-config.js`
+  - `/minigame/shared/teacher-records.js`
+- At the final result screen, automatically submit exactly one completed attempt containing:
+  - student name
+  - game title
+  - score
+  - total
+  - duration
+- Show a short status such as “Score sent to your teacher.”
+- Never display the class record list to students.
+- Do not create a new Google Sheet, Apps Script deployment, database, or backend for each game.
+- Do not send test/template-preview scores from URLs under `/_template` or `/_templates/`.
+
 ## Safety against accidental breakage
 Before writing:
 1. Read the repository guides and selected template.
