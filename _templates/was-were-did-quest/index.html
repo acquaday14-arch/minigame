@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Picture Quest Template</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--purple:#5b36d6;--dark:#242b62;--pink:#e64a98;--soft:#f7f5ff;--line:#d9cff8;--yellow:#ffd57a}
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;background:linear-gradient(180deg,#f3f7ff,#f7f1ff);padding:12px;font-family:"Fredoka",ui-rounded,"Trebuchet MS",Arial,sans-serif;color:var(--dark)}
+    button,input{font:inherit}
+    .shell{width:min(1060px,100%);margin:1vh auto;background:white;border:4px solid #4330ad;border-radius:34px;overflow:hidden;box-shadow:0 14px 0 #ded6ff}
+    .hud{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;padding:18px 28px;background:linear-gradient(135deg,#5132c8,#6948df);color:white}
+    .pill{border:1px solid rgba(255,255,255,.45);background:rgba(255,255,255,.12);border-radius:999px;padding:9px 15px;font-weight:700}
+    .hud .pill:nth-child(2){justify-self:center}.hud .pill:last-child{justify-self:end}
+    .track{height:9px;background:#dcd1ff}.bar{height:100%;width:33%;background:#ffd267;transition:.25s}
+    .content{padding:22px 30px 20px;min-height:700px}
+    .kicker{text-align:center;color:var(--pink);font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+    h1{text-align:center;color:#432cb5;font-size:clamp(40px,6vw,60px);line-height:1;margin:8px 0}
+    .instruction{text-align:center;font-size:20px;font-weight:600;margin-bottom:14px}
+    .image-wrap{display:grid;place-items:center;margin:10px 0 18px}
+    .picture{
+      width:min(310px,80vw);aspect-ratio:1/1;border:4px solid #a98bf5;border-radius:28px;overflow:hidden;
+      box-shadow:0 10px 22px rgba(82,58,173,.16);background:linear-gradient(135deg,#ffedf5,#e7f5ff);position:relative
+    }
+    .picture svg{width:100%;height:100%;display:block}
+    .prompt{text-align:center;font-size:clamp(25px,4vw,35px);font-weight:700;margin:12px 0}
+    .answers{width:min(780px,100%);margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .answer{border:3px solid #ded4f9;background:#fbfaff;border-radius:18px;padding:14px;color:var(--dark);font-weight:700;font-size:18px;cursor:pointer}
+    .answer:hover{border-color:#ab95ed}
+    .answer.good{border-color:#63d7a6;background:#eafff5;color:#176a49;animation:pop .28s}
+    .answer.bad{border-color:#ff9fab;background:#fff0f2;color:#a33745;animation:shake .28s}
+    .feedback{text-align:center;min-height:36px;margin:15px 0;font-size:19px;font-weight:700}
+    .controls{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;margin-top:25px}
+    .btn{border:2px solid #dbd3f5;background:#fff;border-radius:15px;padding:11px 18px;font-weight:700;color:#4733a6;cursor:pointer}
+    .next{justify-self:end;background:linear-gradient(135deg,#ffd88b,#ffc586);border:0;color:#785d41}
+    .hidden{display:none!important}
+    .start{text-align:center;padding:65px 30px}.start p{font-size:19px;color:#687086}.start input{width:min(540px,100%);padding:15px 17px;border:2px solid #d8cff4;border-radius:16px}
+    .start .btn{margin-top:12px;background:linear-gradient(135deg,#5532cf,#7754e9);border:0;color:#fff}
+    @keyframes pop{50%{transform:scale(1.035)}}@keyframes shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+    @media(max-width:700px){.hud{grid-template-columns:1fr 1fr}.hud .pill:nth-child(2){grid-column:1/-1;grid-row:2}.content{padding:20px 14px}.answers{grid-template-columns:1fr}.controls{grid-template-columns:1fr 1fr}.controls .restart{display:none}}
+  </style>
+</head>
+<body>
+  <main class="shell" id="startScreen">
+    <section class="start">
+      <div class="kicker">Picture-first classroom template</div>
+      <h1>Was / Were / Did Quest</h1>
+      <p>Use this template when each question needs an AI-generated or teacher-provided picture.</p>
+      <input id="nameInput" placeholder="Enter your name">
+      <br><button class="btn" id="startBtn">Start Quest</button>
+    </section>
+  </main>
+
+  <main class="shell hidden" id="gameScreen">
+    <div class="hud">
+      <div class="pill" id="round">Round 1 / 2 · Picture questions</div>
+      <div class="pill">⭐ <span id="score">0</span> / <span id="total">3</span> points</div>
+      <div class="pill" id="counter">Question 1 / 3</div>
+    </div>
+    <div class="track"><div class="bar" id="bar"></div></div>
+    <section class="content">
+      <div class="kicker" id="kicker">Picture questions · 1 of 3</div>
+      <h1 id="title">Picture questions</h1>
+      <div class="instruction">Look at the picture and choose the matching question.</div>
+
+      <div class="image-wrap">
+        <div class="picture" id="picture"></div>
+      </div>
+
+      <div class="prompt" id="prompt"></div>
+      <div class="answers" id="answers"></div>
+      <div class="feedback" id="feedback"></div>
+
+      <div class="controls">
+        <button class="btn" id="backBtn">← Back</button>
+        <button class="btn restart" id="restartBtn">↻ Restart</button>
+        <button class="btn next" id="nextBtn">Next →</button>
+      </div>
+    </section>
+  </main>
+
+<script>
+const placeholder = label => `
+<svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${label}">
+ <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffe5f2"/><stop offset="1" stop-color="#dff3ff"/></linearGradient></defs>
+ <rect width="500" height="500" fill="url(#g)"/>
+ <rect x="80" y="300" width="340" height="110" rx="18" fill="#caaef8"/>
+ <rect x="155" y="190" width="190" height="130" rx="16" fill="#ffffff"/>
+ <circle cx="250" cy="145" r="58" fill="#ffd3b2"/>
+ <path d="M190 145c0-70 120-85 130-8-38-18-81-10-130 8z" fill="#6b4638"/>
+ <rect x="210" y="250" width="80" height="70" rx="12" fill="#87c8ff"/>
+ <text x="250" y="455" text-anchor="middle" font-family="Arial" font-size="24" fill="#4733a6">${label}</text>
+</svg>`;
+
+const QUESTIONS=[
+ {round:1,picture:"Office scene",prompt:"Ask about Mandy at work yesterday.",choices:["Was Mandy at work yesterday?","Did Mandy at work yesterday?","Were Mandy at work yesterday?"],a:0},
+ {round:1,picture:"Meeting scene",prompt:"Ask about the workers in the meeting yesterday.",choices:["Was they in the meeting yesterday?","Were they in the meeting yesterday?","Did they in the meeting yesterday?"],a:1},
+ {round:2,picture:"Completed task",prompt:"Ask whether Ben finished the report yesterday.",choices:["Was Ben finish the report yesterday?","Did Ben finish the report yesterday?","Were Ben finished the report yesterday?"],a:1}
+];
+let i=0,score=0,locked=false;
+const $=x=>document.getElementById(x);$("total").textContent=QUESTIONS.length;
+function tone(ok){
+ const c=new (AudioContext||webkitAudioContext)(),o=c.createOscillator(),g=c.createGain();
+ o.frequency.value=ok?800:180;o.connect(g);g.connect(c.destination);
+ g.gain.setValueAtTime(.07,c.currentTime);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+.22);o.start();o.stop(c.currentTime+.23)
+}
+function start(){if(!$("nameInput").value.trim()){alert("Enter your name first.");return}$("startScreen").classList.add("hidden");$("gameScreen").classList.remove("hidden");render()}
+function render(){
+ locked=false;const q=QUESTIONS[i];$("round").textContent="Round "+q.round+" / 2 · Picture questions";$("counter").textContent="Question "+(i+1)+" / "+QUESTIONS.length;
+ $("bar").style.width=((i+1)/QUESTIONS.length*100)+"%";$("kicker").textContent="Picture questions · "+(i+1)+" of "+QUESTIONS.length;
+ $("picture").innerHTML=placeholder(q.picture);$("prompt").textContent=q.prompt;$("feedback").textContent="";$("answers").innerHTML="";
+ q.choices.forEach((x,idx)=>{const b=document.createElement("button");b.className="answer";b.textContent=x;b.onclick=()=>answer(idx,b);$("answers").appendChild(b)});
+ $("backBtn").disabled=i===0;$("nextBtn").textContent=i===QUESTIONS.length-1?"Finish →":"Next →"
+}
+function answer(idx,b){if(locked)return;locked=true;const q=QUESTIONS[i],ok=idx===q.a;if(ok){score++;$("score").textContent=score;b.classList.add("good");$("feedback").textContent="Correct! ⭐"}else{b.classList.add("bad");[...$("answers").children][q.a].classList.add("good");$("feedback").textContent="Not quite — check the subject and verb."}tone(ok)}
+function next(){if(i<QUESTIONS.length-1){i++;render()}else{alert("Finished! Score: "+score+"/"+QUESTIONS.length)}}function back(){if(i>0){i--;render()}}
+$("startBtn").onclick=start;$("nextBtn").onclick=next;$("backBtn").onclick=back;$("restartBtn").onclick=()=>location.reload();
+</script>
+</body>
+</html>
