@@ -81,10 +81,13 @@
       <p class="sub" id="resultName"></p>
       <div class="resultScore" id="finalScore">0/0</div>
       <p class="sub">You can restart and try again.</p>
+      <p class="sub" id="recordStatus"></p>
       <button class="btn primary" id="playAgainBtn">Play Again</button>
     </section>
   </main>
 
+  <script src="/minigame/shared/teacher-records-config.js"></script>
+  <script src="/minigame/shared/teacher-records.js"></script>
   <script>
     // ===== EDIT THIS SECTION FOR EACH NEW GAME =====
     const CONFIG = {
@@ -119,6 +122,7 @@
     // ===== END EDIT SECTION =====
 
     let index = 0, score = 0, locked = false, soundOn = true, timerId = null, timeLeft = 0;
+    let startedAt = null;
     const answered = new Map();
 
     const $ = id => document.getElementById(id);
@@ -141,6 +145,7 @@
       const name = $("studentName").value.trim();
       if(!name){ alert("Please enter your name."); return; }
       $("playerName").textContent = name;
+      startedAt = Date.now();
       $("startScreen").classList.add("hidden");
       $("gameScreen").classList.remove("hidden");
       render();
@@ -212,17 +217,40 @@
     }
     function back(){ if(index>0){ index--; render(); } }
     function restart(){
-      clearTimer(); index=0; score=0; answered.clear(); locked=false;
+      clearTimer(); index=0; score=0; answered.clear(); locked=false; startedAt=Date.now();
       $("resultScreen").classList.add("hidden");
       $("gameScreen").classList.remove("hidden");
       render();
     }
-    function finish(){
+    async function finish(){
       clearTimer();
       $("gameScreen").classList.add("hidden");
       $("resultScreen").classList.remove("hidden");
-      $("resultName").textContent = $("playerName").textContent;
+      const studentName = $("playerName").textContent;
+      $("resultName").textContent = studentName;
       $("finalScore").textContent = score + "/" + QUESTIONS.length;
+
+      const preview = location.pathname.includes("/_template");
+      if(preview){
+        $("recordStatus").textContent = "Template preview — score not sent.";
+        return;
+      }
+
+      $("recordStatus").textContent = "Sending score to your teacher…";
+      if(window.TeacherRecords){
+        const result = await TeacherRecords.submit({
+          studentName,
+          gameTitle: CONFIG.title,
+          score,
+          total: QUESTIONS.length,
+          durationSeconds: startedAt ? Math.max(0,Math.round((Date.now()-startedAt)/1000)) : 0
+        });
+        $("recordStatus").textContent = result.sent
+          ? "✅ Score sent to your teacher."
+          : "⚠️ Score saved on this device, but could not be sent right now.";
+      }else{
+        $("recordStatus").textContent = "⚠️ Teacher Records is unavailable.";
+      }
     }
     function startTimer(){
       timeLeft = CONFIG.secondsPerQuestion;
