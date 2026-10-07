@@ -4,5 +4,11 @@
     "description": "GitHub Pages + JavaScript test game.",
     "level": "Demo",
     "path": "./demo/"
+  },
+  {
+    "title": "Office Self-Introduction Challenge",
+    "description": "Personality vocabulary, office Q&A, and a 10-question Word Order Race.",
+    "level": "A2–B1",
+    "path": "./self-introduction-office/"
   }
 ]
