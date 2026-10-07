@@ -58,3 +58,18 @@ When images are central:
 
 ## Template
 Start from the selected LOCAL template and adapt content without breaking the existing interaction patterns.
+
+
+## Teacher Records
+Central Teacher Records is mandatory for normal published games.
+
+Every new published game must:
+- load `/minigame/shared/teacher-records-config.js`
+- load `/minigame/shared/teacher-records.js`
+- submit exactly one record when an attempt reaches its final result screen
+- send student name, game title, score, total, and duration
+- keep the Google Sheet private; never show the class record list in the student-facing game
+- keep the helper's local browser backup as a fallback
+- not send records from template preview URLs under `/_template` or `/_templates/`
+
+Do not create a new backend or a new Sheet per game. All games use the shared central endpoint.
