@@ -1,0 +1,608 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Office Self-Introduction Challenge</title>
+  <style>
+    :root{
+      --bg1:#fff8fb;--bg2:#eef8ff;--card:#ffffff;--ink:#17324d;--muted:#64748b;
+      --pink:#ff8fbd;--pink2:#ffe2ef;--blue:#7bc8ff;--blue2:#e5f5ff;--yellow:#ffd76a;
+      --green:#64d8a5;--green2:#e8fbf3;--danger:#ef6b73;--danger2:#fff0f1;--line:#dfe7ef;
+      --shadow:0 18px 55px rgba(63,87,110,.14);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;min-height:100vh;color:var(--ink);
+      font-family:Inter,ui-rounded,"Trebuchet MS",Arial,sans-serif;
+      background:
+        radial-gradient(circle at 15% 10%,#ffe8f2 0 10%,transparent 11%),
+        radial-gradient(circle at 88% 12%,#e4f6ff 0 11%,transparent 12%),
+        linear-gradient(145deg,var(--bg1),var(--bg2));
+      padding:22px;
+    }
+    button,input{font:inherit}
+    button{touch-action:manipulation}
+    .app{width:min(980px,96vw);margin:2.5vh auto}
+    .panel{
+      background:rgba(255,255,255,.96);border:1px solid rgba(223,231,239,.95);
+      border-radius:28px;box-shadow:var(--shadow);padding:28px;
+    }
+    .hidden{display:none!important}
+    .center{text-align:center}
+    .hero-badge,.round-badge{
+      display:inline-flex;align-items:center;gap:7px;border-radius:999px;font-weight:900;
+      letter-spacing:.03em;text-transform:uppercase;font-size:12px;padding:8px 12px;
+    }
+    .hero-badge{background:#fff0f6;color:#a63c6a}
+    .round-badge{background:var(--blue2);color:#256b99}
+    h1{font-size:clamp(34px,5.6vw,62px);line-height:1.02;margin:12px 0}
+    h2{font-size:clamp(24px,4vw,36px);line-height:1.25}
+    .subtitle{color:var(--muted);font-size:17px;line-height:1.6;max-width:720px;margin:0 auto}
+    .chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:18px 0 8px}
+    .chip{background:#f4f7fb;border:1px solid var(--line);border-radius:999px;padding:8px 11px;font-weight:800;font-size:13px}
+    .name-input{
+      width:100%;margin-top:24px;padding:16px 18px;border:2px solid #d6e2ee;border-radius:15px;
+      font-size:18px;outline:none;background:#fff
+    }
+    .name-input:focus{border-color:var(--blue);box-shadow:0 0 0 4px #e7f6ff}
+    .btn{
+      border:0;border-radius:15px;padding:13px 18px;font-weight:900;cursor:pointer;
+      transition:transform .12s ease,box-shadow .12s ease,opacity .12s ease
+    }
+    .btn:hover{transform:translateY(-1px)}
+    .btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+    .primary{background:linear-gradient(135deg,#5baef0,#7a7ef3);color:#fff;box-shadow:0 8px 20px rgba(91,174,240,.25)}
+    .secondary{background:#f2f5f9;color:var(--ink)}
+    .pink{background:linear-gradient(135deg,#ff8fbd,#f27fae);color:#fff}
+    .start-row{display:flex;gap:10px;margin-top:12px}
+    .start-row .btn{flex:1}
+    .hud{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;margin-bottom:14px}
+    .player{font-weight:950}
+    .hud-right{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+    .stat{background:#f6f8fb;border:1px solid var(--line);border-radius:999px;padding:8px 12px;font-weight:900}
+    .timer{background:#fff6dd;border-color:#ffe199}
+    .timer.danger{background:var(--danger2);border-color:#ffc8cb;color:#a8323a}
+    .track{height:11px;border-radius:999px;background:#edf1f6;overflow:hidden;margin:12px 0 22px}
+    .bar{height:100%;width:0;background:linear-gradient(90deg,var(--pink),var(--blue));transition:width .25s ease}
+    .question-card{border:1px solid var(--line);background:linear-gradient(180deg,#fff,#fbfdff);border-radius:22px;padding:22px}
+    .prompt{font-size:clamp(23px,3.5vw,34px);font-weight:950;line-height:1.3;margin:14px 0 20px}
+    .context{color:var(--muted);font-weight:700;line-height:1.5;margin-top:-8px;margin-bottom:16px}
+    .answers{display:grid;gap:10px}
+    .answer{
+      width:100%;text-align:left;border:2px solid transparent;background:#f1f5ff;color:var(--ink);
+      border-radius:15px;padding:14px 16px;font-weight:850;cursor:pointer
+    }
+    .answer:hover{border-color:#bfd4ff;background:#edf3ff}
+    .answer.selected{border-color:#8aa6ff;background:#e8eeff}
+    .answer.correct{border-color:#8de0b6;background:var(--green2);color:#14633d}
+    .answer.wrong{border-color:#ffb3b8;background:var(--danger2);color:#9a3138}
+    .word-bank,.sentence-zone{
+      min-height:72px;border-radius:18px;padding:12px;display:flex;flex-wrap:wrap;gap:9px;align-content:flex-start
+    }
+    .word-bank{background:#fff7fb;border:2px dashed #ffc0db;margin-bottom:12px}
+    .sentence-zone{background:#eef8ff;border:2px dashed #a9d9f7}
+    .word{
+      border:0;border-radius:12px;padding:10px 12px;background:white;box-shadow:0 4px 12px rgba(30,54,77,.09);
+      font-weight:900;color:var(--ink);cursor:pointer
+    }
+    .word.used{opacity:.28;pointer-events:none}
+    .sentence-zone .word{background:#dff2ff}
+    .word-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    .feedback{
+      min-height:58px;margin-top:18px;border-radius:16px;padding:12px 14px;font-weight:900;line-height:1.45;
+      display:flex;align-items:center;justify-content:center;text-align:center
+    }
+    .feedback:empty{padding:0;min-height:22px}
+    .feedback.good{background:var(--green2);color:#14633d}
+    .feedback.bad{background:var(--danger2);color:#9a3138}
+    .controls{display:flex;gap:10px;justify-content:space-between;align-items:center;margin-top:18px;flex-wrap:wrap}
+    .controls-right{display:flex;gap:10px;flex-wrap:wrap}
+    .result-score{font-size:clamp(54px,10vw,94px);font-weight:1000;letter-spacing:-.04em;margin:8px 0}
+    .result-note{font-size:18px;color:var(--muted);line-height:1.6}
+    .result-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px}
+    dialog{border:0;border-radius:24px;padding:0;box-shadow:0 28px 90px rgba(15,23,42,.28);width:min(780px,94vw)}
+    dialog::backdrop{background:rgba(30,41,59,.45);backdrop-filter:blur(3px)}
+    .modal{padding:24px;background:#fff}
+    .modal-head{display:flex;justify-content:space-between;gap:12px;align-items:center}
+    .modal-head h2{margin:0}
+    .record-note{background:#fff8e5;border:1px solid #ffe3a3;border-radius:14px;padding:11px 13px;color:#7a5a12;font-weight:750;line-height:1.5}
+    .table-wrap{overflow:auto;border:1px solid var(--line);border-radius:16px;margin-top:14px}
+    table{width:100%;border-collapse:collapse;min-width:560px}
+    th,td{padding:12px;border-bottom:1px solid var(--line);text-align:left}
+    th{background:#f6f8fb;font-size:13px;text-transform:uppercase;letter-spacing:.04em}
+    .modal-actions{display:flex;gap:9px;justify-content:flex-end;flex-wrap:wrap;margin-top:14px}
+    .tiny{font-size:13px;color:var(--muted)}
+    @media(max-width:680px){
+      body{padding:10px}.panel{padding:18px;border-radius:22px}.app{width:100%;margin:1vh auto}
+      .hud{grid-template-columns:1fr}.hud-right{justify-content:flex-start}.start-row{flex-direction:column}
+      .controls{align-items:stretch}.controls>.btn{width:100%}.controls-right{width:100%}.controls-right .btn{flex:1}
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="panel" id="startScreen">
+      <div class="center">
+        <span class="hero-badge">Office English • 20–30 min</span>
+        <h1>Self-Introduction Challenge</h1>
+        <p class="subtitle">
+          Practice personality vocabulary, office introductions, workplace Q&amp;A, and lots of sentence building.
+        </p>
+        <div class="chips">
+          <span class="chip">Vocabulary</span>
+          <span class="chip">Word Order Race</span>
+          <span class="chip">Office Q&amp;A</span>
+          <span class="chip">Score + Progress</span>
+        </div>
+      </div>
+      <input class="name-input" id="studentName" placeholder="Enter your name before starting" autocomplete="name" />
+      <div class="start-row">
+        <button class="btn primary" id="startBtn">Start Game</button>
+        <button class="btn secondary" id="recordsBtn">Teacher Records</button>
+      </div>
+      <p class="tiny center" style="margin-top:14px">Teacher Records are stored only in this browser on this device.</p>
+    </section>
+
+    <section class="panel hidden" id="gameScreen">
+      <div class="hud">
+        <div class="player" id="playerName"></div>
+        <div class="hud-right">
+          <span class="stat">Score: <span id="score">0</span></span>
+          <span class="stat">Progress: <span id="progressText">1/20</span></span>
+          <span class="stat timer hidden" id="timerPill">⏱ <span id="timerText">30</span>s</span>
+        </div>
+      </div>
+
+      <div class="track"><div class="bar" id="progressBar"></div></div>
+
+      <div class="question-card">
+        <span class="round-badge" id="roundLabel"></span>
+        <div class="prompt" id="prompt"></div>
+        <div class="context hidden" id="context"></div>
+        <div id="answerArea"></div>
+        <div class="feedback" id="feedback"></div>
+      </div>
+
+      <div class="controls">
+        <button class="btn secondary" id="backBtn">← Back</button>
+        <div class="controls-right">
+          <button class="btn secondary" id="soundBtn">🔊 Sound On</button>
+          <button class="btn secondary" id="restartBtn">Restart</button>
+          <button class="btn primary" id="nextBtn">Next →</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel hidden center" id="resultScreen">
+      <span class="hero-badge">Completed</span>
+      <h1>Great work, <span id="resultName"></span>!</h1>
+      <div class="result-score"><span id="finalScore">0</span>/<span id="finalTotal">20</span></div>
+      <p class="result-note" id="resultMessage"></p>
+      <div class="result-actions">
+        <button class="btn primary" id="playAgainBtn">Play Again</button>
+        <button class="btn secondary" id="resultRecordsBtn">Teacher Records</button>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="recordsDialog">
+    <div class="modal">
+      <div class="modal-head">
+        <h2>Teacher Records</h2>
+        <button class="btn secondary" id="closeRecordsBtn">Close</button>
+      </div>
+      <p class="record-note">
+        Simple local record only: name, score, and completion time are stored in this browser.
+        Students playing on different devices will keep records on their own devices.
+      </p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Name</th><th>Score</th><th>Percent</th><th>Time</th></tr></thead>
+          <tbody id="recordsBody"></tbody>
+        </table>
+      </div>
+      <div class="modal-actions">
+        <button class="btn secondary" id="exportBtn">Export CSV</button>
+        <button class="btn secondary" id="clearRecordsBtn">Clear Records</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script>
+    const QUESTIONS = [
+      {type:"mcq",round:"1 · Self-Intro Vocabulary",prompt:"Anna always sets big goals for herself. She is _____.",choices:["ambitious","sensitive","stubborn"],answer:0},
+      {type:"mcq",round:"1 · Self-Intro Vocabulary",prompt:"Anna is very _____ about learning English.",choices:["passionate","practical","successful"],answer:0},
+      {type:"mcq",round:"1 · Self-Intro Vocabulary",prompt:"Anna always thinks about other people's feelings. Her friends say she is _____.",choices:["thoughtful","impulsive","stubborn"],answer:0},
+      {type:"mcq",round:"1 · Self-Intro Vocabulary",prompt:"Lucy likes finding simple and useful solutions to problems. She is _____.",choices:["practical","sensitive","ambitious"],answer:0},
+      {type:"mcq",round:"1 · Self-Intro Vocabulary",prompt:"Lucy quickly understands what is happening around her. She is _____.",choices:["perceptive","stubborn","impulsive"],answer:0},
+      {type:"mcq",round:"1 · Self-Intro Vocabulary",prompt:"David does not change his mind easily. He can be a little _____.",choices:["stubborn","thoughtful","passionate"],answer:0},
+
+      {type:"order",round:"2 · Word Order Race",timed:true,prompt:"Build Anna's office introduction.",words:["Hi,","my","name","is","Anna","and","I","work","in","Sales."],answer:"Hi, my name is Anna and I work in Sales."},
+      {type:"order",round:"2 · Word Order Race",timed:true,prompt:"Build a sentence about learning.",words:["I'm","passionate","about","learning","new","skills."],answer:"I'm passionate about learning new skills."},
+      {type:"order",round:"2 · Word Order Race",timed:true,prompt:"Build a sentence about motivation.",words:["My","biggest","motivation","is","to","improve","every","day."],answer:"My biggest motivation is to improve every day."},
+      {type:"order",round:"2 · Word Order Race",timed:true,prompt:"Build a teamwork sentence.",words:["I","enjoy","working","in","groups","because","we","can","learn","from","each","other's","experiences."],answer:"I enjoy working in groups because we can learn from each other's experiences."},
+      {type:"order",round:"2 · Word Order Race",timed:true,prompt:"Build a sentence about growth.",words:["I","would","like","to","broaden","my","horizons."],answer:"I would like to broaden my horizons."},
+      {type:"order",round:"2 · Word Order Race",timed:true,prompt:"Build a sentence about career goals.",words:["In","the","future,","I","hope","to","be","successful","in","my","career."],answer:"In the future, I hope to be successful in my career."},
+      {type:"order",round:"2 · Word Order Race",timed:true,prompt:"Build a workplace strength sentence.",words:["I'm","practical","and","I","like","finding","useful","solutions."],answer:"I'm practical and I like finding useful solutions."},
+      {type:"order",round:"2 · Word Order Race",timed:true,prompt:"Build a self-development sentence.",words:["I","want","to","develop","my","working","skills."],answer:"I want to develop my working skills."},
+      {type:"order",round:"2 · Word Order Race",timed:true,prompt:"Build a business travel sentence.",words:["I","often","travel","for","business","and","meet","new","partners."],answer:"I often travel for business and meet new partners."},
+      {type:"order",round:"2 · Word Order Race",timed:true,prompt:"Build a networking sentence.",words:["I","want","to","expand","my","circle","of","friends."],answer:"I want to expand my circle of friends."},
+
+      {type:"mcq",round:"3 · Office Q&A",prompt:"Your manager asks: “Tell me about yourself.” What is the best answer?",context:"Choose the most natural workplace response.",choices:[
+        "Hi, I'm Minh. I work in Operations, and I'm practical and eager to learn new skills.",
+        "I am Minh because Operations practical.",
+        "Myself Minh. Work Operations. Learn."
+      ],answer:0},
+      {type:"mcq",round:"3 · Office Q&A",prompt:"A colleague asks: “Why do you like working in groups?”",choices:[
+        "Because we can learn from each other's experiences.",
+        "Because groups working I like.",
+        "Because I stubborn."
+      ],answer:0},
+      {type:"mcq",round:"3 · Office Q&A",prompt:"Your boss asks: “What are your strengths?”",choices:[
+        "I'm practical and perceptive, so I can understand problems and find useful solutions.",
+        "My strengths are yesterday and future.",
+        "I strengths because office."
+      ],answer:0},
+      {type:"mcq",round:"3 · Office Q&A",prompt:"Your manager asks: “What are your future plans?”",choices:[
+        "I'd like to travel for business, meet partners from different countries, and broaden my horizons.",
+        "I future travel yesterday.",
+        "My plan is stubborn."
+      ],answer:0}
+    ];
+
+    const STORAGE_KEY = "selfIntroOfficeRecordsV1";
+    let index = 0;
+    let score = 0;
+    let soundOn = true;
+    let timerId = null;
+    let timeLeft = 30;
+    let startTime = null;
+    let selectedWords = [];
+    const states = QUESTIONS.map(() => ({answered:false,correct:false,userAnswer:null}));
+
+    const $ = id => document.getElementById(id);
+
+    function normalize(s){
+      return String(s)
+        .replace(/[’]/g,"'")
+        .replace(/\s+/g," ")
+        .replace(/\s+([,.!?])/g,"$1")
+        .trim()
+        .toLowerCase();
+    }
+
+    function playTone(kind){
+      if(!soundOn) return;
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const now = ctx.currentTime;
+      const gain = ctx.createGain();
+      gain.connect(ctx.destination);
+      if(kind === "bell"){
+        [660,880,1046].forEach((f,i)=>{
+          const o=ctx.createOscillator();
+          o.frequency.value=f;o.type="sine";o.connect(gain);
+          o.start(now+i*.07);o.stop(now+.35+i*.07);
+        });
+        gain.gain.setValueAtTime(.12,now);
+        gain.gain.exponentialRampToValueAtTime(.001,now+.55);
+      }else{
+        const o=ctx.createOscillator();
+        o.connect(gain);
+        o.type="sine";
+        o.frequency.value = kind==="correct" ? 760 : 190;
+        gain.gain.setValueAtTime(.08,now);
+        gain.gain.exponentialRampToValueAtTime(.001,now+.22);
+        o.start(now);o.stop(now+.23);
+      }
+    }
+
+    function startGame(){
+      const name=$("studentName").value.trim();
+      if(!name){alert("Please enter your name first.");return;}
+      $("playerName").textContent=name;
+      $("startScreen").classList.add("hidden");
+      $("resultScreen").classList.add("hidden");
+      $("gameScreen").classList.remove("hidden");
+      startTime=Date.now();
+      render();
+    }
+
+    function render(){
+      clearTimer();
+      selectedWords=[];
+      const q=QUESTIONS[index];
+      const st=states[index];
+      $("roundLabel").textContent=q.round;
+      $("prompt").textContent=q.prompt;
+      $("progressText").textContent=(index+1)+"/"+QUESTIONS.length;
+      $("progressBar").style.width=(((index+1)/QUESTIONS.length)*100)+"%";
+      $("score").textContent=score;
+      $("backBtn").disabled=index===0;
+      $("nextBtn").textContent=index===QUESTIONS.length-1 ? "Finish →" : "Next →";
+      $("feedback").textContent="";
+      $("feedback").className="feedback";
+      $("context").classList.toggle("hidden",!q.context);
+      $("context").textContent=q.context||"";
+
+      const area=$("answerArea");
+      area.innerHTML="";
+
+      if(q.type==="mcq"){
+        const box=document.createElement("div");
+        box.className="answers";
+        q.choices.forEach((choice,i)=>{
+          const b=document.createElement("button");
+          b.className="answer";
+          b.textContent=choice;
+          if(st.answered){
+            if(i===q.answer)b.classList.add("correct");
+            if(st.userAnswer===i && i!==q.answer)b.classList.add("wrong");
+            b.disabled=true;
+          }else{
+            b.onclick=()=>answerMcq(i);
+          }
+          box.appendChild(b);
+        });
+        area.appendChild(box);
+      }else{
+        renderOrder(q,st,area);
+      }
+
+      if(st.answered){
+        showFeedback(st.correct, st.correct ? "Correct! Great job." : "Checked. Correct answer: "+getCorrectAnswer(q));
+      }else if(q.timed){
+        startTimer();
+      }
+    }
+
+    function renderOrder(q,st,area){
+      const bank=document.createElement("div");
+      bank.className="word-bank";
+      const zone=document.createElement("div");
+      zone.className="sentence-zone";
+      const actions=document.createElement("div");
+      actions.className="word-actions";
+
+      const shuffled = st.userAnswer && st.answered ? q.words : deterministicShuffle(q.words,index);
+
+      shuffled.forEach((word,i)=>{
+        const b=document.createElement("button");
+        b.className="word";
+        b.textContent=word;
+        b.dataset.word=word;
+        if(!st.answered){
+          b.onclick=()=>{
+            if(b.classList.contains("used"))return;
+            b.classList.add("used");
+            selectedWords.push(word);
+            drawSelected(zone,bank);
+          };
+        }else{
+          b.disabled=true;
+          b.classList.add("used");
+        }
+        bank.appendChild(b);
+      });
+
+      if(st.answered && st.userAnswer){
+        st.userAnswer.split(" ").forEach(w=>{
+          const t=document.createElement("button");
+          t.className="word";t.textContent=w;t.disabled=true;zone.appendChild(t);
+        });
+      }
+
+      const reset=document.createElement("button");
+      reset.className="btn secondary";reset.textContent="Reset Order";
+      reset.disabled=st.answered;
+      reset.onclick=()=>{selectedWords=[];[...bank.children].forEach(x=>x.classList.remove("used"));drawSelected(zone,bank);};
+
+      const check=document.createElement("button");
+      check.className="btn pink";check.textContent="Check Order";
+      check.disabled=st.answered;
+      check.onclick=()=>checkOrder();
+
+      actions.append(reset,check);
+      area.append(bank,zone,actions);
+    }
+
+    function deterministicShuffle(words,seed){
+      const arr=[...words];
+      let x=seed+17;
+      for(let i=arr.length-1;i>0;i--){
+        x=(x*9301+49297)%233280;
+        const j=Math.floor((x/233280)*(i+1));
+        [arr[i],arr[j]]=[arr[j],arr[i]];
+      }
+      return arr;
+    }
+
+    function drawSelected(zone,bank){
+      zone.innerHTML="";
+      selectedWords.forEach((word,idx)=>{
+        const b=document.createElement("button");
+        b.className="word";b.textContent=word;
+        b.onclick=()=>{
+          selectedWords.splice(idx,1);
+          const candidates=[...bank.children].filter(x=>x.textContent===word && x.classList.contains("used"));
+          if(candidates.length)candidates[candidates.length-1].classList.remove("used");
+          drawSelected(zone,bank);
+        };
+        zone.appendChild(b);
+      });
+    }
+
+    function answerMcq(choice){
+      const q=QUESTIONS[index], st=states[index];
+      if(st.answered)return;
+      st.answered=true;st.userAnswer=choice;st.correct=choice===q.answer;
+      if(st.correct)score++;
+      playTone(st.correct?"correct":"incorrect");
+      clearTimer();
+      render();
+    }
+
+    function checkOrder(){
+      const q=QUESTIONS[index], st=states[index];
+      if(st.answered)return;
+      if(!selectedWords.length){showFeedback(false,"Build the sentence first.");return;}
+      const attempt=selectedWords.join(" ");
+      st.answered=true;st.userAnswer=attempt;st.correct=normalize(attempt)===normalize(q.answer);
+      if(st.correct)score++;
+      playTone(st.correct?"correct":"incorrect");
+      clearTimer();
+      render();
+    }
+
+    function startTimer(){
+      const q=QUESTIONS[index];
+      $("timerPill").classList.remove("hidden","danger");
+      timeLeft=30;
+      $("timerText").textContent=timeLeft;
+      timerId=setInterval(()=>{
+        timeLeft--;
+        $("timerText").textContent=timeLeft;
+        $("timerPill").classList.toggle("danger",timeLeft<=10);
+        if(timeLeft<=0){
+          clearTimer();
+          timeoutCurrent(q);
+        }
+      },1000);
+    }
+
+    function clearTimer(){
+      if(timerId){clearInterval(timerId);timerId=null;}
+      $("timerPill").classList.add("hidden");
+    }
+
+    function timeoutCurrent(q){
+      const st=states[index];
+      if(st.answered)return;
+      st.answered=true;st.correct=false;st.userAnswer=selectedWords.join(" ")||"";
+      playTone("bell");
+      render();
+      showFeedback(false,"TIME'S UP! Correct answer: "+getCorrectAnswer(q));
+    }
+
+    function showFeedback(ok,msg){
+      $("feedback").textContent=msg;
+      $("feedback").className="feedback "+(ok?"good":"bad");
+    }
+
+    function getCorrectAnswer(q){
+      return q.type==="mcq" ? q.choices[q.answer] : q.answer;
+    }
+
+    function next(){
+      if(index<QUESTIONS.length-1){index++;render();}
+      else finish();
+    }
+
+    function back(){
+      if(index>0){index--;render();}
+    }
+
+    function resetGameState(){
+      index=0;score=0;selectedWords=[];clearTimer();
+      states.forEach(s=>{s.answered=false;s.correct=false;s.userAnswer=null;});
+    }
+
+    function restart(){
+      if(!confirm("Restart this game from the beginning?"))return;
+      resetGameState();
+      startTime=Date.now();
+      $("resultScreen").classList.add("hidden");
+      $("gameScreen").classList.remove("hidden");
+      render();
+    }
+
+    function finish(){
+      clearTimer();
+      const name=$("playerName").textContent;
+      $("gameScreen").classList.add("hidden");
+      $("resultScreen").classList.remove("hidden");
+      $("resultName").textContent=name;
+      $("finalScore").textContent=score;
+      $("finalTotal").textContent=QUESTIONS.length;
+      const pct=Math.round(score/QUESTIONS.length*100);
+      $("resultMessage").textContent =
+        pct>=85 ? "Excellent! Your self-introduction and sentence-building skills are strong." :
+        pct>=65 ? "Nice work! Review the word-order sentences once more for extra confidence." :
+        "Good practice. Try again and focus on the word-order round.";
+      saveRecord(name,score,QUESTIONS.length);
+    }
+
+    function playAgain(){
+      resetGameState();
+      startTime=Date.now();
+      $("resultScreen").classList.add("hidden");
+      $("gameScreen").classList.remove("hidden");
+      render();
+    }
+
+    function toggleSound(){
+      soundOn=!soundOn;
+      $("soundBtn").textContent=soundOn?"🔊 Sound On":"🔇 Sound Off";
+    }
+
+    function saveRecord(name,score,total){
+      const rows=getRecords();
+      rows.unshift({
+        name,
+        score,
+        total,
+        percent:Math.round(score/total*100),
+        time:new Date().toLocaleString()
+      });
+      localStorage.setItem(STORAGE_KEY,JSON.stringify(rows.slice(0,100)));
+    }
+
+    function getRecords(){
+      try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]");}
+      catch(e){return[];}
+    }
+
+    function openRecords(){
+      const rows=getRecords();
+      const body=$("recordsBody");
+      body.innerHTML=rows.length ? rows.map(r=>`<tr><td>${escapeHtml(r.name)}</td><td>${r.score}/${r.total}</td><td>${r.percent}%</td><td>${escapeHtml(r.time)}</td></tr>`).join("") :
+        '<tr><td colspan="4">No completed games recorded on this device yet.</td></tr>';
+      $("recordsDialog").showModal();
+    }
+
+    function escapeHtml(s){
+      return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+    }
+
+    function clearRecords(){
+      if(confirm("Clear all records saved in this browser?")){
+        localStorage.removeItem(STORAGE_KEY);openRecords();
+      }
+    }
+
+    function exportCsv(){
+      const rows=getRecords();
+      if(!rows.length){alert("No records to export.");return;}
+      const lines=[["Name","Score","Total","Percent","Time"],...rows.map(r=>[r.name,r.score,r.total,r.percent,r.time])];
+      const csv=lines.map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(",")).join("\n");
+      const blob=new Blob([csv],{type:"text/csv;charset=utf-8"});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement("a");a.href=url;a.download="self-introduction-records.csv";a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    $("startBtn").onclick=startGame;
+    $("recordsBtn").onclick=openRecords;
+    $("resultRecordsBtn").onclick=openRecords;
+    $("closeRecordsBtn").onclick=()=>$("recordsDialog").close();
+    $("clearRecordsBtn").onclick=clearRecords;
+    $("exportBtn").onclick=exportCsv;
+    $("nextBtn").onclick=next;
+    $("backBtn").onclick=back;
+    $("restartBtn").onclick=restart;
+    $("playAgainBtn").onclick=playAgain;
+    $("soundBtn").onclick=toggleSound;
+    $("studentName").addEventListener("keydown",e=>{if(e.key==="Enter")startGame();});
+  </script>
+</body>
+</html>
