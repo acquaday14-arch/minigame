@@ -5,20 +5,77 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>English Mini Games</title>
   <style>
+    :root{
+      --bg:#f6f8ff; --card:#fff; --ink:#1f2937; --muted:#64748b;
+      --line:#e5e7eb; --accent:#5b5bd6; --accent-soft:#eef2ff;
+      --success:#138a5b;
+    }
     *{box-sizing:border-box}
-    body{margin:0;font-family:Arial,sans-serif;background:#f6f7fb;color:#1f2937;display:grid;place-items:center;min-height:100vh}
-    .card{width:min(680px,92vw);background:#fff;border:1px solid #e5e7eb;border-radius:24px;padding:40px;box-shadow:0 18px 45px rgba(0,0,0,.08);text-align:center}
-    h1{margin:0 0 12px;font-size:clamp(32px,6vw,56px)}
-    p{font-size:18px;line-height:1.6;margin:8px 0}
-    .badge{display:inline-block;margin-top:18px;padding:10px 16px;border-radius:999px;background:#eef2ff;font-weight:700}
+    body{margin:0;font-family:Inter,Arial,sans-serif;background:linear-gradient(180deg,#f8faff,#f3f6fb);color:var(--ink)}
+    .wrap{width:min(1080px,92vw);margin:0 auto;padding:48px 0 64px}
+    .hero{background:var(--card);border:1px solid var(--line);border-radius:28px;padding:34px;box-shadow:0 16px 50px rgba(31,41,55,.08);margin-bottom:28px}
+    .eyebrow{display:inline-block;background:var(--accent-soft);padding:8px 12px;border-radius:999px;font-weight:800;font-size:13px}
+    h1{font-size:clamp(34px,6vw,64px);line-height:1.02;margin:14px 0 12px}
+    .lead{font-size:18px;color:var(--muted);max-width:720px;line-height:1.65}
+    .meta{margin-top:18px;font-weight:700;color:var(--success)}
+    .toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:26px 2px 14px}
+    .toolbar h2{margin:0;font-size:24px}
+    .count{color:var(--muted);font-weight:700}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}
+    .game{display:block;text-decoration:none;color:inherit;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px;transition:.18s ease;box-shadow:0 10px 30px rgba(31,41,55,.05)}
+    .game:hover{transform:translateY(-3px);box-shadow:0 16px 34px rgba(31,41,55,.1)}
+    .tag{display:inline-block;font-size:12px;font-weight:800;background:#f1f5f9;padding:6px 9px;border-radius:999px;margin-bottom:12px}
+    .game h3{margin:0 0 8px;font-size:21px}
+    .game p{margin:0;color:var(--muted);line-height:1.5}
+    .play{margin-top:16px;font-weight:800;color:var(--accent)}
+    .empty{background:var(--card);border:1px dashed #cbd5e1;border-radius:20px;padding:26px;color:var(--muted)}
+    footer{margin-top:34px;text-align:center;color:var(--muted);font-size:14px}
   </style>
 </head>
 <body>
-  <main class="card">
-    <h1>🎮 English Mini Games</h1>
-    <p>GitHub Pages is working.</p>
-    <p>This will become the home page for your classroom mini games.</p>
-    <div class="badge">Setup test: PASS ✅</div>
+  <main class="wrap">
+    <section class="hero">
+      <span class="eyebrow">CLASSROOM GAME LIBRARY</span>
+      <h1>🎮 English Mini Games</h1>
+      <p class="lead">A simple library of interactive English games. Each lesson lives at its own URL, so teachers can share a direct link with students.</p>
+      <div class="meta">GitHub Pages is live ✅</div>
+    </section>
+
+    <div class="toolbar">
+      <h2>Games</h2>
+      <div class="count" id="count">Loading…</div>
+    </div>
+
+    <section class="grid" id="games"></section>
+
+    <footer>Built for quick classroom practice • One game, one link</footer>
   </main>
+
+  <script>
+    const container = document.getElementById('games');
+    const count = document.getElementById('count');
+
+    fetch('./games.json', {cache:'no-store'})
+      .then(r => r.json())
+      .then(games => {
+        count.textContent = games.length + (games.length === 1 ? ' game' : ' games');
+        if (!games.length) {
+          container.innerHTML = '<div class="empty">No games yet.</div>';
+          return;
+        }
+        container.innerHTML = games.map(game => `
+          <a class="game" href="${game.path}">
+            <span class="tag">${game.level || 'English'}</span>
+            <h3>${game.title}</h3>
+            <p>${game.description || ''}</p>
+            <div class="play">Play →</div>
+          </a>
+        `).join('');
+      })
+      .catch(() => {
+        count.textContent = 'Library';
+        container.innerHTML = '<div class="empty">Game list is temporarily unavailable.</div>';
+      });
+  </script>
 </body>
 </html>
