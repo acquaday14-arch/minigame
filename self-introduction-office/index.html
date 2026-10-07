@@ -118,6 +118,9 @@
       .hud{grid-template-columns:1fr}.hud-right{justify-content:flex-start}.start-row{flex-direction:column}
       .controls{align-items:stretch}.controls>.btn{width:100%}.controls-right{width:100%}.controls-right .btn{flex:1}
     }
+  
+    #recordsBtn,#resultRecordsBtn,#recordsDialog{display:none!important}
+    #sendStatus{font-weight:800;margin-top:10px}
   </style>
 </head>
 <body>
@@ -179,6 +182,7 @@
       <h1>Great work, <span id="resultName"></span>!</h1>
       <div class="result-score"><span id="finalScore">0</span>/<span id="finalTotal">20</span></div>
       <p class="result-note" id="resultMessage"></p>
+      <p class="result-note" id="sendStatus"></p>
       <div class="result-actions">
         <button class="btn primary" id="playAgainBtn">Play Again</button>
         <button class="btn secondary" id="resultRecordsBtn">Teacher Records</button>
@@ -209,6 +213,8 @@
     </div>
   </dialog>
 
+  <script src="/minigame/shared/teacher-records-config.js"></script>
+  <script src="/minigame/shared/teacher-records.js"></script>
   <script>
     const QUESTIONS = [
       {type:"mcq",round:"1 · Self-Intro Vocabulary",prompt:"Anna always sets big goals for herself. She is _____.",choices:["ambitious","sensitive","stubborn"],answer:0},
@@ -516,7 +522,7 @@
       render();
     }
 
-    function finish(){
+    async function finish(){
       clearTimer();
       const name=$("playerName").textContent;
       $("gameScreen").classList.add("hidden");
@@ -530,6 +536,22 @@
         pct>=65 ? "Nice work! Review the word-order sentences once more for extra confidence." :
         "Good practice. Try again and focus on the word-order round.";
       saveRecord(name,score,QUESTIONS.length);
+
+      $("sendStatus").textContent="Sending score to your teacher…";
+      if(window.TeacherRecords){
+        const result=await TeacherRecords.submit({
+          studentName:name,
+          gameTitle:"Office Self-Introduction Challenge",
+          score:score,
+          total:QUESTIONS.length,
+          durationSeconds:startTime ? Math.max(0,Math.round((Date.now()-startTime)/1000)) : 0
+        });
+        $("sendStatus").textContent=result.sent
+          ? "✅ Score sent to your teacher."
+          : "⚠️ Score saved on this device, but could not be sent right now.";
+      }else{
+        $("sendStatus").textContent="⚠️ Score saved on this device, but Teacher Records is unavailable.";
+      }
     }
 
     function playAgain(){
