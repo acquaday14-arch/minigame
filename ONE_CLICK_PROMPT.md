@@ -6,7 +6,11 @@ Create a new lightweight English classroom mini game from the worksheet/content 
 
 ## Repository rules
 - Work on branch `main`.
-- Use `_template/index.html` as the starting structure.
+- Read `AGENT_GUIDE.md`, `STYLE_REFERENCES.md`, `games.json`, and the relevant local template before writing.
+- Choose the most suitable template automatically:
+  - `_template/index.html` for a very simple/clean game.
+  - `_templates/present-tense-challenge/index.html` for playful grammar, vocabulary, word-order, multi-round or general challenge games.
+  - `_templates/was-were-did-quest/index.html` when picture questions are central.
 - Create the new game in a NEW folder at the repository root.
 - Generate a short lowercase kebab-case folder slug from the lesson topic.
 - If that slug already exists, add `-02`, `-03`, etc. Never overwrite an existing game unless I explicitly ask.
@@ -14,20 +18,31 @@ Create a new lightweight English classroom mini game from the worksheet/content 
 - Keep the game self-contained with HTML/CSS/JavaScript whenever practical.
 - Use only relative paths.
 - Do not delete, rename, or modify other games.
-- After creating the game, add exactly one new entry to `games.json` so it appears on the library home page.
+- After creating the game, add exactly one new entry to `games.json`.
 - Preserve valid JSON in `games.json`.
 - Do not change GitHub Pages settings.
+
+## Preferred visual / sound feel
+Unless I ask for another style, make the game feel like the two saved reference templates:
+- playful rounded font and large headings
+- bright, friendly pastel colors
+- rounded HUD/cards/buttons
+- clear round / score / progress / question counters
+- correct-answer pop or celebration
+- wrong-answer shake or clear visual feedback
+- lightweight Web Audio sound effects
+- responsive layout for laptop/tablet
+- fun, polished, but not visually cluttered
 
 ## Default classroom UX
 - Require student name before Start.
 - Show one question/activity at a time.
 - Show Score and Progress while playing.
 - Use large, clear text and buttons.
-- Include Next, Back, Restart, and Sound On/Off.
+- Include Next, Back, Restart, and Sound On/Off when appropriate.
 - Give clear correct/incorrect feedback.
 - Show a final score screen.
-- Timer is OFF by default. Only add/enable a timer if I explicitly request one.
-- Keep the design bright, friendly, simple, and suitable for classroom screen sharing.
+- Timer is OFF by default unless I explicitly request it or the brief clearly asks for timed rounds.
 - Avoid login, authentication, user accounts, databases, backend services, or unnecessary frameworks.
 
 ## Content handling
@@ -35,21 +50,23 @@ Create a new lightweight English classroom mini game from the worksheet/content 
 - Correct obvious grammar/answer-key mistakes before publishing.
 - Keep vocabulary and instructions appropriate to the requested learner level.
 - Do not reveal answers before the learner submits.
-- For matching, word-order, fill-in-the-blank, MCQ, and error-correction tasks, convert them into interactive activities rather than displaying the worksheet as a static page.
-- If images are supplied, use them only where they genuinely help the activity.
+- Convert matching, word-order, fill-in-the-blank, MCQ, picture questions and error correction into real interactions.
+
+## Image handling
+- If I provide images, integrate them into the relevant questions.
+- If a game clearly needs original illustrations and I request AI images, generate them in a consistent style, store them in that game's `assets/` folder, optimize them for web, and integrate them using relative paths.
+- Never hotlink images from old ChatGPT Sites.
 
 ## Safety against accidental breakage
 Before writing:
-1. Read `AGENT_GUIDE.md`.
-2. Read `_template/index.html`.
-3. Read `games.json`.
-4. Check whether the intended folder slug already exists.
+1. Read the repository guides and selected template.
+2. Check whether the intended folder slug already exists.
 
 After writing:
 1. Re-read the new `index.html`.
 2. Confirm `games.json` is valid JSON and contains the new game exactly once.
 3. Confirm no existing game files were overwritten.
-4. Confirm the direct URL format is:
+4. Confirm the direct URL format:
    `https://acquaday14-arch.github.io/minigame/<folder-slug>/`
 
 ## Completion behavior
