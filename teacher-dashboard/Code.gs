@@ -1,4 +1,4 @@
-const SPREADSHEET_ID = "PASTE_SPREADSHEET_ID_HERE";
+const SPREADSHEET_ID = "1EDb6c6eu_8fAZa0tdN01FLQgnW1GTJMMQXhZidGQfGc";
 const RECORDS_SHEET = "Records";
 
 function doGet() {
