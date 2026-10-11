@@ -10,5 +10,11 @@
     "description": "Personality vocabulary, office Q&A, and a 10-question Word Order Race.",
     "level": "A2–B1",
     "path": "./self-introduction-office/"
+  },
+  {
+    "title": "Office Small Talk Challenge",
+    "description": "9 workplace conversations, 27 questions: best responses, useful language and word order, plus dialogue role-play review.",
+    "level": "A2–B1",
+    "path": "./office-small-talk/"
   }
 ]
