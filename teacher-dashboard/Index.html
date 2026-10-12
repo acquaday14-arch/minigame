@@ -6,142 +6,210 @@
   <base target="_top">
   <title>Mini Game Teacher Dashboard</title>
   <style>
-    :root{
-      --bg:#f5f7fb;--panel:#fff;--ink:#1e293b;--muted:#64748b;--line:#e2e8f0;
-      --purple:#5b36d6;--purple2:#7657e8;--purpleSoft:#f0ebff;--green:#159567;
-      --yellow:#f5b83d;--danger:#d34a62;--shadow:0 15px 42px rgba(40,42,80,.09);
+    :root {
+      color-scheme:light;
+      --bg:#f7f8fc;--surface:#ffffff;--ink:#20243b;--muted:#737b92;
+      --line:#e9ebf3;--indigo:#6254db;--indigo-strong:#4c3ac7;
+      --indigo-soft:#f1efff;--green:#148768;--green-soft:#e8f8f1;
+      --orange:#b87522;--orange-soft:#fff4e4;--red:#b44b62;
+      --red-soft:#fff0f3;--shadow:0 12px 38px rgba(28,37,76,.045);
     }
     *{box-sizing:border-box}
-    body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+    html{font-size:16px}
+    body{margin:0;color:var(--ink);background:var(--bg);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;-webkit-font-smoothing:antialiased}
     button,input,select{font:inherit}
-    .app{min-height:100vh;display:grid;grid-template-columns:270px minmax(0,1fr)}
-    aside{background:#241a55;color:white;padding:24px 16px;position:sticky;top:0;height:100vh;overflow:auto}
-    .brand{padding:8px 10px 22px}
-    .brand .eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#c7baff;font-weight:800}
-    .brand h1{font-size:23px;line-height:1.15;margin:7px 0 4px}
-    .brand p{font-size:13px;color:#cbd0ee;margin:0;line-height:1.5}
-    .sidebar-label{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:#9892bd;font-weight:800;margin:14px 10px 9px}
-    .game-list{display:grid;gap:7px}
-    .game-btn{width:100%;border:0;background:transparent;color:#e8e5ff;text-align:left;padding:12px;border-radius:13px;cursor:pointer;display:flex;justify-content:space-between;gap:9px;align-items:center}
-    .game-btn:hover{background:rgba(255,255,255,.08)}
-    .game-btn.active{background:linear-gradient(135deg,#6344dd,#7959ed);color:white;box-shadow:0 7px 18px rgba(0,0,0,.18)}
-    .game-btn .name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700}
-    .game-btn .count{font-size:12px;background:rgba(255,255,255,.14);padding:4px 7px;border-radius:999px;flex:none}
-    main{padding:28px;min-width:0}
-    .topbar{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;margin-bottom:20px}
-    .title-wrap .eyebrow{color:var(--purple);font-size:12px;letter-spacing:.11em;text-transform:uppercase;font-weight:900}
-    .title-wrap h2{margin:5px 0 4px;font-size:clamp(28px,4vw,42px);line-height:1.08}
-    .title-wrap p{margin:0;color:var(--muted)}
-    .top-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
-    .btn{border:1px solid var(--line);background:white;border-radius:12px;padding:10px 13px;font-weight:750;color:#334155;cursor:pointer}
-    .btn:hover{border-color:#c4b8ef}
-    .btn.primary{background:var(--purple);border-color:var(--purple);color:white}
-    .cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin-bottom:17px}
-    .card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:var(--shadow)}
-    .card .label{color:var(--muted);font-size:13px;font-weight:700}
-    .card .value{font-size:30px;font-weight:850;margin-top:6px;letter-spacing:-.02em}
-    .filters{background:var(--panel);border:1px solid var(--line);border-radius:17px;padding:13px;display:grid;grid-template-columns:minmax(180px,1fr) auto auto;gap:9px;margin-bottom:13px}
-    .input,.select{border:1px solid var(--line);border-radius:11px;padding:11px 12px;background:white;color:var(--ink);min-width:0}
-    .table-card{background:var(--panel);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:var(--shadow)}
-    .table-head{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:15px 18px;border-bottom:1px solid var(--line)}
-    .table-head strong{font-size:16px}.table-head span{font-size:13px;color:var(--muted)}
-    .table-wrap{overflow:auto}
-    table{border-collapse:collapse;width:100%;min-width:850px}
-    th,td{padding:13px 16px;border-bottom:1px solid #edf1f5;text-align:left;white-space:nowrap}
-    th{background:#fafbfc;color:#64748b;font-size:11px;text-transform:uppercase;letter-spacing:.06em;position:sticky;top:0}
-    td{font-size:14px}
-    .student{font-weight:800}.muted{color:var(--muted)}
-    .score{font-weight:850}.pct{display:inline-block;border-radius:999px;padding:5px 9px;font-size:12px;font-weight:850;background:#eef2ff;color:#4e46b7}
-    .pct.high{background:#e8f8f0;color:#11714d}.pct.low{background:#fff0f2;color:#ae3a50}
-    .empty{padding:54px 20px;text-align:center;color:var(--muted)}
-    .loading{position:fixed;inset:0;background:rgba(245,247,251,.86);backdrop-filter:blur(2px);display:grid;place-items:center;z-index:30}
-    .loading.hidden{display:none}.loader{background:white;border:1px solid var(--line);border-radius:17px;padding:18px 24px;box-shadow:var(--shadow);font-weight:800;color:var(--purple)}
-    .error{background:#fff0f2;border:1px solid #ffcbd3;color:#9d2940;border-radius:14px;padding:13px;margin-bottom:14px;display:none}
+    button{transition:background .16s ease,transform .16s ease,box-shadow .16s ease,border-color .16s ease}
+    button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #aea7ff;outline-offset:2px}
+    button:disabled{cursor:wait;opacity:.65}
+    [hidden]{display:none!important}
+    .app{display:grid;grid-template-columns:254px minmax(0,1fr);min-height:100vh}
+    aside{position:sticky;top:0;height:100vh;background:#fff;border-right:1px solid var(--line);display:flex;flex-direction:column;padding:30px 16px 20px;min-width:0}
+    .brand{display:flex;align-items:center;gap:12px;padding:4px 10px 28px;border-bottom:1px solid var(--line)}
+    .brand-icon{display:grid;place-items:center;flex:none;width:42px;height:42px;border-radius:15px;background:#6254db;color:#fff;font-size:24px;box-shadow:0 7px 16px rgba(98,84,219,.2)}
+    .brand .eyebrow{color:var(--indigo);font-weight:800;text-transform:uppercase;letter-spacing:.12em;font-size:10px}
+    .brand h1{font-size:17px;line-height:1.2;letter-spacing:-.03em;margin:3px 0 0;font-weight:850}
+    .brand p{display:none}
+    .sidebar-label{display:flex;align-items:center;justify-content:space-between;margin:29px 11px 13px;font-size:10px;letter-spacing:.13em;font-weight:850;color:#9ca2b4}
+    .sidebar-dot{height:6px;width:6px;background:#aca4f4;border-radius:50%}
+    .game-list{display:grid;gap:6px;overflow:auto;min-height:0;align-content:start}
+    .game-btn{border:1px solid transparent;background:transparent;border-radius:13px;padding:13px 12px;width:100%;display:flex;gap:9px;align-items:center;justify-content:space-between;text-align:left;color:#687087;cursor:pointer}
+    .game-btn:hover{background:#f7f7fc;color:var(--ink)}
+    .game-btn.active{background:var(--indigo-soft);color:var(--indigo-strong);border-color:#e4dfff}
+    .game-btn .name{font-weight:750;font-size:13px;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .game-btn .count{flex:none;background:#f0f1f6;color:#8890a3;border-radius:8px;padding:3px 7px;font-size:11px;font-weight:800}
+    .game-btn.active .count{background:#e0dafd;color:#4f43b9}
+    .sidebar-bottom{margin-top:auto;padding:20px 11px 4px;border-top:1px solid var(--line);display:flex;align-items:center;gap:8px;color:#7b8497;font-size:12px;font-weight:650}
+    .online-dot{width:8px;height:8px;flex:none;background:#41bf8a;border-radius:50%;box-shadow:0 0 0 3px #e7f8f0}
+    main{min-width:0;padding:43px clamp(18px,4vw,60px) 35px;max-width:1640px;width:100%;margin:0 auto}
+    .topbar{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;margin-bottom:30px}
+    .title-wrap .eyebrow{display:block;font-size:11px;font-weight:850;color:var(--indigo);letter-spacing:.13em;text-transform:uppercase;margin-bottom:10px}
+    .title-wrap h2{font-size:clamp(30px,3.2vw,42px);font-weight:850;line-height:1.12;letter-spacing:-.052em;margin:0 0 10px;overflow-wrap:anywhere}
+    .title-wrap p{margin:0;font-size:14px;color:var(--muted);line-height:1.5}
+    .top-actions{display:flex;gap:9px;flex-wrap:wrap;justify-content:flex-end;padding-top:9px}
+    .btn{display:inline-flex;justify-content:center;align-items:center;gap:8px;border:1px solid #e1e4ed;background:white;color:#475065;padding:11px 16px;border-radius:12px;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap}
+    .btn:hover{border-color:#bab3ef;transform:translateY(-1px)}
+    .btn.primary{background:var(--indigo);color:#fff;border-color:var(--indigo);box-shadow:0 6px 14px rgba(98,84,219,.13)}
+    .btn.primary:hover{background:var(--indigo-strong)}
+    .section-intro{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 13px}
+    .section-intro h3{margin:0;font-size:17px;letter-spacing:-.025em}
+    .section-intro span{font-size:12px;color:var(--muted)}
+    .cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px;margin-bottom:30px}
+    .card{position:relative;overflow:hidden;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:19px 20px 20px;box-shadow:var(--shadow)}
+    .card-head{display:flex;gap:6px;align-items:center;justify-content:space-between}
+    .card .label{color:#767f94;font-size:12px;font-weight:750}
+    .card-icon{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;font-size:18px;line-height:1;background:#efeeff;color:#7062da}
+    .card:nth-child(2) .card-icon{background:#e8f7f4;color:#158c78}
+    .card:nth-child(3) .card-icon{background:#fff3e8;color:#c9823b}
+    .card:nth-child(4) .card-icon{background:#fcecf2;color:#c36481}
+    .card .value{font-weight:850;letter-spacing:-.055em;font-size:clamp(26px,3vw,36px);font-variant-numeric:tabular-nums;margin-top:12px;line-height:1.13}
+    .card .hint{margin-top:8px;color:#a1a6b6;font-size:11px;font-weight:600}
+    .filters{background:var(--surface);border:1px solid var(--line);border-radius:17px;padding:13px;display:grid;grid-template-columns:minmax(180px,1fr) minmax(170px,200px) minmax(160px,190px);gap:10px;margin-bottom:16px;box-shadow:var(--shadow)}
+    .input,.select{width:100%;min-width:0;border:1px solid #e4e7f0;background:#fbfcfe;color:#3c4459;border-radius:11px;padding:12px 13px;font-size:13px;outline:none}
+    .input::placeholder{color:#9ba2b1}
+    .input:focus,.select:focus{background:#fff;border-color:#aaa1f1}
+    .select{cursor:pointer}
+    .table-card{overflow:hidden;background:var(--surface);border:1px solid var(--line);border-radius:19px;box-shadow:var(--shadow)}
+    .table-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:21px 23px;border-bottom:1px solid var(--line)}
+    .table-head strong{font-size:16px;font-weight:850;letter-spacing:-.025em}
+    .table-head span{font-size:12px;font-weight:700;color:#737c91;background:#f4f5f9;padding:7px 10px;border-radius:999px}
+    .table-wrap{overflow-x:auto}
+    table{width:100%;border-collapse:collapse;min-width:800px}
+    th,td{padding:15px 18px;text-align:left;border-bottom:1px solid #f0f1f6;white-space:nowrap}
+    th{background:#fbfcfe;color:#9097aa;font-size:10px;letter-spacing:.11em;text-transform:uppercase;font-weight:850}
+    td{font-size:13px;color:#586074}
+    tbody tr:last-child td{border-bottom:0}
+    tbody tr:hover{background:#fafafe}
+    .student-cell{display:flex;align-items:center;gap:11px;min-width:135px}
+    .avatar{display:grid;place-items:center;width:34px;height:34px;flex:none;border-radius:11px;background:#eae6ff;color:#6353c9;font-weight:850;font-size:13px;text-transform:uppercase}
+    .student{color:#2b3147;font-weight:800}
+    .muted{color:#8b92a4}
+    .score{font-size:13px;font-weight:800;color:#333c56;font-variant-numeric:tabular-nums}
+    .percent-cell{display:flex;align-items:center;gap:9px}
+    .percent-track{height:6px;width:58px;flex:none;overflow:hidden;background:#ececf5;border-radius:9px}
+    .percent-track span{display:block;background:#7566e7;height:100%;border-radius:9px}
+    .pct{font-size:12px;color:#5c53ad;font-weight:850;font-variant-numeric:tabular-nums}
+    .pct.high{color:#168667}
+    .pct.low{color:#bb6070}
+    .percent-cell:has(.pct.high) .percent-track span{background:#32ad85}
+    .percent-cell:has(.pct.low) .percent-track span{background:#e88697}
+    .attempt-code{font-size:12px;border:1px solid #edf0f5;background:#f7f8fc;border-radius:7px;padding:5px 7px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;color:#858da1}
+    .empty{padding:57px 20px;text-align:center;color:#9299aa;font-size:14px;line-height:1.65}
+    .empty-icon{display:block;margin-bottom:10px;font-size:30px}
+    .loading{position:fixed;inset:0;background:rgba(247,248,252,.78);backdrop-filter:blur(4px);z-index:30;display:grid;place-items:center}
+    .loading.hidden{display:none}
+    .loader{display:flex;align-items:center;gap:12px;padding:20px 25px;background:#fff;border:1px solid var(--line);border-radius:16px;color:var(--indigo);box-shadow:0 20px 60px rgba(33,32,94,.12);font-weight:800;font-size:14px}
+    .spinner{width:18px;height:18px;border:2px solid #dedaff;border-top-color:var(--indigo);border-radius:50%;animation:spin .8s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .error{display:none;margin-bottom:15px;padding:13px 16px;border-radius:12px;background:var(--red-soft);color:#ae3e58;border:1px solid #f5d9df;line-height:1.45;font-size:13px}
     .error.show{display:block}
-    .foot{color:#94a3b8;font-size:12px;margin-top:12px;text-align:right}
-    @media(max-width:980px){
+    .foot{margin-top:15px;text-align:right;color:#a3a9b7;font-size:11px}
+    @media(max-width:1180px){
+      .app{grid-template-columns:222px minmax(0,1fr)}
+      main{padding:34px 24px}
+      .cards{gap:10px}
+      .card{padding:16px}
+    }
+    @media(max-width:940px){
       .app{grid-template-columns:1fr}
-      aside{height:auto;position:static;padding:16px}
-      .brand{padding-bottom:10px}.game-list{display:flex;overflow:auto}.game-btn{width:auto;min-width:190px}
-      main{padding:18px}.cards{grid-template-columns:repeat(2,1fr)}
+      aside{height:auto;position:relative;padding:16px 20px;display:block}
+      .brand{border:0;padding:0}
+      .brand-icon{width:38px;height:38px;border-radius:12px}
+      .sidebar-label{margin:17px 3px 8px}
+      .game-list{display:flex;overflow-x:auto;gap:7px;padding:0 0 3px}
+      .game-btn{width:auto;min-width:max-content;padding:10px 12px;max-width:270px}
+      .game-btn .name{max-width:180px}
+      .sidebar-bottom{display:none}
+      main{padding:27px 20px}
     }
-    @media(max-width:650px){
-      .topbar{display:block}.top-actions{justify-content:flex-start;margin-top:13px}
-      .cards{grid-template-columns:1fr 1fr}.filters{grid-template-columns:1fr}.card .value{font-size:26px}
+    @media(max-width:700px){
+      .topbar{display:block;margin-bottom:23px}
+      .top-actions{justify-content:flex-start;padding-top:18px}
+      .section-intro{margin-bottom:12px}
+      .cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:24px}
+      .card{padding:15px}
+      .card .value{font-size:30px}
+      .filters{grid-template-columns:1fr;gap:9px}
+      .table-head{padding:17px}
+      .section-intro span{display:none}
+      .title-wrap h2{font-size:32px}
+      main{padding:24px 15px 38px}
     }
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
   </style>
 </head>
 <body>
 <div class="app">
   <aside>
     <div class="brand">
-      <div class="eyebrow">Teacher only</div>
-      <h1>🎓 Mini Game Dashboard</h1>
-      <p>Theo dõi điểm học viên theo từng game.</p>
+      <span class="brand-icon" aria-hidden="true">✦</span>
+      <div><div class="eyebrow">Teacher workspace</div><h1>Classroom Insights</h1><p>Mini Game Dashboard</p></div>
     </div>
-    <div class="sidebar-label">Games</div>
-    <div class="game-list" id="gameList"></div>
+    <div class="sidebar-label"><span>DANH SÁCH BÀI HỌC</span><span class="sidebar-dot"></span></div>
+    <nav class="game-list" id="gameList" aria-label="Chọn bài học"></nav>
+    <div class="sidebar-bottom"><span class="online-dot"></span>Dữ liệu từ Google Sheets</div>
   </aside>
 
   <main>
     <div class="topbar">
       <div class="title-wrap">
-        <div class="eyebrow">Teacher Records</div>
-        <h2 id="pageTitle">All Games</h2>
+        <div class="eyebrow">TEACHER RECORDS / OVERVIEW</div>
+        <h2 id="pageTitle">Tổng quan</h2>
         <p id="pageSubtitle">Đang tải dữ liệu...</p>
       </div>
       <div class="top-actions">
-        <button class="btn" id="refreshBtn">↻ Refresh</button>
-        <button class="btn primary" id="exportBtn">Export CSV</button>
+        <button class="btn" id="refreshBtn" type="button">↻ &nbsp;Làm mới</button>
+        <button class="btn primary" id="exportBtn" type="button">↓ &nbsp;Xuất CSV</button>
       </div>
     </div>
 
     <div class="error" id="errorBox"></div>
 
-    <section class="cards">
-      <div class="card"><div class="label">Attempts</div><div class="value" id="attemptsValue">0</div></div>
-      <div class="card"><div class="label">Students</div><div class="value" id="studentsValue">0</div></div>
-      <div class="card"><div class="label">Average</div><div class="value" id="averageValue">0%</div></div>
-      <div class="card"><div class="label">Best</div><div class="value" id="bestValue">0%</div></div>
+    <div class="section-intro"><h3>Thống kê kết quả</h3><span>Theo bài học đang chọn</span></div>
+    <section class="cards" aria-label="Thống kê bài làm">
+      <div class="card"><div class="card-head"><span class="label">Lượt làm bài</span><span class="card-icon" aria-hidden="true">↗</span></div><div class="value" id="attemptsValue">0</div><div class="hint">Tổng số bài nộp</div></div>
+      <div class="card"><div class="card-head"><span class="label">Học sinh</span><span class="card-icon" aria-hidden="true">♙</span></div><div class="value" id="studentsValue">0</div><div class="hint">Học sinh duy nhất</div></div>
+      <div class="card"><div class="card-head"><span class="label">Điểm trung bình</span><span class="card-icon" aria-hidden="true">◔</span></div><div class="value" id="averageValue">0%</div><div class="hint">Tỷ lệ trả lời đúng</div></div>
+      <div class="card"><div class="card-head"><span class="label">Điểm cao nhất</span><span class="card-icon" aria-hidden="true">★</span></div><div class="value" id="bestValue">0%</div><div class="hint">Kết quả tốt nhất</div></div>
     </section>
+    <div class="section-intro"><h3>Danh sách bài làm</h3><span>Tìm kiếm, sắp xếp và xuất kết quả</span></div>
 
     <section class="filters">
-      <input class="input" id="searchInput" placeholder="🔎 Search student / class...">
-      <select class="select" id="attemptMode">
-        <option value="all">All attempts</option>
-        <option value="latest">Latest per student</option>
-        <option value="best">Best per student</option>
+      <input class="input" id="searchInput" type="search" aria-label="Tìm theo tên hoặc lớp" placeholder="⌕  Tìm theo tên học sinh hoặc lớp...">
+      <select class="select" id="attemptMode" aria-label="Kiểu thống kê bài làm">
+        <option value="all">Tất cả lượt làm</option>
+        <option value="latest">Lần làm mới nhất</option>
+        <option value="best">Điểm cao nhất / học sinh</option>
       </select>
-      <select class="select" id="sortMode">
-        <option value="newest">Newest first</option>
-        <option value="score">Highest score</option>
-        <option value="name">Student A–Z</option>
+      <select class="select" id="sortMode" aria-label="Sắp xếp kết quả">
+        <option value="newest">Mới nhất trước</option>
+        <option value="score">Điểm cao đến thấp</option>
+        <option value="name">Tên học sinh A–Z</option>
       </select>
     </section>
 
     <section class="table-card">
       <div class="table-head">
-        <strong>Student records</strong>
+        <strong>Chi tiết kết quả</strong>
         <span id="shownCount">0 rows</span>
       </div>
       <div class="table-wrap">
         <table>
           <thead>
             <tr>
-              <th>Student</th><th>Class / Code</th><th>Score</th><th>%</th>
-              <th>Duration</th><th>Completed</th><th>Attempt</th>
+              <th>Học sinh</th><th>Lớp / Mã</th><th>Điểm</th><th>Tỷ lệ đúng</th>
+              <th>Thời gian</th><th>Hoàn thành</th><th>Mã lượt làm</th>
             </tr>
           </thead>
           <tbody id="recordsBody"></tbody>
         </table>
-        <div class="empty" id="emptyState" hidden>No records found.</div>
+        <div class="empty" id="emptyState" hidden><span class="empty-icon" aria-hidden="true">▤</span>Không tìm thấy bài làm phù hợp.<br>Hãy thử chọn game khác hoặc thay đổi bộ lọc.</div>
       </div>
     </section>
     <div class="foot" id="updatedAt"></div>
   </main>
 </div>
 
-<div class="loading" id="loading"><div class="loader">Loading teacher records…</div></div>
+<div class="loading" id="loading" role="status" aria-live="polite"><div class="loader"><span class="spinner" aria-hidden="true"></span>Đang tải kết quả học sinh…</div></div>
 
 <script>
 const state={rows:[],game:"__ALL__"};
@@ -170,7 +238,7 @@ function buildSidebar(){
   const counts=new Map();
   state.rows.forEach(r=>counts.set(r.game,(counts.get(r.game)||0)+1));
   const games=[...counts.keys()].filter(Boolean).sort((a,b)=>a.localeCompare(b));
-  const items=[{key:"__ALL__",label:"All Games",count:state.rows.length},...games.map(g=>({key:g,label:g,count:counts.get(g)}))];
+  const items=[{key:"__ALL__",label:"Tất cả bài học",count:state.rows.length},...games.map(g=>({key:g,label:g,count:counts.get(g)}))];
   $("gameList").innerHTML=items.map(x=>`
     <button class="game-btn ${state.game===x.key?"active":""}" data-game="${esc(x.key)}">
       <span class="name">${esc(x.label)}</span><span class="count">${x.count}</span>
@@ -217,24 +285,24 @@ function renderStats(){
   $("studentsValue").textContent=students.size;
   $("averageValue").textContent=avg+"%";
   $("bestValue").textContent=best+"%";
-  $("pageTitle").textContent=state.game==="__ALL__"?"All Games":state.game;
+  $("pageTitle").textContent=state.game==="__ALL__"?"Tổng quan":state.game;
   $("pageSubtitle").textContent=state.game==="__ALL__"
-    ?"Tổng quan tất cả mini game"
-    :"Theo dõi attempts và điểm của học viên";
+    ?"Kết quả học tập trên tất cả mini game"
+    :"Kết quả học tập của học sinh trong bài này";
 }
 function renderTable(){
   const rows=selectedRows();
-  $("shownCount").textContent=rows.length+" row"+(rows.length===1?"":"s");
+  $("shownCount").textContent=rows.length+" lượt làm";
   $("emptyState").hidden=rows.length!==0;
   $("recordsBody").innerHTML=rows.map(r=>`
     <tr>
-      <td><span class="student">${esc(r.studentName||"—")}</span></td>
+      <td><div class="student-cell"><span class="avatar" aria-hidden="true">${esc((r.studentName||"?").trim().charAt(0).toUpperCase())}</span><span class="student">${esc(r.studentName||"—")}</span></div></td>
       <td class="muted">${esc(r.classCode||"—")}</td>
       <td><span class="score">${r.score}/${r.total}</span></td>
-      <td><span class="${pctClass(r.percent)}">${r.percent}%</span></td>
+      <td><div class="percent-cell"><span class="percent-track" aria-hidden="true"><span style="width:${Math.max(0,Math.min(100,Number(r.percent)||0))}%"></span></span><span class="${pctClass(r.percent)}">${r.percent}%</span></div></td>
       <td>${esc(fmtDuration(r.durationSeconds))}</td>
       <td class="muted">${esc(r.completedAt||r.submittedAt||"—")}</td>
-      <td class="muted">${esc((r.attemptId||"").slice(0,8)||"—")}</td>
+      <td><span class="attempt-code">${esc((r.attemptId||"").slice(0,8)||"—")}</span></td>
     </tr>`).join("");
 }
 function render(){renderStats();renderTable()}
@@ -242,19 +310,19 @@ function showError(message){
   $("errorBox").textContent=message;$("errorBox").classList.add("show");
 }
 function load(){
-  $("loading").classList.remove("hidden");$("errorBox").classList.remove("show");
+  $("loading").classList.remove("hidden");$("errorBox").classList.remove("show");$("refreshBtn").disabled=true;
   google.script.run
     .withSuccessHandler(data=>{
       state.rows=data.rows||[];
       buildSidebar();render();
-      $("updatedAt").textContent="Updated: "+new Date(data.updatedAt).toLocaleString();
+      $("updatedAt").textContent="Cập nhật lúc "+new Date(data.updatedAt).toLocaleString("vi-VN");
       $("pageSubtitle").textContent=state.game==="__ALL__"
-        ?"Tổng quan tất cả mini game · "+(data.spreadsheetName||"")
-        :"Theo dõi attempts và điểm của học viên";
-      $("loading").classList.add("hidden");
+        ?"Kết quả học tập trên tất cả mini game"
+        :"Kết quả học tập của học sinh trong bài này";
+      $("loading").classList.add("hidden");$("refreshBtn").disabled=false;
     })
     .withFailureHandler(err=>{
-      $("loading").classList.add("hidden");
+      $("loading").classList.add("hidden");$("refreshBtn").disabled=false;
       showError(err&&err.message?err.message:String(err));
     })
     .getDashboardData();
@@ -262,7 +330,7 @@ function load(){
 function csvCell(v){return '"'+String(v??"").replace(/"/g,'""')+'"'}
 function exportCsv(){
   const rows=selectedRows();
-  if(!rows.length)return alert("No records to export.");
+  if(!rows.length)return alert("Không có dữ liệu để xuất.");
   const data=[
     ["Student Name","Class / Code","Game","Score","Total","Percent","Duration (sec)","Completed At","Attempt ID"],
     ...rows.map(r=>[r.studentName,r.classCode,r.game,r.score,r.total,r.percent,r.durationSeconds,r.completedAt||r.submittedAt,r.attemptId])
