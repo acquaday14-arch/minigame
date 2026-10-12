@@ -16,5 +16,11 @@
     "description": "9 workplace conversations, 27 questions: best responses, useful language and word order, plus dialogue role-play review.",
     "level": "A2–B1",
     "path": "./office-small-talk/"
+  },
+  {
+    "title": "Vocabulary & Suffix Quest",
+    "description": "30 questions: picture vocabulary, 23 describing adjectives, common suffixes and sentence building. No timer.",
+    "level": "B1–B2",
+    "path": "./vocabulary-suffix-quest/"
   }
 ]
