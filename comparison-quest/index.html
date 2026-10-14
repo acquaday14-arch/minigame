@@ -152,7 +152,7 @@
         <div class="stars">⭐ ✨ ⭐</div>
         <div class="kicker">Comparatives · Superlatives</div>
         <h1>Comparison<br>Quest</h1>
-        <p>30 questions · 3 rounds · 20–30 minutes<br>4 picture questions · 14 fill-in-the-blanks · 12 word-order questions.<br>Practice comparatives and superlatives at your own pace.<br>Take your time — no countdown.</p>
+        <p>30 questions · 3 rounds · 20–30 minutes<br>4 picture questions · 14 fill-in-the-blanks · 12 word-order questions.<br>Practice comparatives and superlatives in everyday situations.<br>Take your time — no countdown.</p>
         <label for="nameInput">Student name</label><br><input id="nameInput" maxlength="80" autocomplete="name" placeholder="Enter your name" required>
         <br>
         <button class="btn" id="startBtn">Start Challenge</button>
@@ -253,42 +253,21 @@ const QUESTIONS=[
   {
     "round": 1,
     "type": "mc",
-    "q": "The podium ranks these three animals by speed. The rabbit is _____ of the three.",
+    "q": "The podium ranks these three animals by speed. The snail is _____ of the three.",
     "choices": [
-      "the fastest",
-      "faster than",
-      "the most fast",
-      "fastest than"
-    ],
-    "a": 0,
-    "ex": "The rabbit is the fastest of these three animals.",
-    "image": "assets/speed-podium.webp",
-    "sourceId": null
-  },
-  {
-    "round": 2,
-    "type": "blank",
-    "q": "My brother is _____ than me. (old)",
-    "accepted": [
-      "older"
+      "slower than",
+      "the slowest",
+      "the most slow",
+      "slowest than"
     ],
     "a": 1,
-    "ex": "My brother is older than me. old → older."
+    "ex": "The snail is the slowest of these three animals. slow → slowest.",
+    "image": "assets/speed-podium.webp"
   },
   {
     "round": 2,
     "type": "blank",
-    "q": "This book is _____ than that book. (interesting)",
-    "accepted": [
-      "more interesting"
-    ],
-    "a": 1,
-    "ex": "This book is more interesting than that book. Use more with a long adjective."
-  },
-  {
-    "round": 2,
-    "type": "blank",
-    "q": "Today is _____ than yesterday. (hot)",
+    "q": "Yesterday was 25°C. Today is 32°C. Today is _____ than yesterday. (hot)",
     "accepted": [
       "hotter"
     ],
@@ -298,325 +277,350 @@ const QUESTIONS=[
   {
     "round": 2,
     "type": "blank",
-    "q": "This exercise is _____ than the other one. (easy)",
+    "q": "The blue bag weighs 5 kg; the red bag weighs 2 kg. The blue bag is _____ than the red bag. (heavy)",
     "accepted": [
-      "easier"
+      "heavier"
     ],
     "a": 1,
-    "ex": "This exercise is easier than the other one. Change y to i: easy → easier."
+    "ex": "The blue bag is heavier than the red bag. Change y to i: heavy → heavier."
   },
   {
     "round": 2,
     "type": "blank",
-    "q": "My wife is a _____ driver than I am. (good)",
+    "q": "Mai scored 9/10 and I scored 6/10 in maths. Mai’s result was _____ than mine. (good)",
     "accepted": [
       "better"
     ],
     "a": 1,
-    "ex": "My wife is a better driver than I am. good → better."
+    "ex": "Mai’s result was better than mine. good → better."
   },
   {
     "round": 2,
     "type": "blank",
-    "q": "This hotel costs less. It is _____ than the other hotel. (expensive)",
+    "q": "The traffic was bad yesterday, but it is even _____ today. (bad)",
     "accepted": [
-      "less expensive"
+      "worse"
     ],
     "a": 1,
-    "ex": "It is less expensive than the other hotel. Less expensive means it costs less."
+    "ex": "The traffic is even worse today. bad → worse."
   },
   {
     "round": 2,
     "type": "blank",
-    "q": "From our city, Mexico is _____ away than Sicily. (far)",
+    "q": "I can remember my new password quickly. It is _____ to remember than my old one. (easy)",
     "accepted": [
-      "further",
-      "farther"
+      "easier"
     ],
     "a": 1,
-    "ex": "Mexico is further away than Sicily. Further and farther are both possible for physical distance."
+    "ex": "My new password is easier to remember than my old one. easy → easier."
   },
   {
     "round": 2,
     "type": "blank",
-    "q": "Tom is the _____ of the three boys. (tall)",
+    "q": "Cars and buses pass our shop all day. This street is _____ than the quiet lane behind it. (noisy)",
     "accepted": [
-      "tallest"
+      "noisier"
     ],
     "a": 1,
-    "ex": "Tom is the tallest of the three boys. Use the + adjective-est."
+    "ex": "This street is noisier than the quiet lane. noisy → noisier."
   },
   {
     "round": 2,
     "type": "blank",
-    "q": "My grandpa is the _____ in my family. (old)",
+    "q": "This snack has less sugar and more fruit. It is _____ than the old recipe. (healthy)",
     "accepted": [
-      "oldest"
+      "healthier"
     ],
     "a": 1,
-    "ex": "My grandpa is the oldest in my family. old → oldest."
+    "ex": "This snack is healthier than the old recipe. healthy → healthier."
   },
   {
     "round": 2,
     "type": "blank",
-    "q": "The rabbit is the _____ of these three animals. (fast)",
+    "q": "The new lamp gives the same light but uses less electricity. It is _____ than the old one. (efficient)",
     "accepted": [
-      "fastest"
+      "more efficient"
     ],
     "a": 1,
-    "ex": "The rabbit is the fastest of these three animals. fast → fastest."
+    "ex": "The new lamp is more efficient than the old one. Use more with efficient."
   },
   {
     "round": 2,
     "type": "blank",
-    "q": "This is the _____ room in the house. (big)",
+    "q": "Of all the flowers in our garden, these roses are the _____. (beautiful)",
     "accepted": [
-      "biggest"
+      "most beautiful"
     ],
     "a": 1,
-    "ex": "This is the biggest room in the house. Double the g: big → biggest."
+    "ex": "These roses are the most beautiful flowers in our garden. Use the most with beautiful."
   },
   {
     "round": 2,
     "type": "blank",
-    "q": "That is the _____ film I have ever seen. (bad)",
+    "q": "Tea costs $2, juice $3 and coffee $4. Tea is the _____ drink on this menu. (cheap)",
     "accepted": [
-      "worst"
+      "cheapest"
     ],
     "a": 1,
-    "ex": "That is the worst film I have ever seen. bad → worse → worst."
+    "ex": "Tea is the cheapest drink on this menu. cheap → cheapest."
   },
   {
     "round": 2,
     "type": "blank",
-    "q": "These are the _____ shoes I own. (comfortable)",
+    "q": "Of the three hiking paths, the one beside the cliff is the _____. (dangerous)",
+    "accepted": [
+      "most dangerous"
+    ],
+    "a": 1,
+    "ex": "The path beside the cliff is the most dangerous of the three. Use the most with dangerous."
+  },
+  {
+    "round": 2,
+    "type": "blank",
+    "q": "Customers say Leo welcomes everyone with a smile. He is the _____ member of our staff. (friendly)",
+    "accepted": [
+      "friendliest",
+      "most friendly"
+    ],
+    "a": 1,
+    "ex": "Leo is the friendliest member of our staff. Most friendly is also an acceptable form."
+  },
+  {
+    "round": 2,
+    "type": "blank",
+    "q": "Route A is 2 km, Route B is 4 km and Route C is 6 km. Route A is the _____. (short)",
+    "accepted": [
+      "shortest"
+    ],
+    "a": 1,
+    "ex": "Route A is the shortest of the three routes. short → shortest."
+  },
+  {
+    "round": 2,
+    "type": "blank",
+    "q": "After trying every chair in the shop, I chose the _____ one. (comfortable)",
     "accepted": [
       "most comfortable"
     ],
     "a": 1,
-    "ex": "These are the most comfortable shoes I own. Use the most with a long adjective."
-  },
-  {
-    "round": 2,
-    "type": "blank",
-    "q": "This movie is the _____ of all. (exciting)",
-    "accepted": [
-      "most exciting"
-    ],
-    "a": 1,
-    "ex": "This movie is the most exciting of all. exciting → most exciting."
+    "ex": "I chose the most comfortable chair in the shop. Use the most with comfortable."
   },
   {
     "round": 3,
     "type": "order",
     "q": "Put the words in order.",
-    "sentence": "My brother is older than me.",
+    "sentence": "Travelling by train is more relaxing than driving.",
     "tokens": [
-      "My",
-      "brother",
-      "is",
-      "older",
-      "than",
-      "me."
-    ],
-    "a": 1,
-    "ex": "My brother is older than me."
-  },
-  {
-    "round": 3,
-    "type": "order",
-    "q": "Put the words in order.",
-    "sentence": "This book is more interesting than that book.",
-    "tokens": [
-      "This",
-      "book",
+      "Travelling",
+      "by",
+      "train",
       "is",
       "more",
-      "interesting",
+      "relaxing",
       "than",
-      "that",
-      "book."
+      "driving."
     ],
     "a": 1,
-    "ex": "This book is more interesting than that book."
+    "ex": "Travelling by train is more relaxing than driving."
   },
   {
     "round": 3,
     "type": "order",
     "q": "Put the words in order.",
-    "sentence": "This exercise is easier than the other one.",
+    "sentence": "My new phone is lighter than my old one.",
     "tokens": [
-      "This",
-      "exercise",
+      "My",
+      "new",
+      "phone",
       "is",
-      "easier",
+      "lighter",
       "than",
-      "the",
-      "other",
+      "my",
+      "old",
       "one."
     ],
     "a": 1,
-    "ex": "This exercise is easier than the other one."
+    "ex": "My new phone is lighter than my old one."
   },
   {
     "round": 3,
     "type": "order",
     "q": "Put the words in order.",
-    "sentence": "My wife is a better driver than I am.",
+    "sentence": "The library is quieter than the cafeteria.",
     "tokens": [
-      "My",
-      "wife",
+      "The",
+      "library",
       "is",
-      "a",
-      "better",
-      "driver",
+      "quieter",
       "than",
-      "I",
-      "am."
+      "the",
+      "cafeteria."
     ],
     "a": 1,
-    "ex": "My wife is a better driver than I am."
+    "ex": "The library is quieter than the cafeteria."
   },
   {
     "round": 3,
     "type": "order",
     "q": "Put the words in order.",
-    "sentence": "Their house is much bigger than ours.",
+    "sentence": "This puzzle is much harder than the last one.",
     "tokens": [
-      "Their",
-      "house",
+      "This",
+      "puzzle",
       "is",
       "much",
-      "bigger",
+      "harder",
       "than",
-      "ours."
+      "the",
+      "last",
+      "one."
     ],
     "a": 1,
-    "ex": "Their house is much bigger than ours."
+    "ex": "This puzzle is much harder than the last one."
   },
   {
     "round": 3,
     "type": "order",
     "q": "Put the words in order.",
-    "sentence": "Mexico is further away than Sicily.",
+    "sentence": "A whale is larger than a dolphin.",
     "tokens": [
-      "Mexico",
+      "A",
+      "whale",
       "is",
-      "further",
-      "away",
+      "larger",
       "than",
-      "Sicily."
+      "a",
+      "dolphin."
     ],
     "a": 1,
-    "ex": "Mexico is further away than Sicily."
+    "ex": "A whale is larger than a dolphin."
   },
   {
     "round": 3,
     "type": "order",
     "q": "Put the words in order.",
-    "sentence": "Tom is the tallest in the class.",
+    "sentence": "Your handwriting is clearer than mine.",
     "tokens": [
-      "Tom",
+      "Your",
+      "handwriting",
       "is",
-      "the",
-      "tallest",
-      "in",
-      "the",
-      "class."
+      "clearer",
+      "than",
+      "mine."
     ],
     "a": 1,
-    "ex": "Tom is the tallest in the class."
+    "ex": "Your handwriting is clearer than mine."
   },
   {
     "round": 3,
     "type": "order",
     "q": "Put the words in order.",
-    "sentence": "My grandpa is the oldest in my family.",
+    "sentence": "Monday is the busiest day of my week.",
     "tokens": [
-      "My",
-      "grandpa",
+      "Monday",
       "is",
       "the",
-      "oldest",
-      "in",
-      "my",
-      "family."
-    ],
-    "a": 1,
-    "ex": "My grandpa is the oldest in my family."
-  },
-  {
-    "round": 3,
-    "type": "order",
-    "q": "Put the words in order.",
-    "sentence": "This movie is the most exciting of all.",
-    "tokens": [
-      "This",
-      "movie",
-      "is",
-      "the",
-      "most",
-      "exciting",
+      "busiest",
+      "day",
       "of",
-      "all."
+      "my",
+      "week."
     ],
     "a": 1,
-    "ex": "This movie is the most exciting of all."
+    "ex": "Monday is the busiest day of my week."
   },
   {
     "round": 3,
     "type": "order",
     "q": "Put the words in order.",
-    "sentence": "These are the most comfortable shoes I own.",
-    "tokens": [
-      "These",
-      "are",
-      "the",
-      "most",
-      "comfortable",
-      "shoes",
-      "I",
-      "own."
-    ],
-    "a": 1,
-    "ex": "These are the most comfortable shoes I own."
-  },
-  {
-    "round": 3,
-    "type": "order",
-    "q": "Put the words in order.",
-    "sentence": "This is the biggest room in the house.",
+    "sentence": "This actor is the funniest person in the show.",
     "tokens": [
       "This",
+      "actor",
       "is",
       "the",
-      "biggest",
-      "room",
+      "funniest",
+      "person",
       "in",
       "the",
-      "house."
+      "show."
     ],
     "a": 1,
-    "ex": "This is the biggest room in the house."
+    "ex": "This actor is the funniest person in the show."
   },
   {
     "round": 3,
     "type": "order",
     "q": "Put the words in order.",
-    "sentence": "That is the worst film I have ever seen.",
+    "sentence": "That museum is the most interesting place in town.",
     "tokens": [
       "That",
+      "museum",
       "is",
       "the",
-      "worst",
-      "film",
-      "I",
-      "have",
-      "ever",
-      "seen."
+      "most",
+      "interesting",
+      "place",
+      "in",
+      "town."
     ],
     "a": 1,
-    "ex": "That is the worst film I have ever seen."
+    "ex": "That museum is the most interesting place in town."
+  },
+  {
+    "round": 3,
+    "type": "order",
+    "q": "Put the words in order.",
+    "sentence": "July is the driest month in this area.",
+    "tokens": [
+      "July",
+      "is",
+      "the",
+      "driest",
+      "month",
+      "in",
+      "this",
+      "area."
+    ],
+    "a": 1,
+    "ex": "July is the driest month in this area."
+  },
+  {
+    "round": 3,
+    "type": "order",
+    "q": "Put the words in order.",
+    "sentence": "This is the most useful app on my tablet.",
+    "tokens": [
+      "This",
+      "is",
+      "the",
+      "most",
+      "useful",
+      "app",
+      "on",
+      "my",
+      "tablet."
+    ],
+    "a": 1,
+    "ex": "This is the most useful app on my tablet."
+  },
+  {
+    "round": 3,
+    "type": "order",
+    "q": "Put the words in order.",
+    "sentence": "Lina is the youngest member of our team.",
+    "tokens": [
+      "Lina",
+      "is",
+      "the",
+      "youngest",
+      "member",
+      "of",
+      "our",
+      "team."
+    ],
+    "a": 1,
+    "ex": "Lina is the youngest member of our team."
   }
 ];
 
