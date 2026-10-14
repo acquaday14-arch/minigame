@@ -22,5 +22,11 @@
     "description": "30 questions: picture vocabulary, 23 describing adjectives, common suffixes and sentence building. No timer.",
     "level": "B1–B2",
     "path": "./vocabulary-suffix-quest/"
+  },
+  {
+    "title": "Comparison Quest",
+    "description": "30 questions: picture comparisons, all 18 worksheet exercises, comparatives, superlatives, as…as and sentence building. No timer.",
+    "level": "A2–B1",
+    "path": "./comparison-quest/"
   }
 ]
