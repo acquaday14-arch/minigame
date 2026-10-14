@@ -141,6 +141,8 @@
 
 
 .question{white-space:pre-line;font-size:clamp(22px,2.7vw,30px)}.answer{font-size:clamp(19px,2vw,23px);line-height:1.35}#questionImage{max-height:240px;width:auto;max-width:100%;min-width:180px}.start p{line-height:1.5}.answers.long-answers{grid-template-columns:1fr}.card{width:min(880px,100%)}
+
+#blankArea{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;align-items:center}#blankArea label{width:100%;text-align:center;font-size:21px}#blankInput{width:min(480px,100%);min-height:56px;padding:13px 18px;border:3px solid #c7b6ef;border-radius:16px;font-size:24px;color:#20285c}#blankInput:focus-visible{outline:4px solid #ffd76a;outline-offset:2px}#blankInput.good{border-color:#65d5a8;background:#ebfff6}#blankInput.bad{border-color:#ff98a4;background:#fff0f2}#checkBlankBtn{background:#6040d7;color:white}#blankInput:disabled{opacity:1}
 </style>
 </head>
 <body>
@@ -148,9 +150,9 @@
     <section class="frame" id="startScreen">
       <div class="start">
         <div class="stars">⭐ ✨ ⭐</div>
-        <div class="kicker">Comparatives · Superlatives · As…as</div>
+        <div class="kicker">Comparatives · Superlatives</div>
         <h1>Comparison<br>Quest</h1>
-        <p>30 questions · 4 rounds · 20–30 minutes<br>Compare pictures, fix mistakes, keep the same meaning and build sentences.<br>Take your time — no countdown.</p>
+        <p>30 questions · 3 rounds · 20–30 minutes<br>4 picture questions · 14 fill-in-the-blanks · 12 word-order questions.<br>Practice comparatives and superlatives at your own pace.<br>Take your time — no countdown.</p>
         <label for="nameInput">Student name</label><br><input id="nameInput" maxlength="80" autocomplete="name" placeholder="Enter your name" required>
         <br>
         <button class="btn" id="startBtn">Start Challenge</button>
@@ -172,7 +174,7 @@
 
         <div class="card">
           <figure id="pictureWrap" class="hidden"><img id="questionImage" alt=""></figure><div class="question" id="question"></div>
-          <div class="answers" id="answers"></div><div id="orderArea" class="hidden"><div id="sentenceTray" aria-label="Your sentence"></div><div id="wordBank"></div><div class="order-controls"><button class="btn" id="clearOrder">Clear</button><button class="btn" id="checkOrder">Check sentence ✓</button></div></div>
+          <div class="answers" id="answers"></div><div id="blankArea" class="hidden"><label for="blankInput">Your answer</label><input id="blankInput" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="80" placeholder="Type the missing word(s)"><button class="btn" id="checkBlankBtn">Check answer ✓</button></div><div id="orderArea" class="hidden"><div id="sentenceTray" aria-label="Your sentence"></div><div id="wordBank"></div><div class="order-controls"><button class="btn" id="clearOrder">Clear</button><button class="btn" id="checkOrder">Check sentence ✓</button></div></div>
           <div class="feedback" id="feedback"></div>
         </div>
 
@@ -265,306 +267,147 @@ const QUESTIONS=[
   },
   {
     "round": 2,
-    "type": "mc",
-    "q": "He’s happier than he was yesterday. Is the sentence grammatically correct?",
-    "choices": [
-      "No — use happyer than.",
-      "Yes — it is correct.",
-      "No — use more happy than.",
-      "No — use the happiest than."
+    "type": "blank",
+    "q": "My brother is _____ than me. (old)",
+    "accepted": [
+      "older"
     ],
     "a": 1,
-    "ex": "happy → happier: change y to i before adding -er.",
-    "image": null,
-    "sourceId": "example-a1"
+    "ex": "My brother is older than me. old → older."
   },
   {
     "round": 2,
-    "type": "mc",
-    "q": "Choose the correct sentence.",
-    "choices": [
-      "She’s a person very ambitious.",
-      "She’s a very person ambitious.",
-      "She’s a very ambitious person.",
-      "She’s a person very ambition."
-    ],
-    "a": 2,
-    "ex": "Place the adjective before the noun: a very ambitious person.",
-    "image": null,
-    "sourceId": "example-a2"
-  },
-  {
-    "round": 2,
-    "type": "mc",
-    "q": "Check the original: “That’s the most bad film I’ve ever seen.”\nChoose the correct version.",
-    "choices": [
-      "That’s the worst film I’ve ever seen.",
-      "That’s the most bad film I’ve ever seen.",
-      "That’s the worse film I’ve ever seen.",
-      "That’s the badest film I’ve ever seen."
-    ],
-    "a": 0,
-    "ex": "bad → worse → the worst.",
-    "image": null,
-    "sourceId": "a1"
-  },
-  {
-    "round": 2,
-    "type": "mc",
-    "q": "Check the original: “I’m not as sporty than my brother.”\nChoose the correct version.",
-    "choices": [
-      "I’m not as sporty than my brother.",
-      "I’m not as sporty as my brother.",
-      "I’m not so sportier as my brother.",
-      "I’m not as sportiest as my brother."
+    "type": "blank",
+    "q": "This book is _____ than that book. (interesting)",
+    "accepted": [
+      "more interesting"
     ],
     "a": 1,
-    "ex": "Use not as + adjective + as.",
-    "image": null,
-    "sourceId": "a2"
+    "ex": "This book is more interesting than that book. Use more with a long adjective."
   },
   {
     "round": 2,
-    "type": "mc",
-    "q": "Check the original: “Cats are much more selfish than dogs.”\nChoose the correct version.",
-    "choices": [
-      "Cats are much selfish than dogs.",
-      "Cats are much most selfish than dogs.",
-      "Cats are much more selfish than dogs.",
-      "Cats are much more selfish as dogs."
-    ],
-    "a": 2,
-    "ex": "The grammar is correct. Much makes the comparative stronger.",
-    "image": null,
-    "sourceId": "a3"
-  },
-  {
-    "round": 2,
-    "type": "mc",
-    "q": "Check the original: “We can’t decide between Mexico and Sicily. Mexico is further to travel, but the hotels are less expensive.”\nChoose the correct version.",
-    "choices": [
-      "Mexico is further away, but the hotels are less expensive.",
-      "Mexico is more far away, but the hotels are less expensive.",
-      "Mexico is further away, but the hotels are less expensiver.",
-      "Mexico is the furthest away, but the hotels are the less expensive."
-    ],
-    "a": 0,
-    "ex": "Further and less expensive are correct comparatives. “Further away” is a natural way to express the distance.",
-    "image": null,
-    "sourceId": "a4"
-  },
-  {
-    "round": 2,
-    "type": "mc",
-    "q": "Check the original: “I always lose my phone, so I bought a cheap.”\nChoose the correct version.",
-    "choices": [
-      "I always lose my phone, so I bought a cheap.",
-      "I always lose my phone, so I bought a cheap one.",
-      "I always lose my phone, so I bought a cheaply.",
-      "I always lose my phone, so I bought cheap a one."
+    "type": "blank",
+    "q": "Today is _____ than yesterday. (hot)",
+    "accepted": [
+      "hotter"
     ],
     "a": 1,
-    "ex": "Use one to replace the singular noun phone.",
-    "image": null,
-    "sourceId": "a5"
+    "ex": "Today is hotter than yesterday. Double the t: hot → hotter."
   },
   {
     "round": 2,
-    "type": "mc",
-    "q": "Check the original: “My wife’s a more good driver than I am.”\nChoose the correct version.",
-    "choices": [
-      "My wife’s a more good driver than I am.",
-      "My wife’s a best driver than I am.",
-      "My wife’s a better driver than I am.",
-      "My wife’s a gooder driver than I am."
-    ],
-    "a": 2,
-    "ex": "good → better → the best.",
-    "image": null,
-    "sourceId": "a6"
-  },
-  {
-    "round": 2,
-    "type": "mc",
-    "q": "Check the original: “These shoes are the more comfortable ones I have.”\nChoose the correct version.",
-    "choices": [
-      "These shoes are the most comfortable ones I have.",
-      "These shoes are the more comfortable ones I have.",
-      "These shoes are the comfortablest ones I have.",
-      "These shoes are the most comfortably ones I have."
-    ],
-    "a": 0,
-    "ex": "Use the most comfortable to compare with all the shoes you have.",
-    "image": null,
-    "sourceId": "a7"
-  },
-  {
-    "round": 2,
-    "type": "mc",
-    "q": "Check the original: “My brothers and sisters are all very successfuls.”\nChoose the correct version.",
-    "choices": [
-      "My brothers and sisters are all very successfuls.",
-      "My brothers and sisters are all very successful.",
-      "My brothers and sisters are all very successfully.",
-      "My brothers and sisters are all very successes."
+    "type": "blank",
+    "q": "This exercise is _____ than the other one. (easy)",
+    "accepted": [
+      "easier"
     ],
     "a": 1,
-    "ex": "Adjectives do not take plural -s.",
-    "image": null,
-    "sourceId": "a8"
+    "ex": "This exercise is easier than the other one. Change y to i: easy → easier."
   },
   {
     "round": 2,
-    "type": "mc",
-    "q": "Check the original: “This exercise is easyer than the other one.”\nChoose the correct version.",
-    "choices": [
-      "This exercise is easyer than the other one.",
-      "This exercise is easiest than the other one.",
-      "This exercise is easier than the other one.",
-      "This exercise is more easily than the other one."
+    "type": "blank",
+    "q": "My wife is a _____ driver than I am. (good)",
+    "accepted": [
+      "better"
     ],
-    "a": 2,
-    "ex": "easy → easier: change y to i before adding -er.",
-    "image": null,
-    "sourceId": "a9"
+    "a": 1,
+    "ex": "My wife is a better driver than I am. good → better."
   },
   {
     "round": 2,
-    "type": "mc",
-    "q": "Check the original: “It’s the biggest room in the house.”\nChoose the correct version.",
-    "choices": [
-      "It’s the biggest room in the house.",
-      "It’s the bigest room in the house.",
-      "It’s the more big room in the house.",
-      "It’s the bigger room in the house."
-    ],
-    "a": 0,
-    "ex": "The original sentence is correct. big → bigger → the biggest: double the g.",
-    "image": null,
-    "sourceId": "a10"
-  },
-  {
-    "round": 3,
-    "type": "mc",
-    "q": "Tom isn’t as lucky as his brother.\nKeep the same meaning:\nTom’s brother _____ he is.",
-    "choices": [
-      "is as lucky than",
-      "is luckier than",
-      "is the luckiest than",
-      "is more lucky as"
+    "type": "blank",
+    "q": "This hotel costs less. It is _____ than the other hotel. (expensive)",
+    "accepted": [
+      "less expensive"
     ],
     "a": 1,
-    "ex": "Tom’s brother is luckier than he is.",
-    "image": null,
-    "sourceId": "b1"
+    "ex": "It is less expensive than the other hotel. Less expensive means it costs less."
   },
   {
-    "round": 3,
-    "type": "mc",
-    "q": "Their house is much bigger than ours.\nKeep the same meaning:\nOur house is _____ theirs.",
-    "choices": [
-      "much small than",
-      "much smallest than",
-      "much smaller than",
-      "as smaller as"
-    ],
-    "a": 2,
-    "ex": "Our house is much smaller than theirs. Keep much to preserve the strong comparison.",
-    "image": null,
-    "sourceId": "b2"
-  },
-  {
-    "round": 3,
-    "type": "mc",
-    "q": "My new password is easier to memorize than my old one.\nKeep the same meaning:\nMy old password was _____ to memorize than my new one.",
-    "choices": [
-      "more difficult",
-      "most difficult",
-      "difficulter",
-      "more difficultly"
-    ],
-    "a": 0,
-    "ex": "My old password was more difficult to memorize than my new one.",
-    "image": null,
-    "sourceId": "b3"
-  },
-  {
-    "round": 3,
-    "type": "mc",
-    "q": "This flat is nicer than the other two we’ve seen.\nKeep the same meaning:\nThis flat is _____ of the three we’ve seen.",
-    "choices": [
-      "nicer",
-      "the nicest",
-      "the most nice",
-      "the more nice"
+    "round": 2,
+    "type": "blank",
+    "q": "From our city, Mexico is _____ away than Sicily. (far)",
+    "accepted": [
+      "further",
+      "farther"
     ],
     "a": 1,
-    "ex": "This flat is the nicest of the three we’ve seen.",
-    "image": null,
-    "sourceId": "b4"
+    "ex": "Mexico is further away than Sicily. Further and farther are both possible for physical distance."
   },
   {
-    "round": 3,
-    "type": "mc",
-    "q": "My sister’s children are more helpful than mine.\nKeep the same meaning:\nMy children aren’t _____ my sister’s.",
-    "choices": [
-      "as helpful than",
-      "more helpful as",
-      "as helpful as",
-      "as helpfully as"
-    ],
-    "a": 2,
-    "ex": "My children aren’t as helpful as my sister’s.",
-    "image": null,
-    "sourceId": "b5"
-  },
-  {
-    "round": 3,
-    "type": "mc",
-    "q": "The weather wasn’t as good as we’d expected.\nKeep the same meaning:\nThe weather was _____ we’d expected.",
-    "choices": [
-      "worse than",
-      "worst than",
-      "more bad than",
-      "as worse as"
-    ],
-    "a": 0,
-    "ex": "The weather was worse than we’d expected.",
-    "image": null,
-    "sourceId": "b6"
-  },
-  {
-    "round": 3,
-    "type": "mc",
-    "q": "The film was a bit less dramatic than the book.\nKeep the same meaning:\nThe book was _____ the film.",
-    "choices": [
-      "a bit most dramatic than",
-      "a bit more dramatic than",
-      "a bit more dramatic as",
-      "a bit less dramatic than"
+    "round": 2,
+    "type": "blank",
+    "q": "Tom is the _____ of the three boys. (tall)",
+    "accepted": [
+      "tallest"
     ],
     "a": 1,
-    "ex": "The book was a bit more dramatic than the film. Keep a bit to preserve the small difference.",
-    "image": null,
-    "sourceId": "b7"
+    "ex": "Tom is the tallest of the three boys. Use the + adjective-est."
+  },
+  {
+    "round": 2,
+    "type": "blank",
+    "q": "My grandpa is the _____ in my family. (old)",
+    "accepted": [
+      "oldest"
+    ],
+    "a": 1,
+    "ex": "My grandpa is the oldest in my family. old → oldest."
+  },
+  {
+    "round": 2,
+    "type": "blank",
+    "q": "The rabbit is the _____ of these three animals. (fast)",
+    "accepted": [
+      "fastest"
+    ],
+    "a": 1,
+    "ex": "The rabbit is the fastest of these three animals. fast → fastest."
+  },
+  {
+    "round": 2,
+    "type": "blank",
+    "q": "This is the _____ room in the house. (big)",
+    "accepted": [
+      "biggest"
+    ],
+    "a": 1,
+    "ex": "This is the biggest room in the house. Double the g: big → biggest."
+  },
+  {
+    "round": 2,
+    "type": "blank",
+    "q": "That is the _____ film I have ever seen. (bad)",
+    "accepted": [
+      "worst"
+    ],
+    "a": 1,
+    "ex": "That is the worst film I have ever seen. bad → worse → worst."
+  },
+  {
+    "round": 2,
+    "type": "blank",
+    "q": "These are the _____ shoes I own. (comfortable)",
+    "accepted": [
+      "most comfortable"
+    ],
+    "a": 1,
+    "ex": "These are the most comfortable shoes I own. Use the most with a long adjective."
+  },
+  {
+    "round": 2,
+    "type": "blank",
+    "q": "This movie is the _____ of all. (exciting)",
+    "accepted": [
+      "most exciting"
+    ],
+    "a": 1,
+    "ex": "This movie is the most exciting of all. exciting → most exciting."
   },
   {
     "round": 3,
-    "type": "mc",
-    "q": "Yellow will look better than red for your kitchen walls.\nKeep the same meaning:\nRed won’t look _____ yellow for your kitchen walls.",
-    "choices": [
-      "as better as",
-      "as good than",
-      "as good as",
-      "as well than"
-    ],
-    "a": 2,
-    "ex": "Red won’t look as good as yellow for your kitchen walls. Look is a linking verb here, so use good.",
-    "image": null,
-    "sourceId": "b8"
-  },
-  {
-    "round": 4,
     "type": "order",
     "q": "Put the words in order.",
     "sentence": "My brother is older than me.",
@@ -580,7 +423,7 @@ const QUESTIONS=[
     "ex": "My brother is older than me."
   },
   {
-    "round": 4,
+    "round": 3,
     "type": "order",
     "q": "Put the words in order.",
     "sentence": "This book is more interesting than that book.",
@@ -598,7 +441,94 @@ const QUESTIONS=[
     "ex": "This book is more interesting than that book."
   },
   {
-    "round": 4,
+    "round": 3,
+    "type": "order",
+    "q": "Put the words in order.",
+    "sentence": "This exercise is easier than the other one.",
+    "tokens": [
+      "This",
+      "exercise",
+      "is",
+      "easier",
+      "than",
+      "the",
+      "other",
+      "one."
+    ],
+    "a": 1,
+    "ex": "This exercise is easier than the other one."
+  },
+  {
+    "round": 3,
+    "type": "order",
+    "q": "Put the words in order.",
+    "sentence": "My wife is a better driver than I am.",
+    "tokens": [
+      "My",
+      "wife",
+      "is",
+      "a",
+      "better",
+      "driver",
+      "than",
+      "I",
+      "am."
+    ],
+    "a": 1,
+    "ex": "My wife is a better driver than I am."
+  },
+  {
+    "round": 3,
+    "type": "order",
+    "q": "Put the words in order.",
+    "sentence": "Their house is much bigger than ours.",
+    "tokens": [
+      "Their",
+      "house",
+      "is",
+      "much",
+      "bigger",
+      "than",
+      "ours."
+    ],
+    "a": 1,
+    "ex": "Their house is much bigger than ours."
+  },
+  {
+    "round": 3,
+    "type": "order",
+    "q": "Put the words in order.",
+    "sentence": "Mexico is further away than Sicily.",
+    "tokens": [
+      "Mexico",
+      "is",
+      "further",
+      "away",
+      "than",
+      "Sicily."
+    ],
+    "a": 1,
+    "ex": "Mexico is further away than Sicily."
+  },
+  {
+    "round": 3,
+    "type": "order",
+    "q": "Put the words in order.",
+    "sentence": "Tom is the tallest in the class.",
+    "tokens": [
+      "Tom",
+      "is",
+      "the",
+      "tallest",
+      "in",
+      "the",
+      "class."
+    ],
+    "a": 1,
+    "ex": "Tom is the tallest in the class."
+  },
+  {
+    "round": 3,
     "type": "order",
     "q": "Put the words in order.",
     "sentence": "My grandpa is the oldest in my family.",
@@ -616,7 +546,7 @@ const QUESTIONS=[
     "ex": "My grandpa is the oldest in my family."
   },
   {
-    "round": 4,
+    "round": 3,
     "type": "order",
     "q": "Put the words in order.",
     "sentence": "This movie is the most exciting of all.",
@@ -634,46 +564,66 @@ const QUESTIONS=[
     "ex": "This movie is the most exciting of all."
   },
   {
-    "round": 4,
+    "round": 3,
     "type": "order",
     "q": "Put the words in order.",
-    "sentence": "Our house is much smaller than theirs.",
+    "sentence": "These are the most comfortable shoes I own.",
     "tokens": [
-      "Our",
-      "house",
-      "is",
-      "much",
-      "smaller",
-      "than",
-      "theirs."
+      "These",
+      "are",
+      "the",
+      "most",
+      "comfortable",
+      "shoes",
+      "I",
+      "own."
     ],
     "a": 1,
-    "ex": "Our house is much smaller than theirs."
+    "ex": "These are the most comfortable shoes I own."
   },
   {
-    "round": 4,
+    "round": 3,
     "type": "order",
     "q": "Put the words in order.",
-    "sentence": "The weather was worse than we had expected.",
+    "sentence": "This is the biggest room in the house.",
     "tokens": [
-      "The",
-      "weather",
-      "was",
-      "worse",
-      "than",
-      "we",
-      "had",
-      "expected."
+      "This",
+      "is",
+      "the",
+      "biggest",
+      "room",
+      "in",
+      "the",
+      "house."
     ],
     "a": 1,
-    "ex": "The weather was worse than we had expected."
+    "ex": "This is the biggest room in the house."
+  },
+  {
+    "round": 3,
+    "type": "order",
+    "q": "Put the words in order.",
+    "sentence": "That is the worst film I have ever seen.",
+    "tokens": [
+      "That",
+      "is",
+      "the",
+      "worst",
+      "film",
+      "I",
+      "have",
+      "ever",
+      "seen."
+    ],
+    "a": 1,
+    "ex": "That is the worst film I have ever seen."
   }
 ];
 
 
 const MODE = "present";
 const $ = id => document.getElementById(id);
-const state = QUESTIONS.map(() => ({choice:null,ordered:[],order:[]}));
+const state = QUESTIONS.map(() => ({choice:null,ordered:[],order:[],typed:""}));
 let pos = 0;
 let player = "";
 let soundOn = true;
@@ -682,7 +632,7 @@ let roundTimer = null;
 let startedAt = null;
 let attemptId = "";
 let finished = false;
-const ROUND_NAMES=["Picture Comparisons","Grammar Detective","Same Meaning","Sentence Builder"];
+const ROUND_NAMES=["Picture Comparisons","Fill in the Blanks","Word Order"];
 const totalRounds = Math.max(...QUESTIONS.map(q=>q.round));
 $("total").textContent = QUESTIONS.length;
 const roundElement = () => $(MODE === "present" ? "roundPill" : "round");
@@ -760,7 +710,7 @@ function start(){
 function restart(){
   startedAt=Date.now();attemptId=window.crypto&&crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);
   finished=false;pos=0;
-  state.forEach((s,i)=>{s.choice=null;s.ordered=[];s.order=QUESTIONS[i].tokens?shuffle(QUESTIONS[i].tokens.map((_,n)=>n)):[];});
+  state.forEach((s,i)=>{s.choice=null;s.typed="";s.ordered=[];s.order=QUESTIONS[i].tokens?shuffle(QUESTIONS[i].tokens.map((_,n)=>n)):[];});
   $("recordStatus").textContent="";setScreen("gameScreen");render();toastRound(1);
 }
 function renderOrder(){
@@ -785,12 +735,12 @@ function render(){
   $("bar").style.width=(done/QUESTIONS.length*100)+"%";$("bar").parentElement.setAttribute("aria-label",done+" of "+QUESTIONS.length+" completed");
   $("score").textContent=points();$("kicker").textContent=ROUND_NAMES[q.round-1]+" · "+(pos+1)+" of "+QUESTIONS.length;
   $("title").textContent=ROUND_NAMES[q.round-1];
-  $("instruction").textContent=q.type==="order"?"Tap the words in order. Tap a chosen word to undo. Then check your sentence.":q.round===2?"Choose the grammatically correct version. Some originals are already correct.":q.round===3?"Complete the second sentence without changing the meaning.":"Use the picture and the details to compare.";
+  $("instruction").textContent=q.type==="order"?"Tap the words in order. Tap a chosen word to undo. Then check your sentence.":q.type==="blank"?"Use the adjective in brackets. Type the missing word(s), then check your answer.":"Use the picture and the details to compare.";
   $("question").textContent=q.q;
   $("pictureWrap").classList.toggle("hidden",!q.image);
   if(q.image){$("questionImage").src=q.image;$("questionImage").alt="Illustration for this question";}else{$("questionImage").removeAttribute("src");}
-  const box=$("answers");box.classList.toggle("long-answers",q.round===2);box.innerHTML="";box.classList.toggle("hidden",q.type==="order");$("orderArea").classList.toggle("hidden",q.type!=="order");
-  if(q.type==="order")renderOrder();else q.choices.forEach((label,n)=>{
+  const box=$("answers");box.classList.toggle("long-answers",q.round===2);box.innerHTML="";box.classList.toggle("hidden",q.type!=="mc");$("orderArea").classList.toggle("hidden",q.type!=="order");$("blankArea").classList.toggle("hidden",q.type!=="blank");
+  if(q.type==="order")renderOrder();else if(q.type==="blank"){const input=$("blankInput");input.value=st.typed;input.disabled=st.choice!==null;input.className=st.choice===null?"":st.choice===q.a?"good":"bad";$("checkBlankBtn").disabled=st.choice!==null;}else q.choices.forEach((label,n)=>{
     const b=document.createElement("button");b.className="answer";b.textContent=label;
     if(st.choice!==null){b.disabled=true;if(n===q.a)b.classList.add("good");if(n===st.choice&&n!==q.a)b.classList.add("bad");}else b.onclick=()=>answer(n);box.appendChild(b);
   });
@@ -798,6 +748,12 @@ function render(){
   fb.textContent=st.choice===null?"":(correct?"Correct! ⭐ ":"Incorrect. 💡 ")+(q.ex||"");fb.className="feedback"+(st.choice===null?"":correct?" success":" error");fb.setAttribute("aria-live","polite");
   $("nextBtn").disabled=st.choice===null;$("nextBtn").classList.toggle("ready",st.choice!==null);$("nextBtn").textContent=pos===QUESTIONS.length-1?"See Results →":"Next →";$("backBtn").disabled=pos===0;
   const scene=$("gameScreen").querySelector(".stage");scene.classList.remove("fx-enter");void scene.offsetWidth;scene.classList.add("fx-enter");
+}
+function checkBlank(){
+ const q=QUESTIONS[pos],s=state[pos];if(q.type!=="blank"||s.choice!==null||finished)return;
+ const text=$("blankInput").value.trim();s.typed=text;
+ if(!text){$("feedback").textContent="Type your answer first.";$("blankInput").focus();return;}
+ answer(q.accepted.some(x=>normalize(x)===normalize(text))?1:0);
 }
 function answer(choice){
   if(finished||state[pos].choice!==null)return;
@@ -842,6 +798,9 @@ $("playAgainBtn").addEventListener("click",restart);
 $("soundBtn").addEventListener("click",toggleSound);
 $("clearOrder").onclick=()=>{if(state[pos].choice===null){state[pos].ordered=[];renderOrder();}};
 $("checkOrder").onclick=checkOrder;
+$("checkBlankBtn").onclick=checkBlank;
+$("blankInput").addEventListener("input",()=>{if(QUESTIONS[pos].type==="blank"&&state[pos].choice===null)state[pos].typed=$("blankInput").value;});
+$("blankInput").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();checkBlank();}});
 
 </script>
 </body>
