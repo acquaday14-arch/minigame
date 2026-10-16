@@ -1066,7 +1066,7 @@ async function finish(){
   finished=true;const thisAttempt=attemptId;const completedAt=new Date().toISOString();
   setScreen("resultScreen");const score=points();const pct=Math.round(score/QUESTIONS.length*100);
   $("playerResult").textContent=player;$("finalPoints").textContent=score;$("finalTotal").textContent=QUESTIONS.length;
-  $("resultMessage").textContent=pct+"% · "+(pct>=85?"Amazing! You’re a English superstar!":pct>=60?"Great effort! Keep practicing!":"Every try makes you stronger. Play again!");
+  $("resultMessage").textContent=pct+"% · "+(pct>=85?"Amazing! You’re an English superstar!":pct>=60?"Great effort! Keep practicing!":"Every try makes you stronger. Play again!");
   const summary=$("roundResults");summary.innerHTML="";
   ROUND_NAMES.forEach((name,r)=>{const ids=QUESTIONS.map((q,i)=>q.round===r+1?i:-1).filter(i=>i>=0);const n=ids.filter(i=>state[i].choice===QUESTIONS[i].a).length;const el=document.createElement("span");el.textContent=name+": "+n+" / "+ids.length;summary.appendChild(el);});
   chime("finish");particles(100);
