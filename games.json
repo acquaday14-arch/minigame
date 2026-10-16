@@ -28,5 +28,11 @@
     "description": "30 varied questions: 4 picture comparisons, 14 typed blanks and 12 word-order activities about everyday life. Comparatives and superlatives. No timer.",
     "level": "A2–B1",
     "path": "./comparison-quest/"
+  },
+  {
+    "title": "Home & Town Past Quest",
+    "description": "42 questions from six worksheets: town places, all 8 rooms on the floor plan, 10 furniture words, two readings, past-tense blanks and word order. No timer.",
+    "level": "A1–A2",
+    "path": "./home-town-past-quest/"
   }
 ]
