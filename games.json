@@ -34,5 +34,11 @@
     "description": "42 questions from six worksheets: town places, all 8 rooms on the floor plan, 10 furniture words, two readings, past-tense blanks and word order. No timer.",
     "level": "A1–A2",
     "path": "./home-town-past-quest/"
+  },
+  {
+    "title": "Quantifier Quest",
+    "description": "All 63 worksheet items: countable/uncountable nouns, some/any, much/many, a lot of/lots of, corrections and A Busy Saturday reading. Flexible valid answers. No timer.",
+    "level": "A2",
+    "path": "./quantifier-quest/"
   }
 ]

@@ -1,0 +1,1532 @@
+<!doctype html>
+<html lang="en" data-template-effects-version="2">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Quantifier Quest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --purple:#5b36d6;--purple2:#7a57eb;--ink:#20285c;--pink:#ef5aa7;
+      --yellow:#ffd76a;--mint:#6be0b2;--sky:#74c7ff;--soft:#f8f6ff;--line:#d9cff8;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;min-height:100vh;padding:18px;
+      font-family:"Fredoka",ui-rounded,"Trebuchet MS",Arial,sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at 9% 12%,#ffe2f0 0 7%,transparent 7.5%),
+        radial-gradient(circle at 90% 14%,#dff5ff 0 8%,transparent 8.5%),
+        linear-gradient(180deg,#f8fbff,#f4efff);
+    }
+    button,input{font:inherit}
+    .app{width:min(1060px,98vw);margin:1vh auto}
+    .frame{
+      background:#fff;border:4px solid #4b32bf;border-radius:32px;overflow:hidden;
+      box-shadow:0 14px 0 #ded5ff,0 24px 44px rgba(63,47,147,.14)
+    }
+    .top{
+      background:linear-gradient(135deg,var(--purple),#6541dc);
+      padding:18px 28px;color:#fff;display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:center
+    }
+    .pill{border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.12);padding:9px 15px;border-radius:999px;font-weight:700}
+    .top .pill:last-child{justify-self:end}
+    .progress{height:10px;background:#dacdfd}
+    .progress>div{height:100%;width:25%;background:linear-gradient(90deg,#ffd75f,#ffae73);transition:.25s}
+    .stage{padding:28px 34px 24px;min-height:650px;position:relative}
+    .kicker{text-align:center;color:var(--pink);font-size:14px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+    h1{text-align:center;font-size:clamp(38px,6vw,62px);margin:8px 0 8px;color:#432cb5;line-height:.98}
+    .instruction{text-align:center;font-size:20px;font-weight:600;margin-bottom:24px}
+    .card{
+      width:min(780px,100%);margin:0 auto;border:2px solid var(--line);border-radius:24px;padding:24px;
+      background:linear-gradient(180deg,#fff,#fcfbff)
+    }
+    .question{font-size:clamp(24px,4vw,36px);font-weight:700;text-align:center;margin:6px 0 22px}
+    .answers{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .answer{
+      border:3px solid #ded3fa;background:#fbf9ff;border-radius:18px;padding:15px 18px;color:var(--ink);
+      font-weight:700;font-size:18px;cursor:pointer;transition:.14s
+    }
+    .answer:hover{transform:translateY(-2px);border-color:#aa8df3}
+    .answer.good{border-color:#65d5a8;background:#ebfff6;color:#17734e;animation:pop .28s ease}
+    .answer.bad{border-color:#ff98a4;background:#fff0f2;color:#a63a47;animation:shake .28s ease}
+    .feedback{min-height:42px;text-align:center;margin:18px 0 4px;font-size:19px;font-weight:700}
+    .controls{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:14px;margin-top:28px}
+    .btn{border:2px solid #dbd2f8;border-radius:15px;background:#fff;color:#4734a9;padding:12px 18px;font-weight:700;cursor:pointer}
+    .controls .next{justify-self:end;background:linear-gradient(135deg,#ffd37c,#ffbd84);border:0;color:#76563b}
+    .center{text-align:center}
+    .hidden{display:none!important}
+    .start{padding:60px 32px;text-align:center}
+    .start p{font-size:19px;color:#667085}
+    .start input{width:min(560px,100%);padding:15px 17px;border:2px solid #d8cff4;border-radius:16px;font-size:18px}
+    .start .btn{margin-top:12px;background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;border:0}
+    .stars{font-size:26px;letter-spacing:5px}
+    .confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:20}
+    .confetti i{position:absolute;width:10px;height:16px;border-radius:3px;animation:fall 900ms linear forwards}
+    @keyframes pop{50%{transform:scale(1.035)}}
+    @keyframes shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+    @keyframes fall{from{transform:translateY(-10vh) rotate(0)}to{transform:translateY(110vh) rotate(500deg);opacity:.7}}
+    @media(max-width:700px){.top{grid-template-columns:1fr 1fr}.top>div:nth-child(2){grid-column:1/-1;grid-row:2;text-align:center}.stage{padding:22px 16px}.answers{grid-template-columns:1fr}.controls{grid-template-columns:1fr 1fr}.controls .restart{display:none}}
+  
+    /* Template FX v2 — reduced-motion aware and dependency-free */
+    .fx-enter{animation:fx-enter .38s cubic-bezier(.2,.8,.2,1) both}
+    .answer{transition:transform .17s ease,border-color .2s ease,box-shadow .2s ease,background .2s ease}
+    .answer:active,.btn:active{transform:scale(.97)}
+    .answer:focus-visible,.btn:focus-visible{outline:4px solid #f7bb56;outline-offset:3px}
+    .answer.good{box-shadow:0 0 0 4px rgba(81,213,157,.13)}
+    .answer.bad{box-shadow:0 0 0 4px rgba(255,118,144,.13)}
+    .answer:disabled{cursor:default}
+    .pill.score-pulse,.score-pulse{animation:fx-pulse .35s ease}
+    .feedback.success{color:#10845c;animation:fx-pop .4s ease both}
+    .feedback.error{color:#b44453;animation:fx-shake .32s ease both}
+    .mid-actions{display:flex;gap:8px;align-items:center;justify-content:center}
+    .mid-actions .btn{white-space:nowrap}
+    .btn:disabled{opacity:.4;cursor:not-allowed;filter:grayscale(.25)}
+    .next.ready{animation:fx-glow 1.8s ease-in-out infinite}
+    .fx-particles{position:fixed;inset:0;z-index:100;pointer-events:none;overflow:hidden}
+    .fx-particles span{position:absolute;top:-24px;width:10px;height:16px;border-radius:3px;animation:fx-rain 1.15s cubic-bezier(.2,.7,.5,1) forwards}
+    .fx-round-toast{position:fixed;inset:0;z-index:90;pointer-events:none;display:flex;justify-content:center;align-items:center;background:rgba(45,29,122,.11)}
+    .fx-round-toast.hidden{display:none!important}
+    .fx-round-pill{
+      text-align:center;border:4px solid #fff;border-radius:28px;
+      background:linear-gradient(135deg,#5b36d6,#8b6cf0);color:white;
+      padding:24px 36px;box-shadow:0 20px 60px rgba(54,38,152,.25);
+      font-size:clamp(25px,4vw,42px);font-weight:700;animation:fx-toast .7s ease both
+    }
+    .fx-round-pill small{display:block;font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:#ffdf85;margin-bottom:4px}
+    .result-area{text-align:center;padding:56px 24px}
+    .result-area h1{font-size:clamp(40px,6vw,64px);margin:10px 0;color:#432cb5}
+    .result-area .result-score{font-size:clamp(60px,10vw,100px);color:#5b36d6;font-weight:700;line-height:1.12}
+    .result-area .result-sub{font-size:21px;margin:8px 0 28px}
+    .result-area .btn{background:#6040d7;color:#fff;border:0;padding:15px 30px;font-size:18px}
+    .result-area .result-stars{font-size:38px;letter-spacing:8px;animation:fx-float 2s ease-in-out infinite}
+    .picture{animation:fx-picture-in .55s cubic-bezier(.2,.8,.2,1) both;transition:transform .25s ease,box-shadow .25s ease}
+    .picture:hover{transform:translateY(-3px) rotate(-1deg);box-shadow:0 17px 34px rgba(82,58,173,.21)}
+    .picture img{width:100%;height:100%;object-fit:cover;display:block}
+    @keyframes fx-enter{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes fx-pop{0%{transform:scale(.83);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+    @keyframes fx-pulse{50%{transform:scale(1.09)}}
+    @keyframes fx-shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+    @keyframes fx-glow{50%{box-shadow:0 0 0 6px rgba(255,205,100,.22)}}
+    @keyframes fx-rain{0%{transform:translateY(-10vh) rotate(0deg);opacity:1}100%{transform:translateY(112vh) rotate(620deg);opacity:0}}
+    @keyframes fx-toast{0%{transform:scale(.7) translateY(25px);opacity:0}40%{transform:scale(1.05);opacity:1}100%{transform:scale(1);opacity:1}}
+    @keyframes fx-float{50%{transform:translateY(-9px)}}
+    @keyframes fx-picture-in{from{opacity:0;transform:scale(.91) rotate(-2deg)}to{opacity:1;transform:scale(1) rotate(0)}}
+    @media(max-width:700px){
+      .controls{grid-template-columns:1fr 1fr}
+      .controls .mid-actions{grid-column:1/-1;grid-row:2;justify-content:center}
+      .controls .restart{display:inline-flex}
+      .result-area{padding:42px 16px}
+      .mid-actions .btn{font-size:14px;padding:10px 12px}
+    }
+    @media(prefers-reduced-motion:reduce){
+      *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+    }
+
+  
+    .stage{min-height:0} .start label{font-size:20px} .progress>div{width:0}
+    #pictureWrap{margin:0 auto 20px;text-align:center} #questionImage{max-width:100%;width:min(480px,100%);max-height:280px;object-fit:contain;border-radius:18px;box-shadow:0 6px 14px #33226718}
+    .question{font-size:clamp(23px,3vw,32px)} .answer{font-size:22px;min-height:62px}
+    #sentenceTray{min-height:84px;padding:14px;border:3px dashed #bca9ef;border-radius:18px;background:#f5f0ff;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+    #wordBank{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:18px 0;min-height:48px}
+    .token{padding:12px 16px;font-size:21px;border:2px solid #cfbdf8;border-radius:14px;background:#fff;color:#432cb5;cursor:pointer;min-height:48px}
+    .token:disabled{opacity:.45;cursor:default}.token:focus-visible{outline:4px solid #ffd76a}.order-controls{display:flex;justify-content:center;gap:12px}
+    #roundResults{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin:0 0 24px}#roundResults span{background:#f3edff;padding:14px;border-radius:14px;font-size:18px}
+    .feedback{line-height:1.45}.order-correct{border-color:#65d5a8!important;animation:pop .3s}.order-wrong{border-color:#ff98a4!important;animation:shake .3s}
+    .top{padding:16px 20px;grid-template-columns:1fr auto 1fr}.pill{font-size:17px}.btn{min-height:48px;font-size:18px}
+    @media(max-width:700px){body{padding:10px}.app{width:100%}.top{grid-template-columns:1fr 1fr}.card{padding:16px}.stage{padding:20px 12px}.top .pill{padding:8px 10px;font-size:15px}#questionImage{max-height:220px}.controls{gap:8px}.btn{padding:11px 13px}h1{font-size:38px}}
+
+
+.question{white-space:pre-line;font-size:clamp(22px,2.7vw,30px)}.answer{font-size:clamp(19px,2vw,23px);line-height:1.35}#questionImage{max-height:240px;width:auto;max-width:100%;min-width:180px}.start p{line-height:1.5}.answers.long-answers{grid-template-columns:1fr}.card{width:min(880px,100%)}
+
+#blankArea{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;align-items:center}#blankArea label{width:100%;text-align:center;font-size:21px}#blankInput{width:min(480px,100%);min-height:56px;padding:13px 18px;border:3px solid #c7b6ef;border-radius:16px;font-size:24px;color:#20285c}#blankInput:focus-visible{outline:4px solid #ffd76a;outline-offset:2px}#blankInput.good{border-color:#65d5a8;background:#ebfff6}#blankInput.bad{border-color:#ff98a4;background:#fff0f2}#checkBlankBtn{background:#6040d7;color:white}#blankInput:disabled{opacity:1}
+
+#readingPanel{border:2px solid #ded3fa;border-radius:18px;background:#f7f3ff;padding:16px;margin-bottom:20px}
+#readingPanel summary{font-size:23px;font-weight:600;cursor:pointer;color:#5135b0}
+#readingText{font-family:"Trebuchet MS",Arial,sans-serif;font-size:20px;line-height:1.6;white-space:pre-line;max-height:300px;overflow:auto;margin-top:12px;padding-right:10px;color:#25365a}
+#wordChoices{background:#fff3cf;border:2px solid #ffe3a0;border-radius:14px;padding:13px;text-align:center;font-size:20px;margin-bottom:20px;line-height:1.5}
+#originalLine{font-size:20px;line-height:1.5;color:#8a3b6a;text-align:center;background:#fff0f8;padding:12px;border-radius:14px;margin-bottom:20px}
+#questionImage{width:min(420px,100%);max-height:180px;object-fit:contain}.answer{min-height:60px}
+@media(max-width:700px){#readingText{font-size:18px}#wordChoices,#originalLine{font-size:18px}}
+</style>
+</head>
+<body>
+  <main class="app">
+    <section class="frame" id="startScreen">
+      <div class="start">
+        <div class="stars">⭐ ✨ ⭐</div>
+        <div class="kicker">Some · Any · Much · Many</div>
+        <h1>Quantifier<br>Quest</h1>
+        <p>63 quick questions · 6 rounds · 20–30 minutes<br>Sort nouns, fill gaps, fix quantifiers and read A Busy Saturday.<br>Some questions accept more than one correct answer.<br>Take your time — no countdown.</p>
+        <label for="nameInput">Student name</label><br><input id="nameInput" maxlength="80" autocomplete="name" placeholder="Enter your name" required>
+        <br>
+        <button class="btn" id="startBtn">Start Challenge</button>
+      </div>
+    </section>
+
+    <section class="frame hidden" id="gameScreen">
+      <div class="top">
+        <div class="pill" id="roundPill">Round 1 / 3</div>
+        <div class="pill">⭐ <span id="score">0</span> / <span id="total">4</span> points</div>
+        <div class="pill" id="questionPill">Question 1 / 4</div>
+      </div>
+      <div class="progress"><div id="bar"></div></div>
+
+      <div class="stage">
+        <div class="kicker" id="kicker">Quick choice · 1 of 4</div>
+        <h1 id="title">Choose the best answer</h1>
+        <div class="instruction" id="instruction">Pick the sentence that sounds natural.</div>
+
+        <div class="card">
+          <details id="readingPanel" class="hidden" open><summary>Read: A Busy Saturday</summary><div id="readingText"></div></details><div id="wordChoices" class="hidden" aria-label="Word choices"></div><div id="originalLine" class="hidden"></div><figure id="pictureWrap" class="hidden"><img id="questionImage" alt=""></figure><div class="question" id="question"></div>
+          <div class="answers" id="answers"></div><div id="blankArea" class="hidden"><label for="blankInput">Your answer</label><input id="blankInput" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="80" placeholder="Type the missing word(s)"><button class="btn" id="checkBlankBtn">Check answer ✓</button></div><div id="orderArea" class="hidden"><div id="sentenceTray" aria-label="Your sentence"></div><div id="wordBank"></div><div class="order-controls"><button class="btn" id="clearOrder">Clear</button><button class="btn" id="checkOrder">Check sentence ✓</button></div></div>
+          <div class="feedback" id="feedback"></div>
+        </div>
+
+        <div class="controls">
+          <button class="btn" id="backBtn">← Back</button>
+          <div class="mid-actions"><button class="btn" id="soundBtn" aria-pressed="true">🔊 Sound On</button><button class="btn restart" id="restartBtn">↻ Restart</button></div>
+          <button class="btn next" id="nextBtn">Next →</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="frame hidden" id="resultScreen">
+      <div class="result-area">
+        <div class="result-stars">🌟 🎉 🌟</div>
+        <h1>Great Job, <span id="playerResult"></span>!</h1>
+        <div class="result-score"><span id="finalPoints">0</span>/<span id="finalTotal">4</span></div>
+        <p class="result-sub" id="resultMessage"></p>
+        <p class="result-sub" id="recordStatus" aria-live="polite"></p><div id="roundResults"></div>
+        <button class="btn" id="playAgainBtn">↻ Play Again</button>
+      </div>
+    </section>
+  <div class="fx-particles" id="fxParticles" aria-hidden="true"></div>
+    <div class="fx-round-toast hidden" id="roundToast" aria-hidden="true"><div class="fx-round-pill"><small>LEVEL UP ✨</small><span id="roundToastText"></span></div></div>
+  </main>
+
+<script src="/minigame/shared/teacher-records-config.js"></script>
+<script src="/minigame/shared/teacher-records.js"></script>
+<script>
+
+const QUESTIONS=[
+  {
+    "round": 1,
+    "sourceId": "noun-air",
+    "type": "mc",
+    "q": "Meaning: the air we breathe.\nIs this noun countable or uncountable?",
+    "choices": [
+      "Uncountable",
+      "Countable"
+    ],
+    "a": 0,
+    "ex": "We say some air, not an air, in this meaning.",
+    "image": "assets/air.webp",
+    "instruction": null,
+    "reading": null
+  },
+  {
+    "round": 1,
+    "sourceId": "noun-sugar",
+    "type": "mc",
+    "q": "Meaning: sugar used in food.\nIs this noun countable or uncountable?",
+    "choices": [
+      "Uncountable",
+      "Countable"
+    ],
+    "a": 0,
+    "ex": "Sugar is uncountable when we mean the substance.",
+    "image": "assets/sugar.webp",
+    "instruction": null,
+    "reading": null
+  },
+  {
+    "round": 1,
+    "sourceId": "noun-book",
+    "type": "mc",
+    "q": "Meaning: a book that you read.\nIs this noun countable or uncountable?",
+    "choices": [
+      "Countable",
+      "Uncountable"
+    ],
+    "a": 0,
+    "ex": "One book, two books: book is countable.",
+    "image": "assets/book.webp",
+    "instruction": null,
+    "reading": null
+  },
+  {
+    "round": 1,
+    "sourceId": "noun-time",
+    "type": "mc",
+    "q": "Meaning: free time available for an activity.\nIs this noun countable or uncountable?",
+    "choices": [
+      "Uncountable",
+      "Countable"
+    ],
+    "a": 0,
+    "ex": "Time is uncountable here. Times can count occasions in a different meaning.",
+    "image": "assets/time.webp",
+    "instruction": null,
+    "reading": null
+  },
+  {
+    "round": 1,
+    "sourceId": "noun-film",
+    "type": "mc",
+    "q": "Meaning: a movie you can watch.\nIs this noun countable or uncountable?",
+    "choices": [
+      "Countable",
+      "Uncountable"
+    ],
+    "a": 0,
+    "ex": "One film, two films: a movie is countable.",
+    "image": "assets/film.webp",
+    "instruction": null,
+    "reading": null
+  },
+  {
+    "round": 1,
+    "sourceId": "noun-tea",
+    "type": "mc",
+    "q": "Meaning: the drink, not individual cups.\nIs this noun countable or uncountable?",
+    "choices": [
+      "Uncountable",
+      "Countable"
+    ],
+    "a": 0,
+    "ex": "Tea is uncountable as a drink. Cups of tea can be counted.",
+    "image": "assets/tea.webp",
+    "instruction": null,
+    "reading": null
+  },
+  {
+    "round": 1,
+    "sourceId": "noun-information",
+    "type": "mc",
+    "q": "Meaning: facts or details about something.\nIs this noun countable or uncountable?",
+    "choices": [
+      "Uncountable",
+      "Countable"
+    ],
+    "a": 0,
+    "ex": "Information is uncountable. Say some information or a piece of information.",
+    "image": "assets/information.webp",
+    "instruction": null,
+    "reading": null
+  },
+  {
+    "round": 1,
+    "sourceId": "noun-car",
+    "type": "mc",
+    "q": "Meaning: a vehicle you can drive.\nIs this noun countable or uncountable?",
+    "choices": [
+      "Countable",
+      "Uncountable"
+    ],
+    "a": 0,
+    "ex": "One car, two cars: car is countable.",
+    "image": "assets/car.webp",
+    "instruction": null,
+    "reading": null
+  },
+  {
+    "round": 1,
+    "sourceId": "noun-money",
+    "type": "mc",
+    "q": "Meaning: money used to pay for things.\nIs this noun countable or uncountable?",
+    "choices": [
+      "Uncountable",
+      "Countable"
+    ],
+    "a": 0,
+    "ex": "Money is uncountable. Coins and banknotes can be counted.",
+    "image": "assets/money.webp",
+    "instruction": null,
+    "reading": null
+  },
+  {
+    "round": 1,
+    "sourceId": "noun-bag",
+    "type": "mc",
+    "q": "Meaning: a bag used to carry things.\nIs this noun countable or uncountable?",
+    "choices": [
+      "Countable",
+      "Uncountable"
+    ],
+    "a": 0,
+    "ex": "One bag, two bags: bag is countable.",
+    "image": "assets/bag.webp",
+    "instruction": null,
+    "reading": null
+  },
+  {
+    "round": 1,
+    "sourceId": "noun-laptop",
+    "type": "mc",
+    "q": "Meaning: a portable computer.\nIs this noun countable or uncountable?",
+    "choices": [
+      "Countable",
+      "Uncountable"
+    ],
+    "a": 0,
+    "ex": "One laptop, two laptops: laptop is countable.",
+    "image": "assets/laptop.webp",
+    "instruction": null,
+    "reading": null
+  },
+  {
+    "round": 1,
+    "sourceId": "noun-people",
+    "type": "mc",
+    "q": "Meaning: several persons.\nIs this noun countable or uncountable?",
+    "choices": [
+      "Countable",
+      "Uncountable"
+    ],
+    "a": 0,
+    "ex": "People is a plural countable noun. Use many people, not much people.",
+    "image": "assets/people.webp",
+    "instruction": null,
+    "reading": null
+  },
+  {
+    "round": 2,
+    "sourceId": "some-1",
+    "type": "blank",
+    "q": "I don’t have _____ money left because I spent it all on snacks.",
+    "accepted": [
+      "any"
+    ],
+    "a": 1,
+    "ex": "Use any in this negative sentence.",
+    "bank": [
+      "some",
+      "any"
+    ],
+    "instruction": "Use some or any. For questions, use the usual choice for a neutral question.",
+    "original": null
+  },
+  {
+    "round": 2,
+    "sourceId": "some-2",
+    "type": "blank",
+    "q": "There aren’t _____ cafés around here.",
+    "accepted": [
+      "any"
+    ],
+    "a": 1,
+    "ex": "There aren’t any cafés around here.",
+    "bank": [
+      "some",
+      "any"
+    ],
+    "instruction": "Use some or any. For questions, use the usual choice for a neutral question.",
+    "original": null
+  },
+  {
+    "round": 2,
+    "sourceId": "some-3",
+    "type": "blank",
+    "q": "Shelly wants to buy _____ flowers for her grandmother.",
+    "accepted": [
+      "some"
+    ],
+    "a": 1,
+    "ex": "Use some for an unspecified positive number of flowers.",
+    "bank": [
+      "some",
+      "any"
+    ],
+    "instruction": "Use some or any. For questions, use the usual choice for a neutral question.",
+    "original": null
+  },
+  {
+    "round": 2,
+    "sourceId": "some-4",
+    "type": "blank",
+    "q": "Do you have _____ information about the next flight to Paris?",
+    "accepted": [
+      "any"
+    ],
+    "a": 1,
+    "ex": "Any is the usual choice in a neutral question. Information is uncountable.",
+    "bank": [
+      "some",
+      "any"
+    ],
+    "instruction": "Use some or any. For questions, use the usual choice for a neutral question.",
+    "original": null
+  },
+  {
+    "round": 2,
+    "sourceId": "some-5",
+    "type": "blank",
+    "q": "I’ve got _____ homework to do tonight.",
+    "accepted": [
+      "some"
+    ],
+    "a": 1,
+    "ex": "Homework is uncountable. I’ve got some homework.",
+    "bank": [
+      "some",
+      "any"
+    ],
+    "instruction": "Use some or any. For questions, use the usual choice for a neutral question.",
+    "original": null
+  },
+  {
+    "round": 2,
+    "sourceId": "some-6",
+    "type": "blank",
+    "q": "He wants to buy _____ new socks.",
+    "accepted": [
+      "some"
+    ],
+    "a": 1,
+    "ex": "Use some in this affirmative sentence.",
+    "bank": [
+      "some",
+      "any"
+    ],
+    "instruction": "Use some or any. For questions, use the usual choice for a neutral question.",
+    "original": null
+  },
+  {
+    "round": 2,
+    "sourceId": "some-7",
+    "type": "blank",
+    "q": "I haven’t read _____ good books lately.",
+    "accepted": [
+      "any"
+    ],
+    "a": 1,
+    "ex": "Use any after haven’t in this sentence.",
+    "bank": [
+      "some",
+      "any"
+    ],
+    "instruction": "Use some or any. For questions, use the usual choice for a neutral question.",
+    "original": null
+  },
+  {
+    "round": 2,
+    "sourceId": "some-8",
+    "type": "mc",
+    "q": "Do we have _____ bread at home? Yes, we do have _____.",
+    "choices": [
+      "some / any",
+      "any / some",
+      "any / any",
+      "some / some"
+    ],
+    "a": 1,
+    "ex": "Neutral question: any. Affirmative reply: some.",
+    "image": null,
+    "instruction": "Choose the two answers in order. Treat the first sentence as a neutral question.",
+    "reading": null
+  },
+  {
+    "round": 2,
+    "sourceId": "some-9",
+    "type": "blank",
+    "q": "I need _____ help finding my wallet.",
+    "accepted": [
+      "some"
+    ],
+    "a": 1,
+    "ex": "Help is uncountable here: I need some help.",
+    "bank": [
+      "some",
+      "any"
+    ],
+    "instruction": "Use some or any. For questions, use the usual choice for a neutral question.",
+    "original": null
+  },
+  {
+    "round": 2,
+    "sourceId": "some-10",
+    "type": "mc",
+    "q": "Is there _____ rice left in your bowl? No, there isn’t _____ left.",
+    "choices": [
+      "any / any",
+      "some / some",
+      "any / some",
+      "some / any"
+    ],
+    "a": 0,
+    "ex": "Use any in the neutral question and in the negative reply.",
+    "image": null,
+    "instruction": "Choose the two answers in order. Treat the first sentence as a neutral question.",
+    "reading": null
+  },
+  {
+    "round": 2,
+    "sourceId": "some-11",
+    "type": "blank",
+    "q": "Let’s open a window. I need _____ air.",
+    "accepted": [
+      "some"
+    ],
+    "a": 1,
+    "ex": "I need some air. Air is uncountable.",
+    "bank": [
+      "some",
+      "any"
+    ],
+    "instruction": "Use some or any. For questions, use the usual choice for a neutral question.",
+    "original": null
+  },
+  {
+    "round": 2,
+    "sourceId": "some-12",
+    "type": "blank",
+    "q": "She ate _____ grapes in between her classes.",
+    "accepted": [
+      "some"
+    ],
+    "a": 1,
+    "ex": "Use some with the plural noun grapes in this affirmative sentence.",
+    "bank": [
+      "some",
+      "any"
+    ],
+    "instruction": "Use some or any. For questions, use the usual choice for a neutral question.",
+    "original": null
+  },
+  {
+    "round": 2,
+    "sourceId": "some-13",
+    "type": "blank",
+    "q": "Mum asked me to buy more milk because there isn’t _____ at home.",
+    "accepted": [
+      "any"
+    ],
+    "a": 1,
+    "ex": "There isn’t any milk at home. Any replaces the repeated noun phrase.",
+    "bank": [
+      "some",
+      "any"
+    ],
+    "instruction": "Use some or any. For questions, use the usual choice for a neutral question.",
+    "original": null
+  },
+  {
+    "round": 2,
+    "sourceId": "some-14",
+    "type": "blank",
+    "q": "Do you have _____ advice for people learning English?",
+    "accepted": [
+      "any"
+    ],
+    "a": 1,
+    "ex": "Any is the usual neutral question form. Advice is uncountable.",
+    "bank": [
+      "some",
+      "any"
+    ],
+    "instruction": "Use some or any. For questions, use the usual choice for a neutral question.",
+    "original": null
+  },
+  {
+    "round": 2,
+    "sourceId": "some-15",
+    "type": "blank",
+    "q": "There are _____ beautiful flowers growing in the garden.",
+    "accepted": [
+      "some"
+    ],
+    "a": 1,
+    "ex": "There are some beautiful flowers in the garden.",
+    "bank": [
+      "some",
+      "any"
+    ],
+    "instruction": "Use some or any. For questions, use the usual choice for a neutral question.",
+    "original": null
+  },
+  {
+    "round": 3,
+    "sourceId": "quantity-1",
+    "type": "blank",
+    "q": "We don’t have _____ food left.",
+    "accepted": [
+      "much",
+      "a lot of",
+      "lots of"
+    ],
+    "a": 1,
+    "ex": "Food is uncountable: much, a lot of and lots of can all fit this negative sentence.",
+    "bank": [
+      "much",
+      "many",
+      "a lot of",
+      "lots of"
+    ],
+    "instruction": "Use much, many, a lot of or lots of. More than one answer may be correct.",
+    "original": null
+  },
+  {
+    "round": 3,
+    "sourceId": "quantity-2",
+    "type": "blank",
+    "q": "How _____ eggs should we use in this cake?",
+    "accepted": [
+      "many"
+    ],
+    "a": 1,
+    "ex": "How many + plural countable noun: eggs.",
+    "bank": [
+      "much",
+      "many",
+      "a lot of",
+      "lots of"
+    ],
+    "instruction": "Use much, many, a lot of or lots of. More than one answer may be correct.",
+    "original": null
+  },
+  {
+    "round": 3,
+    "sourceId": "quantity-3",
+    "type": "blank",
+    "q": "I have _____ aunts and uncles.",
+    "accepted": [
+      "many",
+      "a lot of",
+      "lots of"
+    ],
+    "a": 1,
+    "ex": "Aunts and uncles are countable. Many, a lot of and lots of are all possible.",
+    "bank": [
+      "much",
+      "many",
+      "a lot of",
+      "lots of"
+    ],
+    "instruction": "Use much, many, a lot of or lots of. More than one answer may be correct.",
+    "original": null
+  },
+  {
+    "round": 3,
+    "sourceId": "quantity-4",
+    "type": "blank",
+    "q": "How _____ cheese do you want in your sandwich?",
+    "accepted": [
+      "much"
+    ],
+    "a": 1,
+    "ex": "How much + uncountable noun: cheese.",
+    "bank": [
+      "much",
+      "many",
+      "a lot of",
+      "lots of"
+    ],
+    "instruction": "Use much, many, a lot of or lots of. More than one answer may be correct.",
+    "original": null
+  },
+  {
+    "round": 3,
+    "sourceId": "quantity-5",
+    "type": "blank",
+    "q": "How _____ days are there in a month?",
+    "accepted": [
+      "many"
+    ],
+    "a": 1,
+    "ex": "Days is plural and countable: how many days.",
+    "bank": [
+      "much",
+      "many",
+      "a lot of",
+      "lots of"
+    ],
+    "instruction": "Use much, many, a lot of or lots of. More than one answer may be correct.",
+    "original": null
+  },
+  {
+    "round": 3,
+    "sourceId": "quantity-6",
+    "type": "blank",
+    "q": "She doesn’t eat _____ sugar.",
+    "accepted": [
+      "much",
+      "a lot of",
+      "lots of"
+    ],
+    "a": 1,
+    "ex": "Sugar is uncountable. Much, a lot of and lots of are all possible here.",
+    "bank": [
+      "much",
+      "many",
+      "a lot of",
+      "lots of"
+    ],
+    "instruction": "Use much, many, a lot of or lots of. More than one answer may be correct.",
+    "original": null
+  },
+  {
+    "round": 3,
+    "sourceId": "quantity-7",
+    "type": "blank",
+    "q": "Carlos has _____ hobbies.",
+    "accepted": [
+      "many",
+      "a lot of",
+      "lots of"
+    ],
+    "a": 1,
+    "ex": "Hobbies is countable. Many, a lot of and lots of can all fit.",
+    "bank": [
+      "much",
+      "many",
+      "a lot of",
+      "lots of"
+    ],
+    "instruction": "Use much, many, a lot of or lots of. More than one answer may be correct.",
+    "original": null
+  },
+  {
+    "round": 3,
+    "sourceId": "quantity-8",
+    "type": "blank",
+    "q": "I don’t read _____ books these days.",
+    "accepted": [
+      "many",
+      "a lot of",
+      "lots of"
+    ],
+    "a": 1,
+    "ex": "Books is countable. Use many, a lot of or lots of.",
+    "bank": [
+      "much",
+      "many",
+      "a lot of",
+      "lots of"
+    ],
+    "instruction": "Use much, many, a lot of or lots of. More than one answer may be correct.",
+    "original": null
+  },
+  {
+    "round": 3,
+    "sourceId": "quantity-9",
+    "type": "blank",
+    "q": "How _____ does a hamburger cost?",
+    "accepted": [
+      "much"
+    ],
+    "a": 1,
+    "ex": "How much asks about the price, even when the item being priced is countable.",
+    "bank": [
+      "much",
+      "many",
+      "a lot of",
+      "lots of"
+    ],
+    "instruction": "Use much, many, a lot of or lots of. More than one answer may be correct.",
+    "original": null
+  },
+  {
+    "round": 3,
+    "sourceId": "quantity-10",
+    "type": "blank",
+    "q": "There wasn’t _____ chocolate in my lunchbox today.",
+    "accepted": [
+      "much",
+      "a lot of",
+      "lots of"
+    ],
+    "a": 1,
+    "ex": "Chocolate is uncountable as food here.",
+    "bank": [
+      "much",
+      "many",
+      "a lot of",
+      "lots of"
+    ],
+    "instruction": "Use much, many, a lot of or lots of. More than one answer may be correct.",
+    "original": null
+  },
+  {
+    "round": 3,
+    "sourceId": "quantity-11",
+    "type": "blank",
+    "q": "There aren’t _____ people on the bus today.",
+    "accepted": [
+      "many",
+      "a lot of",
+      "lots of"
+    ],
+    "a": 1,
+    "ex": "People is plural and countable. Use there aren’t, not there isn’t.",
+    "bank": [
+      "much",
+      "many",
+      "a lot of",
+      "lots of"
+    ],
+    "instruction": "Use much, many, a lot of or lots of. More than one answer may be correct.",
+    "original": null
+  },
+  {
+    "round": 3,
+    "sourceId": "quantity-12",
+    "type": "blank",
+    "q": "My dad spends too _____ money.",
+    "accepted": [
+      "much"
+    ],
+    "a": 1,
+    "ex": "Use too much with the uncountable noun money.",
+    "bank": [
+      "much",
+      "many",
+      "a lot of",
+      "lots of"
+    ],
+    "instruction": "Use much, many, a lot of or lots of. More than one answer may be correct.",
+    "original": null
+  },
+  {
+    "round": 3,
+    "sourceId": "quantity-13",
+    "type": "blank",
+    "q": "There aren’t _____ carrots left in the fridge.",
+    "accepted": [
+      "many",
+      "a lot of",
+      "lots of"
+    ],
+    "a": 1,
+    "ex": "Carrots is plural and countable.",
+    "bank": [
+      "much",
+      "many",
+      "a lot of",
+      "lots of"
+    ],
+    "instruction": "Use much, many, a lot of or lots of. More than one answer may be correct.",
+    "original": null
+  },
+  {
+    "round": 3,
+    "sourceId": "quantity-14",
+    "type": "blank",
+    "q": "Tourists leave _____ rubbish on the beach.",
+    "accepted": [
+      "a lot of",
+      "lots of",
+      "much"
+    ],
+    "a": 1,
+    "ex": "Rubbish is uncountable. A lot of and lots of sound most natural here; much is more formal.",
+    "bank": [
+      "much",
+      "many",
+      "a lot of",
+      "lots of"
+    ],
+    "instruction": "Use much, many, a lot of or lots of. More than one answer may be correct.",
+    "original": null
+  },
+  {
+    "round": 3,
+    "sourceId": "quantity-15",
+    "type": "blank",
+    "q": "I haven’t got _____ homework to do today.",
+    "accepted": [
+      "much",
+      "a lot of",
+      "lots of"
+    ],
+    "a": 1,
+    "ex": "Homework is uncountable: much, a lot of and lots of can all fit.",
+    "bank": [
+      "much",
+      "many",
+      "a lot of",
+      "lots of"
+    ],
+    "instruction": "Use much, many, a lot of or lots of. More than one answer may be correct.",
+    "original": null
+  },
+  {
+    "round": 4,
+    "sourceId": "correct-1",
+    "type": "blank",
+    "q": "How _____ time do you have?",
+    "accepted": [
+      "much"
+    ],
+    "a": 1,
+    "ex": "Use how much with time available.",
+    "bank": [
+      "much",
+      "many"
+    ],
+    "instruction": "Replace only the incorrect quantifier, using the choices above.",
+    "original": "How many time do you have?"
+  },
+  {
+    "round": 4,
+    "sourceId": "correct-2",
+    "type": "blank",
+    "q": "I have _____ new books at home.",
+    "accepted": [
+      "some"
+    ],
+    "a": 1,
+    "ex": "Use some in this ordinary affirmative sentence.",
+    "bank": [
+      "some",
+      "any"
+    ],
+    "instruction": "Replace only the incorrect quantifier, using the choices above.",
+    "original": "I have any new books at home."
+  },
+  {
+    "round": 4,
+    "sourceId": "correct-3",
+    "type": "blank",
+    "q": "She needs _____ help with her laptop.",
+    "accepted": [
+      "some"
+    ],
+    "a": 1,
+    "ex": "Use some help in this affirmative statement.",
+    "bank": [
+      "some",
+      "any"
+    ],
+    "instruction": "Replace only the incorrect quantifier, using the choices above.",
+    "original": "She needs any help with her laptop."
+  },
+  {
+    "round": 4,
+    "sourceId": "correct-4",
+    "type": "blank",
+    "q": "Do you have _____ plans for next week?",
+    "accepted": [
+      "many"
+    ],
+    "a": 1,
+    "ex": "Plans is plural and countable: many plans.",
+    "bank": [
+      "much",
+      "many"
+    ],
+    "instruction": "Replace only the incorrect quantifier, using the choices above.",
+    "original": "Do you have much plans for next week?"
+  },
+  {
+    "round": 4,
+    "sourceId": "correct-5",
+    "type": "blank",
+    "q": "There are _____ people coming over today.",
+    "accepted": [
+      "many"
+    ],
+    "a": 1,
+    "ex": "People is a plural countable noun: many people.",
+    "bank": [
+      "much",
+      "many"
+    ],
+    "instruction": "Replace only the incorrect quantifier, using the choices above.",
+    "original": "There are much people coming over today."
+  },
+  {
+    "round": 4,
+    "sourceId": "correct-6",
+    "type": "blank",
+    "q": "There isn’t _____ traffic today.",
+    "accepted": [
+      "much"
+    ],
+    "a": 1,
+    "ex": "Traffic is uncountable: much traffic.",
+    "bank": [
+      "much",
+      "many"
+    ],
+    "instruction": "Replace only the incorrect quantifier, using the choices above.",
+    "original": "There isn’t many traffic today."
+  },
+  {
+    "round": 5,
+    "sourceId": "reading-1",
+    "type": "mc",
+    "q": "Who went shopping with Mia?",
+    "choices": [
+      "Her dad.",
+      "Her mum.",
+      "Her teacher.",
+      "Her brother."
+    ],
+    "a": 0,
+    "ex": "Mia went shopping with her dad on Saturday morning.",
+    "image": null,
+    "instruction": "Read the passage, then choose the best answer.",
+    "reading": "shopping"
+  },
+  {
+    "round": 5,
+    "sourceId": "reading-2",
+    "type": "mc",
+    "q": "Which two fruits did they buy?",
+    "choices": [
+      "Oranges and grapes.",
+      "Apples and bananas.",
+      "Pears and peaches.",
+      "Carrots and tomatoes."
+    ],
+    "a": 1,
+    "ex": "They bought a few apples and bananas. Carrots and tomatoes are the vegetables mentioned.",
+    "image": null,
+    "instruction": "Read the passage, then choose the best answer.",
+    "reading": "shopping"
+  },
+  {
+    "round": 5,
+    "sourceId": "reading-3",
+    "type": "mc",
+    "q": "Why did they buy milk?",
+    "choices": [
+      "They had too much milk at home.",
+      "They wanted to buy eggs instead.",
+      "They didn’t have much milk at home.",
+      "They were buying milk for a neighbour."
+    ],
+    "a": 2,
+    "ex": "They noticed they didn’t have much milk at home.",
+    "image": null,
+    "instruction": "Read the passage, then choose the best answer.",
+    "reading": "shopping"
+  },
+  {
+    "round": 5,
+    "sourceId": "reading-4",
+    "type": "mc",
+    "q": "Could they buy any eggs?",
+    "choices": [
+      "No. There weren’t any eggs left on the shelf.",
+      "Yes. They bought two boxes.",
+      "No. They forgot to look for eggs.",
+      "Yes. They bought a few eggs."
+    ],
+    "a": 0,
+    "ex": "They wanted some eggs, but the shelf had none left.",
+    "image": null,
+    "instruction": "Read the passage, then choose the best answer.",
+    "reading": "shopping"
+  },
+  {
+    "round": 5,
+    "sourceId": "reading-5",
+    "type": "mc",
+    "q": "What did Mia’s dad ask her to get?",
+    "choices": [
+      "Some bread.",
+      "Some cheese.",
+      "Some sugar.",
+      "Some rice."
+    ],
+    "a": 1,
+    "ex": "Mia asked about cheese, and her dad said, “Yes, please get some.”",
+    "image": null,
+    "instruction": "Read the passage, then choose the best answer.",
+    "reading": "shopping"
+  },
+  {
+    "round": 6,
+    "sourceId": "mixed-1",
+    "type": "blank",
+    "q": "There are _____ apples in the basket.",
+    "accepted": [
+      "some"
+    ],
+    "a": 1,
+    "ex": "Use some for an unspecified positive number.",
+    "bank": [
+      "some",
+      "any"
+    ],
+    "instruction": "Choose some or any.",
+    "original": null
+  },
+  {
+    "round": 6,
+    "sourceId": "mixed-2",
+    "type": "blank",
+    "q": "We don’t have _____ rice left.",
+    "accepted": [
+      "any"
+    ],
+    "a": 1,
+    "ex": "Use any in this negative sentence.",
+    "bank": [
+      "some",
+      "any"
+    ],
+    "instruction": "Choose some or any.",
+    "original": null
+  },
+  {
+    "round": 6,
+    "sourceId": "mixed-3",
+    "type": "blank",
+    "q": "Is there _____ water in the bottle?",
+    "accepted": [
+      "any"
+    ],
+    "a": 1,
+    "ex": "Any is the usual choice for a neutral question.",
+    "bank": [
+      "some",
+      "any"
+    ],
+    "instruction": "Choose some or any for a neutral question.",
+    "original": null
+  },
+  {
+    "round": 6,
+    "sourceId": "mixed-4",
+    "type": "blank",
+    "q": "She has _____ close friends at school — not many, but enough.",
+    "accepted": [
+      "a few"
+    ],
+    "a": 1,
+    "ex": "A few means a small positive number of countable things.",
+    "bank": [
+      "some",
+      "any",
+      "much",
+      "many",
+      "a lot of",
+      "lots of",
+      "a few",
+      "a little"
+    ],
+    "instruction": "Use a two-word expression meaning a small positive number.",
+    "original": null
+  },
+  {
+    "round": 6,
+    "sourceId": "mixed-5",
+    "type": "blank",
+    "q": "There are _____ students in the library today.",
+    "accepted": [
+      "many",
+      "a lot of",
+      "lots of"
+    ],
+    "a": 1,
+    "ex": "Many, a lot of and lots of express a large number of students.",
+    "bank": [
+      "some",
+      "any",
+      "much",
+      "many",
+      "a lot of",
+      "lots of",
+      "a few",
+      "a little"
+    ],
+    "instruction": "Choose an expression meaning a large number.",
+    "original": null
+  },
+  {
+    "round": 6,
+    "sourceId": "mixed-6",
+    "type": "blank",
+    "q": "I need _____ sugar for my tea — just one small amount.",
+    "accepted": [
+      "a little"
+    ],
+    "a": 1,
+    "ex": "A little means a small positive amount of an uncountable noun.",
+    "bank": [
+      "some",
+      "any",
+      "much",
+      "many",
+      "a lot of",
+      "lots of",
+      "a few",
+      "a little"
+    ],
+    "instruction": "Use a two-word expression meaning a small positive amount.",
+    "original": null
+  },
+  {
+    "round": 6,
+    "sourceId": "mixed-7",
+    "type": "blank",
+    "q": "Would you like _____ orange juice?",
+    "accepted": [
+      "some"
+    ],
+    "a": 1,
+    "ex": "Use some in this friendly offer.",
+    "bank": [
+      "some",
+      "any"
+    ],
+    "instruction": "Choose some or any for a friendly offer.",
+    "original": null
+  },
+  {
+    "round": 6,
+    "sourceId": "mixed-8",
+    "type": "blank",
+    "q": "There aren’t _____ chairs for everyone.",
+    "accepted": [
+      "many"
+    ],
+    "a": 1,
+    "ex": "Chairs is plural and countable: many chairs.",
+    "bank": [
+      "much",
+      "many"
+    ],
+    "instruction": "Choose much or many.",
+    "original": null
+  },
+  {
+    "round": 6,
+    "sourceId": "mixed-9",
+    "type": "blank",
+    "q": "We bought _____ food for the party.",
+    "accepted": [
+      "a lot of",
+      "lots of"
+    ],
+    "a": 1,
+    "ex": "A lot of and lots of both fit before the uncountable noun food.",
+    "bank": [
+      "some",
+      "any",
+      "much",
+      "many",
+      "a lot of",
+      "lots of",
+      "a few",
+      "a little"
+    ],
+    "instruction": "Use an expression with “of” meaning a large amount.",
+    "original": null
+  },
+  {
+    "round": 6,
+    "sourceId": "mixed-10",
+    "type": "blank",
+    "q": "There isn’t _____ cheese in the fridge.",
+    "accepted": [
+      "much"
+    ],
+    "a": 1,
+    "ex": "Cheese is uncountable: much cheese.",
+    "bank": [
+      "much",
+      "many"
+    ],
+    "instruction": "Choose much or many.",
+    "original": null
+  }
+];
+
+
+const PASSAGES={"shopping": "A Busy Saturday\n\nOn Saturday morning, Mia went shopping with her dad. They needed some food for the week. First, they bought a few apples and bananas. There were many kinds of vegetables, so Mia chose some carrots and tomatoes. Her dad put a lot of potatoes in the shopping cart.\n\nAt the dairy section, Mia noticed that they didn’t have much milk at home. They bought two bottles of milk and a little butter. They wanted to buy some eggs, but there weren’t any eggs left on the shelf. Mia asked, “Do we need any cheese?” Her dad said, “Yes, please get some.”\n\nBefore they left, Mia checked the drinks. There wasn’t much orange juice, so they bought a few bottles. They had a lot of shopping bags, but Mia was happy because she helped her dad."};
+const MODE = "present";
+const $ = id => document.getElementById(id);
+const state = QUESTIONS.map(() => ({choice:null,ordered:[],order:[],typed:""}));
+let pos = 0;
+let player = "";
+let soundOn = true;
+let audioCtx = null;
+let roundTimer = null;
+let startedAt = null;
+let attemptId = "";
+let finished = false;
+const ROUND_NAMES=["Noun Sorter","Some or Any?","Much, Many & More","Fix the Quantifier","A Busy Saturday","Mixed Challenge"];
+const totalRounds = Math.max(...QUESTIONS.map(q=>q.round));
+$("total").textContent = QUESTIONS.length;
+const roundElement = () => $(MODE === "present" ? "roundPill" : "round");
+const counterElement = () => $(MODE === "present" ? "questionPill" : "counter");
+
+function points() {
+  return state.reduce((n,s,idx)=>n+(s.choice === QUESTIONS[idx].a ? 1 : 0),0);
+}
+function chime(kind) {
+  if (!soundOn) return;
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    if (!audioCtx) audioCtx = new AC();
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    const melodies = {
+      correct:[[659,0,.11],[880,.11,.15],[1046,.23,.18]],
+      wrong:[[330,0,.13],[220,.11,.19]],
+      round:[[523,0,.1],[659,.11,.1],[784,.23,.19]],
+      finish:[[523,0,.14],[659,.15,.14],[784,.31,.15],[1046,.49,.28]]
+    };
+    const now = audioCtx.currentTime;
+    (melodies[kind] || melodies.correct).forEach(([hz,delay,len])=>{
+      const osc=audioCtx.createOscillator(),gain=audioCtx.createGain();
+      osc.type=kind==="wrong"?"triangle":"sine";
+      osc.frequency.setValueAtTime(hz,now+delay);
+      gain.gain.setValueAtTime(.0001,now+delay);
+      gain.gain.exponentialRampToValueAtTime(.095,now+delay+.018);
+      gain.gain.exponentialRampToValueAtTime(.0001,now+delay+len);
+      osc.connect(gain);gain.connect(audioCtx.destination);
+      osc.start(now+delay);osc.stop(now+delay+len+.01);
+    });
+  } catch (_) {}
+}
+function particles(count) {
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const box=$("fxParticles"), colors=["#ffc85b","#f65caf","#6de0b1","#77caff","#9e76f2","#ff9d78"];
+  for(let n=0;n<count;n++){
+    const p=document.createElement("span");
+    p.style.left=(Math.random()*100)+"%";
+    p.style.background=colors[n%colors.length];
+    p.style.animationDelay=(Math.random()*.27)+"s";
+    p.style.animationDuration=(.95+Math.random()*.7)+"s";
+    box.appendChild(p);
+    p.addEventListener("animationend",()=>p.remove(),{once:true});
+  }
+}
+function animateScore() {
+  const el=$("score");
+  el.textContent=points();
+  el.classList.remove("score-pulse");
+  void el.offsetWidth;
+  el.classList.add("score-pulse");
+}
+function toastRound(round){
+  if(roundTimer)clearTimeout(roundTimer);
+  $("roundToastText").textContent="Round "+round+" / "+totalRounds;
+  $("roundToast").classList.remove("hidden");
+  chime("round");
+  roundTimer=setTimeout(()=>$("roundToast").classList.add("hidden"),900);
+}
+function setScreen(id){
+  ["startScreen","gameScreen","resultScreen"].forEach(x=>$(x).classList.toggle("hidden",x!==id));
+}
+function shuffle(indices){
+  for(let i=indices.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[indices[i],indices[j]]=[indices[j],indices[i]];}
+  if(indices.length>1&&indices.every((n,i)=>n===i))indices.push(indices.shift());
+  return indices;
+}
+function start(){
+  const name=$("nameInput").value.trim();
+  if(!name){alert("Please enter your name first.");$("nameInput").focus();return;}
+  player=name;restart();
+}
+function restart(){
+  startedAt=Date.now();attemptId=window.crypto&&crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);
+  finished=false;pos=0;
+  state.forEach((s,i)=>{s.choice=null;s.typed="";s.ordered=[];s.order=QUESTIONS[i].tokens?shuffle(QUESTIONS[i].tokens.map((_,n)=>n)):[];});
+  $("recordStatus").textContent="";setScreen("gameScreen");render();toastRound(1);
+}
+function renderOrder(){
+  const q=QUESTIONS[pos],s=state[pos];const tray=$("sentenceTray"),bank=$("wordBank");tray.innerHTML="";bank.innerHTML="";
+  tray.className=s.choice===null?"":s.choice===1?"order-correct":"order-wrong";
+  if(!s.ordered.length){const hint=document.createElement("span");hint.textContent="Tap words below to build your sentence.";tray.appendChild(hint);}
+  s.ordered.forEach((n,i)=>{const b=document.createElement("button");b.className="token";b.textContent=q.tokens[n];b.disabled=s.choice!==null;b.setAttribute("aria-label","Remove word "+q.tokens[n]);b.onclick=()=>{s.ordered.splice(i,1);renderOrder();};tray.appendChild(b);});
+  s.order.forEach(n=>{const b=document.createElement("button");b.className="token";b.textContent=q.tokens[n];b.disabled=s.choice!==null||s.ordered.includes(n);b.onclick=()=>{s.ordered.push(n);renderOrder();};bank.appendChild(b);});
+  $("checkOrder").disabled=s.choice!==null||s.ordered.length!==q.tokens.length;$("clearOrder").disabled=s.choice!==null||!s.ordered.length;
+}
+function normalize(s){return s.toLowerCase().replace(/[.!?]/g,"").replace(/\s+/g," ").trim();}
+function checkOrder(){
+ const q=QUESTIONS[pos],s=state[pos];if(q.type!=="order"||s.choice!==null||s.ordered.length!==q.tokens.length)return;
+ const sentence=s.ordered.map(n=>q.tokens[n]).join(" ");
+ const variants=[q.sentence,...(q.accepted||[])];answer(variants.some(x=>normalize(x)===normalize(sentence))?1:0);
+}
+function render(){
+  const q=QUESTIONS[pos],st=state[pos];
+  $("roundPill").textContent="Round "+q.round+" / "+totalRounds;
+  $("questionPill").textContent="Question "+(pos+1)+" / "+QUESTIONS.length;
+  const done=state.filter(s=>s.choice!==null).length;
+  $("bar").style.width=(done/QUESTIONS.length*100)+"%";$("bar").parentElement.setAttribute("aria-label",done+" of "+QUESTIONS.length+" completed");
+  $("score").textContent=points();$("kicker").textContent=ROUND_NAMES[q.round-1]+" · "+(pos+1)+" of "+QUESTIONS.length;
+  $("title").textContent=ROUND_NAMES[q.round-1];
+  $("instruction").textContent=q.instruction||(q.type==="blank"?"Type your answer, then check it.":"Choose the best answer.");
+  $("question").textContent=q.q;
+  $("readingPanel").classList.toggle("hidden",!q.reading);
+  if(q.reading)$("readingText").textContent=PASSAGES[q.reading];
+  $("wordChoices").classList.toggle("hidden",!q.bank);$("wordChoices").textContent=q.bank?"Choices: "+q.bank.join(" · "):"";
+  $("originalLine").classList.toggle("hidden",!q.original);$("originalLine").textContent=q.original?"Original: “"+q.original+"”":"";
+
+  $("pictureWrap").classList.toggle("hidden",!q.image);
+  if(q.image){$("questionImage").src=q.image;$("questionImage").alt="Illustration for this question";}else{$("questionImage").removeAttribute("src");}
+  const box=$("answers");box.classList.toggle("long-answers",q.round===5);box.innerHTML="";box.classList.toggle("hidden",q.type!=="mc");$("orderArea").classList.toggle("hidden",q.type!=="order");$("blankArea").classList.toggle("hidden",q.type!=="blank");
+  if(q.type==="order")renderOrder();else if(q.type==="blank"){const input=$("blankInput");input.value=st.typed;input.disabled=st.choice!==null;input.className=st.choice===null?"":st.choice===q.a?"good":"bad";$("checkBlankBtn").disabled=st.choice!==null;}else q.choices.forEach((label,n)=>{
+    const b=document.createElement("button");b.className="answer";b.textContent=label;
+    if(st.choice!==null){b.disabled=true;if(n===q.a)b.classList.add("good");if(n===st.choice&&n!==q.a)b.classList.add("bad");}else b.onclick=()=>answer(n);box.appendChild(b);
+  });
+  const correct=st.choice===q.a;const fb=$("feedback");
+  fb.textContent=st.choice===null?"":(correct?"Correct! ⭐ ":"Incorrect. 💡 ")+(q.ex||"")+(st.choice!==null&&q.type==="blank"&&q.accepted.length>1?" Accepted: "+q.accepted.join(" / ")+".":"");fb.className="feedback"+(st.choice===null?"":correct?" success":" error");fb.setAttribute("aria-live","polite");
+  $("nextBtn").disabled=st.choice===null;$("nextBtn").classList.toggle("ready",st.choice!==null);$("nextBtn").textContent=pos===QUESTIONS.length-1?"See Results →":"Next →";$("backBtn").disabled=pos===0;
+  const scene=$("gameScreen").querySelector(".stage");scene.classList.remove("fx-enter");void scene.offsetWidth;scene.classList.add("fx-enter");
+}
+function checkBlank(){
+ const q=QUESTIONS[pos],s=state[pos];if(q.type!=="blank"||s.choice!==null||finished)return;
+ const text=$("blankInput").value.trim();s.typed=text;
+ if(!text){$("feedback").textContent="Type your answer first.";$("blankInput").focus();return;}
+ answer(q.accepted.some(x=>normalize(x)===normalize(text))?1:0);
+}
+function answer(choice){
+  if(finished||state[pos].choice!==null)return;
+  const q=QUESTIONS[pos];if(q.type==="mc"&&(!Number.isInteger(choice)||choice<0||choice>=q.choices.length))return;
+  state[pos].choice=choice;const correct=choice===q.a;chime(correct?"correct":"wrong");if(correct)particles(24);render();animateScore();
+}
+function next(){
+  if(finished||state[pos].choice===null)return;
+  if(pos===QUESTIONS.length-1){finish();return;}
+  const prev=QUESTIONS[pos].round;pos++;render();if(QUESTIONS[pos].round!==prev)toastRound(QUESTIONS[pos].round);
+}
+function back(){if(!finished&&pos>0){pos--;render();}}
+async function finish(){
+  if(finished||state.some(s=>s.choice===null))return;
+  finished=true;const thisAttempt=attemptId;const completedAt=new Date().toISOString();
+  setScreen("resultScreen");const score=points();const pct=Math.round(score/QUESTIONS.length*100);
+  $("playerResult").textContent=player;$("finalPoints").textContent=score;$("finalTotal").textContent=QUESTIONS.length;
+  $("resultMessage").textContent=pct+"% · "+(pct>=85?"Amazing! You’re a quantifier superstar!":pct>=60?"Great effort! Keep practicing!":"Every try makes you stronger. Play again!");
+  const summary=$("roundResults");summary.innerHTML="";
+  ROUND_NAMES.forEach((name,r)=>{const ids=QUESTIONS.map((q,i)=>q.round===r+1?i:-1).filter(i=>i>=0);const n=ids.filter(i=>state[i].choice===QUESTIONS[i].a).length;const el=document.createElement("span");el.textContent=name+": "+n+" / "+ids.length;summary.appendChild(el);});
+  chime("finish");particles(100);
+  if(/\/_templates?\//.test(location.pathname)){$("recordStatus").textContent="Template preview — score not sent.";return;}
+  const payload={studentName:player,gameTitle:document.title,score,total:QUESTIONS.length,percentage:pct,durationSeconds:Math.max(0,Math.round((Date.now()-startedAt)/1000)),completedAt,attemptId:thisAttempt,gameUrl:location.href};
+  try{const key="quantifierQuestResultsV1";const saved=JSON.parse(localStorage.getItem(key)||"[]");saved.unshift(payload);localStorage.setItem(key,JSON.stringify(saved.slice(0,100)));}catch(_){}
+  $("recordStatus").textContent="Sending score to your teacher…";
+  try{
+    const result=window.TeacherRecords?await TeacherRecords.submit(payload):{sent:false};
+    if(attemptId===thisAttempt&&finished)$("recordStatus").textContent=result.sent?"✅ Score sent to your teacher.":"⚠️ Your result is saved on this device. Sending is unavailable right now.";
+  }catch(_){if(attemptId===thisAttempt&&finished)$("recordStatus").textContent="⚠️ Your result is saved on this device. Sending is unavailable right now.";}
+}
+function toggleSound(){
+  soundOn=!soundOn;
+  $("soundBtn").textContent=soundOn?"🔊 Sound On":"🔇 Sound Off";
+  $("soundBtn").setAttribute("aria-pressed",String(soundOn));
+}
+$("startBtn").addEventListener("click",start);
+$("nameInput").addEventListener("keydown",e=>{if(e.key==="Enter")start();});
+$("nextBtn").addEventListener("click",next);
+$("backBtn").addEventListener("click",back);
+$("restartBtn").addEventListener("click",restart);
+$("playAgainBtn").addEventListener("click",restart);
+$("soundBtn").addEventListener("click",toggleSound);
+$("clearOrder").onclick=()=>{if(state[pos].choice===null){state[pos].ordered=[];renderOrder();}};
+$("checkOrder").onclick=checkOrder;
+$("checkBlankBtn").onclick=checkBlank;
+$("blankInput").addEventListener("input",()=>{if(QUESTIONS[pos].type==="blank"&&state[pos].choice===null)state[pos].typed=$("blankInput").value;});
+$("blankInput").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();checkBlank();}});
+
+</script>
+</body>
+</html>
