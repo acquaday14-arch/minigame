@@ -160,7 +160,7 @@
         <div class="stars">⭐ ✨ ⭐</div>
         <div class="kicker">Some · Any · Much · Many</div>
         <h1>Quantifier<br>Quest</h1>
-        <p>63 quick questions · 6 rounds · 20–30 minutes<br>Sort nouns, fill gaps, fix quantifiers and read A Busy Saturday.<br>Some questions accept more than one correct answer.<br>Take your time — no countdown.</p>
+        <p>40 quick questions · 6 rounds · 20–30 minutes<br>Sort nouns, fill gaps, fix quantifiers and read A Busy Saturday.<br>Some questions accept more than one correct answer.<br>Take your time — no countdown.</p>
         <label for="nameInput">Student name</label><br><input id="nameInput" maxlength="80" autocomplete="name" placeholder="Enter your name" required>
         <br>
         <button class="btn" id="startBtn">Start Challenge</button>
@@ -230,21 +230,6 @@ const QUESTIONS=[
   },
   {
     "round": 1,
-    "sourceId": "noun-sugar",
-    "type": "mc",
-    "q": "Meaning: sugar used in food.\nIs this noun countable or uncountable?",
-    "choices": [
-      "Uncountable",
-      "Countable"
-    ],
-    "a": 0,
-    "ex": "Sugar is uncountable when we mean the substance.",
-    "image": "assets/sugar.webp",
-    "instruction": null,
-    "reading": null
-  },
-  {
-    "round": 1,
     "sourceId": "noun-book",
     "type": "mc",
     "q": "Meaning: a book that you read.\nIs this noun countable or uncountable?",
@@ -305,81 +290,6 @@ const QUESTIONS=[
   },
   {
     "round": 1,
-    "sourceId": "noun-information",
-    "type": "mc",
-    "q": "Meaning: facts or details about something.\nIs this noun countable or uncountable?",
-    "choices": [
-      "Uncountable",
-      "Countable"
-    ],
-    "a": 0,
-    "ex": "Information is uncountable. Say some information or a piece of information.",
-    "image": "assets/information.webp",
-    "instruction": null,
-    "reading": null
-  },
-  {
-    "round": 1,
-    "sourceId": "noun-car",
-    "type": "mc",
-    "q": "Meaning: a vehicle you can drive.\nIs this noun countable or uncountable?",
-    "choices": [
-      "Countable",
-      "Uncountable"
-    ],
-    "a": 0,
-    "ex": "One car, two cars: car is countable.",
-    "image": "assets/car.webp",
-    "instruction": null,
-    "reading": null
-  },
-  {
-    "round": 1,
-    "sourceId": "noun-money",
-    "type": "mc",
-    "q": "Meaning: money used to pay for things.\nIs this noun countable or uncountable?",
-    "choices": [
-      "Uncountable",
-      "Countable"
-    ],
-    "a": 0,
-    "ex": "Money is uncountable. Coins and banknotes can be counted.",
-    "image": "assets/money.webp",
-    "instruction": null,
-    "reading": null
-  },
-  {
-    "round": 1,
-    "sourceId": "noun-bag",
-    "type": "mc",
-    "q": "Meaning: a bag used to carry things.\nIs this noun countable or uncountable?",
-    "choices": [
-      "Countable",
-      "Uncountable"
-    ],
-    "a": 0,
-    "ex": "One bag, two bags: bag is countable.",
-    "image": "assets/bag.webp",
-    "instruction": null,
-    "reading": null
-  },
-  {
-    "round": 1,
-    "sourceId": "noun-laptop",
-    "type": "mc",
-    "q": "Meaning: a portable computer.\nIs this noun countable or uncountable?",
-    "choices": [
-      "Countable",
-      "Uncountable"
-    ],
-    "a": 0,
-    "ex": "One laptop, two laptops: laptop is countable.",
-    "image": "assets/laptop.webp",
-    "instruction": null,
-    "reading": null
-  },
-  {
-    "round": 1,
     "sourceId": "noun-people",
     "type": "mc",
     "q": "Meaning: several persons.\nIs this noun countable or uncountable?",
@@ -403,23 +313,6 @@ const QUESTIONS=[
     ],
     "a": 1,
     "ex": "Use any in this negative sentence.",
-    "bank": [
-      "some",
-      "any"
-    ],
-    "instruction": "Use some or any. For questions, use the usual choice for a neutral question.",
-    "original": null
-  },
-  {
-    "round": 2,
-    "sourceId": "some-2",
-    "type": "blank",
-    "q": "There aren’t _____ cafés around here.",
-    "accepted": [
-      "any"
-    ],
-    "a": 1,
-    "ex": "There aren’t any cafés around here.",
     "bank": [
       "some",
       "any"
@@ -471,23 +364,6 @@ const QUESTIONS=[
     ],
     "a": 1,
     "ex": "Homework is uncountable. I’ve got some homework.",
-    "bank": [
-      "some",
-      "any"
-    ],
-    "instruction": "Use some or any. For questions, use the usual choice for a neutral question.",
-    "original": null
-  },
-  {
-    "round": 2,
-    "sourceId": "some-6",
-    "type": "blank",
-    "q": "He wants to buy _____ new socks.",
-    "accepted": [
-      "some"
-    ],
-    "a": 1,
-    "ex": "Use some in this affirmative sentence.",
     "bank": [
       "some",
       "any"
@@ -565,40 +441,6 @@ const QUESTIONS=[
   },
   {
     "round": 2,
-    "sourceId": "some-11",
-    "type": "blank",
-    "q": "Let’s open a window. I need _____ air.",
-    "accepted": [
-      "some"
-    ],
-    "a": 1,
-    "ex": "I need some air. Air is uncountable.",
-    "bank": [
-      "some",
-      "any"
-    ],
-    "instruction": "Use some or any. For questions, use the usual choice for a neutral question.",
-    "original": null
-  },
-  {
-    "round": 2,
-    "sourceId": "some-12",
-    "type": "blank",
-    "q": "She ate _____ grapes in between her classes.",
-    "accepted": [
-      "some"
-    ],
-    "a": 1,
-    "ex": "Use some with the plural noun grapes in this affirmative sentence.",
-    "bank": [
-      "some",
-      "any"
-    ],
-    "instruction": "Use some or any. For questions, use the usual choice for a neutral question.",
-    "original": null
-  },
-  {
-    "round": 2,
     "sourceId": "some-13",
     "type": "blank",
     "q": "Mum asked me to buy more milk because there isn’t _____ at home.",
@@ -629,44 +471,6 @@ const QUESTIONS=[
       "any"
     ],
     "instruction": "Use some or any. For questions, use the usual choice for a neutral question.",
-    "original": null
-  },
-  {
-    "round": 2,
-    "sourceId": "some-15",
-    "type": "blank",
-    "q": "There are _____ beautiful flowers growing in the garden.",
-    "accepted": [
-      "some"
-    ],
-    "a": 1,
-    "ex": "There are some beautiful flowers in the garden.",
-    "bank": [
-      "some",
-      "any"
-    ],
-    "instruction": "Use some or any. For questions, use the usual choice for a neutral question.",
-    "original": null
-  },
-  {
-    "round": 3,
-    "sourceId": "quantity-1",
-    "type": "blank",
-    "q": "We don’t have _____ food left.",
-    "accepted": [
-      "much",
-      "a lot of",
-      "lots of"
-    ],
-    "a": 1,
-    "ex": "Food is uncountable: much, a lot of and lots of can all fit this negative sentence.",
-    "bank": [
-      "much",
-      "many",
-      "a lot of",
-      "lots of"
-    ],
-    "instruction": "Use much, many, a lot of or lots of. More than one answer may be correct.",
     "original": null
   },
   {
@@ -730,25 +534,6 @@ const QUESTIONS=[
   },
   {
     "round": 3,
-    "sourceId": "quantity-5",
-    "type": "blank",
-    "q": "How _____ days are there in a month?",
-    "accepted": [
-      "many"
-    ],
-    "a": 1,
-    "ex": "Days is plural and countable: how many days.",
-    "bank": [
-      "much",
-      "many",
-      "a lot of",
-      "lots of"
-    ],
-    "instruction": "Use much, many, a lot of or lots of. More than one answer may be correct.",
-    "original": null
-  },
-  {
-    "round": 3,
     "sourceId": "quantity-6",
     "type": "blank",
     "q": "She doesn’t eat _____ sugar.",
@@ -791,27 +576,6 @@ const QUESTIONS=[
   },
   {
     "round": 3,
-    "sourceId": "quantity-8",
-    "type": "blank",
-    "q": "I don’t read _____ books these days.",
-    "accepted": [
-      "many",
-      "a lot of",
-      "lots of"
-    ],
-    "a": 1,
-    "ex": "Books is countable. Use many, a lot of or lots of.",
-    "bank": [
-      "much",
-      "many",
-      "a lot of",
-      "lots of"
-    ],
-    "instruction": "Use much, many, a lot of or lots of. More than one answer may be correct.",
-    "original": null
-  },
-  {
-    "round": 3,
     "sourceId": "quantity-9",
     "type": "blank",
     "q": "How _____ does a hamburger cost?",
@@ -820,27 +584,6 @@ const QUESTIONS=[
     ],
     "a": 1,
     "ex": "How much asks about the price, even when the item being priced is countable.",
-    "bank": [
-      "much",
-      "many",
-      "a lot of",
-      "lots of"
-    ],
-    "instruction": "Use much, many, a lot of or lots of. More than one answer may be correct.",
-    "original": null
-  },
-  {
-    "round": 3,
-    "sourceId": "quantity-10",
-    "type": "blank",
-    "q": "There wasn’t _____ chocolate in my lunchbox today.",
-    "accepted": [
-      "much",
-      "a lot of",
-      "lots of"
-    ],
-    "a": 1,
-    "ex": "Chocolate is uncountable as food here.",
     "bank": [
       "much",
       "many",
@@ -881,27 +624,6 @@ const QUESTIONS=[
     ],
     "a": 1,
     "ex": "Use too much with the uncountable noun money.",
-    "bank": [
-      "much",
-      "many",
-      "a lot of",
-      "lots of"
-    ],
-    "instruction": "Use much, many, a lot of or lots of. More than one answer may be correct.",
-    "original": null
-  },
-  {
-    "round": 3,
-    "sourceId": "quantity-13",
-    "type": "blank",
-    "q": "There aren’t _____ carrots left in the fridge.",
-    "accepted": [
-      "many",
-      "a lot of",
-      "lots of"
-    ],
-    "a": 1,
-    "ex": "Carrots is plural and countable.",
     "bank": [
       "much",
       "many",
@@ -989,23 +711,6 @@ const QUESTIONS=[
   },
   {
     "round": 4,
-    "sourceId": "correct-3",
-    "type": "blank",
-    "q": "She needs _____ help with her laptop.",
-    "accepted": [
-      "some"
-    ],
-    "a": 1,
-    "ex": "Use some help in this affirmative statement.",
-    "bank": [
-      "some",
-      "any"
-    ],
-    "instruction": "Replace only the incorrect quantifier, using the choices above.",
-    "original": "She needs any help with her laptop."
-  },
-  {
-    "round": 4,
     "sourceId": "correct-4",
     "type": "blank",
     "q": "Do you have _____ plans for next week?",
@@ -1020,23 +725,6 @@ const QUESTIONS=[
     ],
     "instruction": "Replace only the incorrect quantifier, using the choices above.",
     "original": "Do you have much plans for next week?"
-  },
-  {
-    "round": 4,
-    "sourceId": "correct-5",
-    "type": "blank",
-    "q": "There are _____ people coming over today.",
-    "accepted": [
-      "many"
-    ],
-    "a": 1,
-    "ex": "People is a plural countable noun: many people.",
-    "bank": [
-      "much",
-      "many"
-    ],
-    "instruction": "Replace only the incorrect quantifier, using the choices above.",
-    "original": "There are much people coming over today."
   },
   {
     "round": 4,
@@ -1124,57 +812,6 @@ const QUESTIONS=[
     "reading": "shopping"
   },
   {
-    "round": 5,
-    "sourceId": "reading-5",
-    "type": "mc",
-    "q": "What did Mia’s dad ask her to get?",
-    "choices": [
-      "Some bread.",
-      "Some cheese.",
-      "Some sugar.",
-      "Some rice."
-    ],
-    "a": 1,
-    "ex": "Mia asked about cheese, and her dad said, “Yes, please get some.”",
-    "image": null,
-    "instruction": "Read the passage, then choose the best answer.",
-    "reading": "shopping"
-  },
-  {
-    "round": 6,
-    "sourceId": "mixed-1",
-    "type": "blank",
-    "q": "There are _____ apples in the basket.",
-    "accepted": [
-      "some"
-    ],
-    "a": 1,
-    "ex": "Use some for an unspecified positive number.",
-    "bank": [
-      "some",
-      "any"
-    ],
-    "instruction": "Choose some or any.",
-    "original": null
-  },
-  {
-    "round": 6,
-    "sourceId": "mixed-2",
-    "type": "blank",
-    "q": "We don’t have _____ rice left.",
-    "accepted": [
-      "any"
-    ],
-    "a": 1,
-    "ex": "Use any in this negative sentence.",
-    "bank": [
-      "some",
-      "any"
-    ],
-    "instruction": "Choose some or any.",
-    "original": null
-  },
-  {
     "round": 6,
     "sourceId": "mixed-3",
     "type": "blank",
@@ -1212,31 +849,6 @@ const QUESTIONS=[
       "a little"
     ],
     "instruction": "Use a two-word expression meaning a small positive number.",
-    "original": null
-  },
-  {
-    "round": 6,
-    "sourceId": "mixed-5",
-    "type": "blank",
-    "q": "There are _____ students in the library today.",
-    "accepted": [
-      "many",
-      "a lot of",
-      "lots of"
-    ],
-    "a": 1,
-    "ex": "Many, a lot of and lots of express a large number of students.",
-    "bank": [
-      "some",
-      "any",
-      "much",
-      "many",
-      "a lot of",
-      "lots of",
-      "a few",
-      "a little"
-    ],
-    "instruction": "Choose an expression meaning a large number.",
     "original": null
   },
   {
@@ -1318,23 +930,6 @@ const QUESTIONS=[
       "a little"
     ],
     "instruction": "Use an expression with “of” meaning a large amount.",
-    "original": null
-  },
-  {
-    "round": 6,
-    "sourceId": "mixed-10",
-    "type": "blank",
-    "q": "There isn’t _____ cheese in the fridge.",
-    "accepted": [
-      "much"
-    ],
-    "a": 1,
-    "ex": "Cheese is uncountable: much cheese.",
-    "bank": [
-      "much",
-      "many"
-    ],
-    "instruction": "Choose much or many.",
     "original": null
   }
 ];
