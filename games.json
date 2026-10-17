@@ -46,5 +46,11 @@
     "description": "49 worksheet questions in 7 rounds: -ing spelling, am/is/are, choices, negatives, action sentences, question builders and a beach story. No timer.",
     "level": "A1–A2",
     "path": "./present-continuous-quest/"
+  },
+  {
+    "title": "Present Simple vs. Present Continuous Quest",
+    "description": "36 worksheet questions: tense choices, six picture word-order sentences, verb blanks and Tom’s Day reading. No timer.",
+    "level": "A1–A2",
+    "path": "./present-simple-continuous/"
   }
 ]
