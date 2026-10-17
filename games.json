@@ -52,5 +52,11 @@
     "description": "36 worksheet questions: tense choices, six picture word-order sentences, verb blanks and Tom’s Day reading. No timer.",
     "level": "A1–A2",
     "path": "./present-simple-continuous/"
+  },
+  {
+    "title": "Holiday Packing Quest",
+    "description": "40 questions: all 21 packing words, X-ray picture detective, five budget-travel readings and all 10 holiday conversation question builders. No timer.",
+    "level": "A2–B1",
+    "path": "./holiday-packing-quest/"
   }
 ]
