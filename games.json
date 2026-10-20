@@ -58,5 +58,11 @@
     "description": "30 illustrated questions: all 21 packing words, four X-ray picture questions and five budget-travel readings. A picture with every question. No timer.",
     "level": "A2–B1",
     "path": "./holiday-packing-quest/"
+  },
+  {
+    "title": "Going To Plans Quest",
+    "description": "30 illustrated questions: eight vocabulary items, contextual blanks, be going to plans and predictions, and five everyday conversation responses. No timer.",
+    "level": "A2",
+    "path": "./going-to-plans/"
   }
 ]
