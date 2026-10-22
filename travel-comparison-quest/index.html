@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en" data-template-effects-version="2">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Travel & Comparison Quest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --purple:#5b36d6;--purple2:#7a57eb;--ink:#20285c;--pink:#ef5aa7;
+      --yellow:#ffd76a;--mint:#6be0b2;--sky:#74c7ff;--soft:#f8f6ff;--line:#d9cff8;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;min-height:100vh;padding:18px;
+      font-family:"Fredoka",ui-rounded,"Trebuchet MS",Arial,sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at 9% 12%,#ffe2f0 0 7%,transparent 7.5%),
+        radial-gradient(circle at 90% 14%,#dff5ff 0 8%,transparent 8.5%),
+        linear-gradient(180deg,#f8fbff,#f4efff);
+    }
+    button,input{font:inherit}
+    .app{width:min(1060px,98vw);margin:1vh auto}
+    .frame{
+      background:#fff;border:4px solid #4b32bf;border-radius:32px;overflow:hidden;
+      box-shadow:0 14px 0 #ded5ff,0 24px 44px rgba(63,47,147,.14)
+    }
+    .top{
+      background:linear-gradient(135deg,var(--purple),#6541dc);
+      padding:18px 28px;color:#fff;display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:center
+    }
+    .pill{border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.12);padding:9px 15px;border-radius:999px;font-weight:700}
+    .top .pill:last-child{justify-self:end}
+    .progress{height:10px;background:#dacdfd}
+    .progress>div{height:100%;width:0%;background:linear-gradient(90deg,#ffd75f,#ffae73);transition:.25s}
+    .stage{padding:28px 34px 24px;min-height:650px;position:relative}
+    .kicker{text-align:center;color:var(--pink);font-size:14px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+    h1{text-align:center;font-size:clamp(38px,6vw,62px);margin:8px 0 8px;color:#432cb5;line-height:.98}
+    .instruction{text-align:center;font-size:20px;font-weight:600;margin-bottom:24px}
+    .card{
+      width:min(780px,100%);margin:0 auto;border:2px solid var(--line);border-radius:24px;padding:24px;
+      background:linear-gradient(180deg,#fff,#fcfbff)
+    }
+    .question{font-size:clamp(24px,4vw,36px);font-weight:700;text-align:center;margin:6px 0 22px}
+    .answers{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .answer{
+      border:3px solid #ded3fa;background:#fbf9ff;border-radius:18px;padding:15px 18px;color:var(--ink);
+      font-weight:700;font-size:18px;cursor:pointer;transition:.14s
+    }
+    .answer:hover{transform:translateY(-2px);border-color:#aa8df3}
+    .answer.good{border-color:#65d5a8;background:#ebfff6;color:#17734e;animation:pop .28s ease}
+    .answer.bad{border-color:#ff98a4;background:#fff0f2;color:#a63a47;animation:shake .28s ease}
+    .feedback{min-height:42px;text-align:center;margin:18px 0 4px;font-size:19px;font-weight:700}
+    .controls{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:14px;margin-top:28px}
+    .btn{border:2px solid #dbd2f8;border-radius:15px;background:#fff;color:#4734a9;padding:12px 18px;font-weight:700;cursor:pointer}
+    .controls .next{justify-self:end;background:linear-gradient(135deg,#ffd37c,#ffbd84);border:0;color:#76563b}
+    .center{text-align:center}
+    .hidden{display:none!important}
+    .start{padding:60px 32px;text-align:center}
+    .start p{font-size:19px;color:#667085}
+    .start input{width:min(560px,100%);padding:15px 17px;border:2px solid #d8cff4;border-radius:16px;font-size:18px}
+    .start .btn{margin-top:12px;background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;border:0}
+    .stars{font-size:26px;letter-spacing:5px}
+    .confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:20}
+    .confetti i{position:absolute;width:10px;height:16px;border-radius:3px;animation:fall 900ms linear forwards}
+    @keyframes pop{50%{transform:scale(1.035)}}
+    @keyframes shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+    @keyframes fall{from{transform:translateY(-10vh) rotate(0)}to{transform:translateY(110vh) rotate(500deg);opacity:.7}}
+    @media(max-width:700px){.top{grid-template-columns:1fr 1fr}.top>div:nth-child(2){grid-column:1/-1;grid-row:2;text-align:center}.stage{padding:22px 16px}.answers{grid-template-columns:1fr}.controls{grid-template-columns:1fr 1fr}.controls .restart{display:none}}
+  
+    /* Template FX v2 — reduced-motion aware and dependency-free */
+    .fx-enter{animation:fx-enter .38s cubic-bezier(.2,.8,.2,1) both}
+    .answer{transition:transform .17s ease,border-color .2s ease,box-shadow .2s ease,background .2s ease}
+    .answer:active,.btn:active{transform:scale(.97)}
+    .answer:focus-visible,.btn:focus-visible{outline:4px solid #f7bb56;outline-offset:3px}
+    .answer.good{box-shadow:0 0 0 4px rgba(81,213,157,.13)}
+    .answer.bad{box-shadow:0 0 0 4px rgba(255,118,144,.13)}
+    .answer:disabled{cursor:default}
+    .pill.score-pulse,.score-pulse{animation:fx-pulse .35s ease}
+    .feedback.success{color:#10845c;animation:fx-pop .4s ease both}
+    .feedback.error{color:#b44453;animation:fx-shake .32s ease both}
+    .mid-actions{display:flex;gap:8px;align-items:center;justify-content:center}
+    .mid-actions .btn{white-space:nowrap}
+    .btn:disabled{opacity:.4;cursor:not-allowed;filter:grayscale(.25)}
+    .next.ready{animation:fx-glow 1.8s ease-in-out infinite}
+    .fx-particles{position:fixed;inset:0;z-index:100;pointer-events:none;overflow:hidden}
+    .fx-particles span{position:absolute;top:-24px;width:10px;height:16px;border-radius:3px;animation:fx-rain 1.15s cubic-bezier(.2,.7,.5,1) forwards}
+    .fx-round-toast{position:fixed;inset:0;z-index:90;pointer-events:none;display:flex;justify-content:center;align-items:center;background:rgba(45,29,122,.11)}
+    .fx-round-toast.hidden{display:none!important}
+    .fx-round-pill{
+      text-align:center;border:4px solid #fff;border-radius:28px;
+      background:linear-gradient(135deg,#5b36d6,#8b6cf0);color:white;
+      padding:24px 36px;box-shadow:0 20px 60px rgba(54,38,152,.25);
+      font-size:clamp(25px,4vw,42px);font-weight:700;animation:fx-toast .7s ease both
+    }
+    .fx-round-pill small{display:block;font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:#ffdf85;margin-bottom:4px}
+    .result-area{text-align:center;padding:56px 24px}
+    .result-area h1{font-size:clamp(40px,6vw,64px);margin:10px 0;color:#432cb5}
+    .result-area .result-score{font-size:clamp(60px,10vw,100px);color:#5b36d6;font-weight:700;line-height:1.12}
+    .result-area .result-sub{font-size:21px;margin:8px 0 28px}
+    .result-area .btn{background:#6040d7;color:#fff;border:0;padding:15px 30px;font-size:18px}
+    .result-area .result-stars{font-size:38px;letter-spacing:8px;animation:fx-float 2s ease-in-out infinite}
+    .picture{animation:fx-picture-in .55s cubic-bezier(.2,.8,.2,1) both;transition:transform .25s ease,box-shadow .25s ease}
+    .picture:hover{transform:translateY(-3px) rotate(-1deg);box-shadow:0 17px 34px rgba(82,58,173,.21)}
+    .picture img{width:100%;height:100%;object-fit:cover;display:block}
+    @keyframes fx-enter{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes fx-pop{0%{transform:scale(.83);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+    @keyframes fx-pulse{50%{transform:scale(1.09)}}
+    @keyframes fx-shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+    @keyframes fx-glow{50%{box-shadow:0 0 0 6px rgba(255,205,100,.22)}}
+    @keyframes fx-rain{0%{transform:translateY(-10vh) rotate(0deg);opacity:1}100%{transform:translateY(112vh) rotate(620deg);opacity:0}}
+    @keyframes fx-toast{0%{transform:scale(.7) translateY(25px);opacity:0}40%{transform:scale(1.05);opacity:1}100%{transform:scale(1);opacity:1}}
+    @keyframes fx-float{50%{transform:translateY(-9px)}}
+    @keyframes fx-picture-in{from{opacity:0;transform:scale(.91) rotate(-2deg)}to{opacity:1;transform:scale(1) rotate(0)}}
+    @media(max-width:700px){
+      .controls{grid-template-columns:1fr 1fr}
+      .controls .mid-actions{grid-column:1/-1;grid-row:2;justify-content:center}
+      .controls .restart{display:inline-flex}
+      .result-area{padding:42px 16px}
+      .mid-actions .btn{font-size:14px;padding:10px 12px}
+    }
+    @media(prefers-reduced-motion:reduce){
+      *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+    }
+
+  
+    .answers:has(.typed),.answers:has(.order-zone){display:block}
+    .typed{width:100%;padding:16px;border:3px solid #c9b7f5;border-radius:16px;font-size:24px;color:var(--ink);margin-bottom:12px}
+    .check{background:#5b36d6;color:white;font-size:20px;padding:14px 24px}
+    .prompt-image{display:block;max-width:100%;width:100%;height:280px;max-height:280px;object-fit:contain;margin:8px auto 20px;border-radius:14px;image-rendering:auto}
+    .context{font:19px/1.5 "Trebuchet MS",sans-serif;text-align:center;background:#eef8ff;padding:12px;border-radius:12px}
+    .order-zone{min-height:70px;padding:14px;background:#f2edff;border:2px dashed #ad96e8;border-radius:15px;margin-bottom:14px;display:flex;flex-wrap:wrap;gap:8px}
+    .word-bank{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0}.word-bank .answer{font-size:22px;padding:12px}
+    .order-zone button{font-size:22px;padding:10px}.review{margin:26px auto;text-align:left;max-width:760px;font:18px/1.6 "Trebuchet MS",sans-serif}.review li{margin:12px 0}.review summary{cursor:pointer;font-weight:bold}
+    .stage{min-height:590px}.feedback{line-height:1.45}button{touch-action:manipulation} @media(max-width:700px){body{padding:8px}.app{width:100%}.top{padding:14px 12px;gap:8px}.pill{padding:8px;font-size:15px}.card{padding:16px}.typed{font-size:21px}.controls{gap:10px}.stage{min-height:0}h1{font-size:35px}}
+    .source-reference{margin:16px 0;font-size:18px}.source-reference summary{cursor:pointer;color:#5b36d6}.source-reference img{display:block;width:100%;height:auto;margin-top:15px}.followup{padding:12px;background:#fff4d6;border-radius:12px;font-size:20px}.context{white-space:pre-line;text-align:left;font-size:21px;line-height:1.55} @media(max-width:700px){.context{font-size:18px}.prompt-image{max-height:300px}}
+
+</style>
+</head>
+<body>
+  <main class="app">
+    <section class="frame" id="startScreen">
+      <div class="start">
+        <div class="stars">⭐ ✨ ⭐</div>
+        <div class="kicker">Everyday English · A2</div>
+        <h1>Travel & Comparison Quest</h1>
+        <p>48 questions · 4 rounds · No timer<br>Comparisons · Bathroom vocabulary · Airport check-in · Hotel check-in.</p>
+        <label for="nameInput">Your name</label><br><input maxlength="80" autocomplete="name" id="nameInput" placeholder="Enter your name">
+        <br>
+        <button class="btn" id="startBtn">Start Challenge</button>
+      </div>
+    </section>
+
+    <section class="frame hidden" id="gameScreen">
+      <div class="top">
+        <div class="pill" id="roundPill">Round 1 / 4</div>
+        <div class="pill">⭐ <span id="score">0</span> / <span id="total">48</span> points</div>
+        <div class="pill" id="questionPill">Question 1 / 48</div>
+      </div>
+      <div class="progress"><div id="bar"></div></div>
+
+      <div class="stage">
+        <div class="kicker" id="kicker">Quick choice · 1 of 4</div>
+        <h1 id="title">Choose the best answer</h1>
+        <div class="instruction" id="instruction">Pick the sentence that sounds natural.</div>
+
+        <div class="card">
+          <div class="question" id="question"></div>
+          <div class="answers" id="answers"></div>
+          <div class="feedback" id="feedback"></div>
+        </div>
+
+        <div class="controls">
+          <button class="btn" id="backBtn">← Back</button>
+          <div class="mid-actions"><button class="btn" id="soundBtn" aria-pressed="true">🔊 Sound On</button><button class="btn restart" id="restartBtn">↻ Restart</button></div>
+          <button class="btn next" id="nextBtn">Next →</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="frame hidden" id="resultScreen">
+      <div class="result-area">
+        <div class="result-stars">🌟 🎉 🌟</div>
+        <h1>Great Job, <span id="playerResult"></span>!</h1>
+        <div class="result-score"><span id="finalPoints">0</span>/<span id="finalTotal">48</span></div>
+        <p class="result-sub" id="resultMessage"></p>
+        <p class="result-sub" id="recordStatus"></p>
+        <button class="btn" id="playAgainBtn">↻ Play Again</button>
+      </div>
+    </section>
+  <div class="fx-particles" id="fxParticles" aria-hidden="true"></div>
+    <div class="fx-round-toast hidden" id="roundToast" aria-hidden="true"><div class="fx-round-pill"><small>LEVEL UP ✨</small><span id="roundToastText"></span></div></div>
+  </main>
+
+<script src="/minigame/shared/teacher-records-config.js"></script>
+<script src="/minigame/shared/teacher-records.js"></script>
+<script>
+
+const QUESTIONS=[{"round": 1, "q": "In this worksheet: Messi is the _____ (good) footballer in the world.", "answers": ["best"], "choices": ["better", "best", "goodest"], "image": "best"}, {"round": 1, "q": "Timmy is _____ (young) than his sister.", "answers": ["younger"], "choices": ["youngest", "younger", "more young"], "image": "younger"}, {"round": 1, "q": "The grandmother is _____ (old) than the child.", "answers": ["older"], "image": "older"}, {"round": 1, "q": "The weather is _____ (hot) today than yesterday.", "answers": ["hotter"], "image": "hotter"}, {"round": 1, "q": "In the picture, Hulk is _____ (strong) than Superman.", "answers": ["stronger"], "choices": ["strongest", "more strong", "stronger"], "image": "stronger"}, {"round": 1, "q": "Write the superlative of soft.", "answers": ["softest"], "image": "softest"}, {"round": 1, "q": "The book is _____ (slow) than the movie.", "answers": ["slower"], "image": "slower-book"}, {"round": 1, "q": "Cheetahs are the _____ (fast) land animals in the world.", "answers": ["fastest"], "choices": ["faster", "fastest", "most fast"], "image": "fastest"}, {"round": 1, "q": "Jeff is in the _____ (big) team in the competition.", "answers": ["biggest"], "image": "biggest-team"}, {"round": 1, "q": "He is the _____ (funny) person I know.", "answers": ["funniest"], "image": "funniest"}, {"round": 1, "q": "Write the superlative of tall.", "answers": ["tallest"], "choices": ["taller", "most tall", "tallest"], "image": "tallest"}, {"round": 1, "q": "The crocodile is _____ (long) than the dog.", "answers": ["longer"], "image": "longer"}, {"round": 1, "q": "Write the superlative of big.", "answers": ["biggest"], "image": "biggest"}, {"round": 1, "q": "The tortoise is _____ (slow) than the horse.", "answers": ["slower"], "choices": ["slower", "slowest", "more slow"], "image": "slower"}, {"round": 1, "q": "The bear is _____ (heavy) than the cat.", "answers": ["heavier"], "image": "heavier"}, {"round": 1, "q": "Write the comparative of bad.", "answers": ["worse"], "choices": ["worst", "badder", "worse"], "image": "worse"}, {"round": 1, "q": "Write the comparative of good.", "answers": ["better"], "image": "better"}, {"round": 1, "q": "Ireland is _____ (cold) than Brazil.", "answers": ["colder"], "image": "colder"}, {"round": 2, "q": "You use it to clean floors and carpets.", "answers": ["vacuum cleaner"], "choices": ["bath rug", "hairbrush", "bleach", "vacuum cleaner"], "image": "vacuum"}, {"round": 2, "q": "You use it to brush your hair.", "answers": ["hairbrush", "hair brush"], "image": "brush"}, {"round": 2, "q": "You use it to clean your teeth.", "answers": ["toothbrush"], "choices": ["vacuum cleaner", "toothbrush", "towel", "body lotion"], "image": "toothbrush"}, {"round": 2, "q": "A strong cleaning product used to whiten things and kill germs.", "answers": ["bleach"], "choices": ["bleach", "vacuum cleaner", "towel", "soap"], "image": "bleach"}, {"round": 2, "q": "A small rug you put on the bathroom floor.", "answers": ["bath rug", "bath mat"], "image": "rug"}, {"round": 2, "q": "You put your toothbrush in this.", "answers": ["toothbrush mug", "toothbrush holder", "toothbrush cup"], "choices": ["toothbrush mug", "soap", "body lotion", "towel"], "image": "mug"}, {"round": 2, "q": "You put this on your skin to moisturize it.", "answers": ["body lotion"], "choices": ["washbasin", "shower gel", "body lotion", "bath rug"], "image": "lotion"}, {"round": 2, "q": "You wash your face and hands here in the bathroom.", "answers": ["washbasin"], "image": "basin"}, {"round": 2, "q": "You keep toiletries and cosmetics in this bag.", "answers": ["sponge bag", "toiletry bag", "toiletries bag", "wash bag"], "choices": ["sink", "vacuum cleaner", "sponge bag", "body lotion"], "image": "bag"}, {"round": 2, "q": "You wash dishes here in the kitchen.", "answers": ["sink"], "choices": ["sponge bag", "soap", "sink", "body lotion"], "image": "sink"}, {"round": 2, "q": "You use it to dry your hands, face and body.", "answers": ["towel"], "image": "towel"}, {"round": 2, "q": "A liquid product you use to wash your body in the shower.", "answers": ["shower gel"], "choices": ["towel", "sponge bag", "shampoo", "shower gel"]}, {"round": 2, "q": "You use this bar to wash your hands.", "answers": ["soap"], "choices": ["hairbrush", "washbasin", "toothbrush mug", "soap"], "image": "soap"}, {"round": 2, "q": "You wash your hair with this.", "answers": ["shampoo"], "image": "shampoo"}, {"round": 3, "q": "Staff: “May I see your passport and booking confirmation, please?” Choose the best reply.", "answers": ["Sure. Here you are."], "choices": ["Sure. Here you are.", "It is on the eighth floor.", "Breakfast is included."], "context": "Airport check-in · You are flying to Singapore."}, {"round": 3, "q": "Staff: “Are you checking in any luggage today?” Choose the reply from the dialogue.", "answers": ["Yes, one suitcase to check in and one backpack to carry on."], "choices": ["No, I need a double room.", "Yes, one suitcase to check in and one backpack to carry on.", "Yes, two nights, please."], "context": "Airport check-in · You are flying to Singapore."}, {"round": 3, "q": "Staff: “Please put your suitcase on the _____.”", "answers": ["scale"], "context": "Airport check-in · You are flying to Singapore."}, {"round": 3, "q": "Staff: “You are allowed one carry-on bag. Here is your boarding pass.” What document lets the passenger board?", "answers": ["boarding pass"], "choices": ["hotel key card", "boarding pass", "breakfast menu"], "context": "Airport check-in · You are flying to Singapore."}, {"round": 3, "q": "Staff: “Your flight departs at 10:30 a.m. from Gate 12.” Which gate should you go to?", "answers": ["Gate 12"], "choices": ["Gate 10", "Gate 30", "Gate 12"], "context": "Airport check-in · You are flying to Singapore."}, {"round": 3, "q": "Staff: “Your flight departs at 10:30 a.m. Please be at the gate at least 30 minutes before departure.” What is the latest time to be there?", "answers": ["10:00 a.m."], "choices": ["10:30 a.m.", "10:00 a.m.", "11:00 a.m."], "context": "Airport check-in · You are flying to Singapore."}, {"round": 3, "q": "Build the passenger’s question about luggage.", "answers": ["How much luggage can I take on board?"], "type": "order", "context": "Airport check-in · You are flying to Singapore."}, {"round": 3, "q": "Build the passenger’s question about arrival time.", "answers": ["How early should I be at the gate?"], "type": "order", "context": "Airport check-in · You are flying to Singapore."}, {"round": 4, "q": "Receptionist: “Do you have a reservation?” Choose the guest’s reply.", "answers": ["Yes, under the name David Brown."], "choices": ["Yes, under the name David Brown.", "My flight leaves at 10:30.", "Put it on the scale."], "context": "Hotel check-in · The Grand Hotel"}, {"round": 4, "q": "Receptionist: “You have booked a double room for two nights, correct?” What did the guest book?", "answers": ["A double room for two nights."], "choices": ["A single room for one night.", "A double room for two nights.", "Two rooms for eight nights."], "context": "Hotel check-in · The Grand Hotel"}, {"round": 4, "q": "Receptionist: “Breakfast is included. It is served from 6:30 to 10 a.m. on the second floor.” Where is breakfast served?", "answers": ["On the second floor."], "choices": ["On the eighth floor.", "At Gate 12.", "On the second floor."], "context": "Hotel check-in · The Grand Hotel"}, {"round": 4, "q": "Receptionist: “Check-out time is 12 noon.” When must the guest check out?", "answers": ["At 12 noon."], "choices": ["At 12 midnight.", "At 12 noon.", "At 10 a.m."], "context": "Hotel check-in · The Grand Hotel"}, {"round": 4, "q": "Guest: “Could I have a room on a higher floor?” Receptionist: “We can offer you a room on the eighth floor.” Which floor is the new room on?", "answers": ["The eighth floor."], "choices": ["The second floor.", "The first floor.", "The eighth floor."], "context": "Hotel check-in · The Grand Hotel"}, {"round": 4, "q": "Receptionist: “Free Wi-Fi is available throughout the hotel. Here is your key card.” What does the guest use to open the room?", "answers": ["key card"], "choices": ["key card", "passport", "boarding pass"], "context": "Hotel check-in · The Grand Hotel"}, {"round": 4, "q": "Build the guest’s question about breakfast.", "answers": ["Is breakfast included?"], "type": "order", "context": "Hotel check-in · The Grand Hotel"}, {"round": 4, "q": "Receptionist: “The elevator is just around the corner on your left.” Build the guest’s question.", "answers": ["Could you tell me how to get to the elevator?"], "type": "order", "context": "Hotel check-in · The Grand Hotel"}];
+const MODE = "present";
+const $ = id => document.getElementById(id);
+const state = QUESTIONS.map(() => ({answered:false,correct:false,value:'',tokens:[]}));
+let pos=0,player='',soundOn=true,audioCtx=null,roundTimer=null,startedAt=null,attemptId='',submitted=false;
+const totalRounds=4;
+$('total').textContent=QUESTIONS.length;
+function points(){return state.filter(s=>s.correct).length;}
+function normalize(s){return s.toLowerCase().replace(/[’‘]/g,"'").replace(/[?.!]/g,'').replace(/\s+/g,' ').trim();}
+function newAttempt(){attemptId=crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random();submitted=false;startedAt=Date.now();pos=0;state.forEach(s=>Object.assign(s,{answered:false,correct:false,value:'',tokens:[]}));}
+function chime(kind) {
+  if (!soundOn) return;
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    if (!audioCtx) audioCtx = new AC();
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    const melodies = {
+      correct:[[659,0,.11],[880,.11,.15],[1046,.23,.18]],
+      wrong:[[330,0,.13],[220,.11,.19]],
+      round:[[523,0,.1],[659,.11,.1],[784,.23,.19]],
+      finish:[[523,0,.14],[659,.15,.14],[784,.31,.15],[1046,.49,.28]]
+    };
+    const now = audioCtx.currentTime;
+    (melodies[kind] || melodies.correct).forEach(([hz,delay,len])=>{
+      const osc=audioCtx.createOscillator(),gain=audioCtx.createGain();
+      osc.type=kind==="wrong"?"triangle":"sine";
+      osc.frequency.setValueAtTime(hz,now+delay);
+      gain.gain.setValueAtTime(.0001,now+delay);
+      gain.gain.exponentialRampToValueAtTime(.095,now+delay+.018);
+      gain.gain.exponentialRampToValueAtTime(.0001,now+delay+len);
+      osc.connect(gain);gain.connect(audioCtx.destination);
+      osc.start(now+delay);osc.stop(now+delay+len+.01);
+    });
+  } catch (_) {}
+}
+function particles(count) {
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const box=$("fxParticles"), colors=["#ffc85b","#f65caf","#6de0b1","#77caff","#9e76f2","#ff9d78"];
+  for(let n=0;n<count;n++){
+    const p=document.createElement("span");
+    p.style.left=(Math.random()*100)+"%";
+    p.style.background=colors[n%colors.length];
+    p.style.animationDelay=(Math.random()*.27)+"s";
+    p.style.animationDuration=(.95+Math.random()*.7)+"s";
+    box.appendChild(p);
+    p.addEventListener("animationend",()=>p.remove(),{once:true});
+  }
+}
+function animateScore() {
+  const el=$("score");
+  el.textContent=points();
+  el.classList.remove("score-pulse");
+  void el.offsetWidth;
+  el.classList.add("score-pulse");
+}
+function toastRound(round){
+  if(roundTimer)clearTimeout(roundTimer);
+  $("roundToastText").textContent="Round "+round+" / "+totalRounds;
+  $("roundToast").classList.remove("hidden");
+  chime("round");
+  roundTimer=setTimeout(()=>$("roundToast").classList.add("hidden"),900);
+}
+function setScreen(id){
+  ["startScreen","gameScreen","resultScreen"].forEach(x=>$(x).classList.toggle("hidden",x!==id));
+}
+function start(){
+ const name=$('nameInput').value.trim();if(!name){$('nameInput').focus();$('nameInput').setCustomValidity('Please enter your name.');$('nameInput').reportValidity();return;}
+ $('nameInput').setCustomValidity('');player=name;restart();
+}
+const labels=["Comparison Challenge", "Bathroom Vocabulary", "Airport Check-in", "Hotel Check-in"];
+const instructions=["Look, compare and choose or type the answer.","Look at the object and read the clue. Choose or type its name.","Read the situation. Choose, type or build a response.","Read the situation. Choose or build a response."];
+function render(){
+ const q=QUESTIONS[pos],st=state[pos];
+ $('roundPill').textContent='Round '+q.round+' / 4';$('questionPill').textContent='Question '+(pos+1)+' / '+QUESTIONS.length;
+ $('bar').style.width=(state.filter(s=>s.answered).length/QUESTIONS.length*100)+'%';$('score').textContent=points();
+ $('kicker').textContent='Everyday English · Round '+q.round;$('title').textContent=labels[q.round-1];$('instruction').textContent=instructions[q.round-1];$('question').textContent=q.q;
+ document.querySelectorAll('.prompt-image,.context,.source-reference,.followup,.vocab-picture').forEach(el=>el.remove());
+ if(q.context){const c=document.createElement('p');c.className='context';c.textContent=q.context;$('question').before(c);}
+ if(q.image){const im=document.createElement('img');im.className='prompt-image';im.src='assets/'+q.image+'.webp';im.alt=q.alt||'Illustration supporting this question';$('question').before(im);}
+ const box=$('answers');box.replaceChildren();
+ if(q.choices){q.choices.forEach(label=>{const b=document.createElement('button');b.className='answer';b.textContent=label;b.disabled=st.answered;b.onclick=()=>answer(label);if(st.answered&&q.answers.includes(label))b.classList.add('good');else if(st.answered&&st.value===label)b.classList.add('bad');box.append(b);});}
+ else if(q.type==='order'){
+   const zone=document.createElement('div');zone.className='order-zone';zone.setAttribute('aria-label','Your question');
+   const bank=document.createElement('div');bank.className='word-bank';
+   if(!st.bank){st.bank=q.answers[0].replace(/[?.!]$/,'').split(' ').map((word,id)=>({word,id})).sort(()=>Math.random()-.5);if(st.bank.map(t=>t.word).join(' ')===q.answers[0].replace(/[?.!]$/,''))st.bank.reverse();}
+   const draw=()=>{zone.replaceChildren();bank.replaceChildren();st.tokens.forEach(id=>{const t=st.bank.find(t=>t.id===id),b=document.createElement('button');b.className='btn';b.textContent=t.word;b.disabled=st.answered;b.onclick=()=>{st.tokens=st.tokens.filter(x=>x!==id);draw()};zone.append(b);});st.bank.forEach(t=>{const b=document.createElement('button');b.className='answer';b.textContent=t.word;b.disabled=st.answered||st.tokens.includes(t.id);b.onclick=()=>{st.tokens.push(t.id);draw()};bank.append(b);});};
+   box.append(zone,bank);draw();const check=document.createElement('button');check.className='btn check';check.textContent='Check answer';check.disabled=st.answered;check.onclick=()=>{if(st.tokens.length!==st.bank.length){$('feedback').textContent='Use all the words first.';return;}answer(st.tokens.map(id=>st.bank.find(t=>t.id===id).word).join(' ')+'?')};box.append(check);
+ }else{
+  const input=document.createElement('input');input.className='typed';input.setAttribute('aria-label','Your answer');input.placeholder='Type your answer…';input.autocomplete='off';input.spellcheck=false;input.value=st.value;input.disabled=st.answered;input.oninput=()=>{st.value=input.value};
+  const check=document.createElement('button');check.className='btn check';check.textContent='Check answer';check.disabled=st.answered;check.onclick=()=>answer(input.value);input.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();check.click();}};box.append(input,check);
+ }
+ const f=$('feedback');f.setAttribute('aria-live','polite');f.className='feedback'+(st.answered?(st.correct?' success':' error'):'');
+ f.textContent=st.answered?(st.correct?'Correct! ⭐': 'Incorrect. Answer: '+q.answers[0]):'';
+ if(st.answered&&q.source){const details=document.createElement('details');details.className='source-reference';const sum=document.createElement('summary');sum.textContent='See the worksheet reference';const img=document.createElement('img');img.src='assets/'+q.source+'.webp';img.alt='Original lesson poster for review';details.append(sum,img);f.after(details);}
+ if(st.answered&&q.followup){const follow=document.createElement('p');follow.className='followup';follow.textContent='Speaking bonus (unscored): '+q.followup;f.after(follow);}
+ $('nextBtn').disabled=!st.answered;$('nextBtn').classList.toggle('ready',st.answered);$('nextBtn').textContent=pos===QUESTIONS.length-1?'See Results →':'Next →';$('backBtn').disabled=pos===0;
+ const stage=document.querySelector('.stage');stage.classList.remove('fx-enter');void stage.offsetWidth;stage.classList.add('fx-enter');
+}
+function answer(value){const s=state[pos];if(s.answered)return;if(!value.trim()){$('feedback').textContent='Please enter an answer first.';return;}s.value=value;s.answered=true;s.correct=QUESTIONS[pos].answers.some(a=>normalize(a)===normalize(value));chime(s.correct?'correct':'wrong');if(s.correct)particles(20);render();animateScore();}
+function next(){if(!state[pos].answered)return;if(pos===QUESTIONS.length-1){finish();return;}const r=QUESTIONS[pos].round;pos++;render();if(QUESTIONS[pos].round!==r)toastRound(QUESTIONS[pos].round);}
+function back(){if(pos>0){pos--;render();}}
+function restart(){newAttempt();state.forEach(s=>delete s.bank);setScreen('gameScreen');render();toastRound(1);}
+async function finish(){
+ if(submitted||state.some(s=>!s.answered))return;submitted=true;
+ const thisAttempt=attemptId,score=points(),pct=Math.round(score/QUESTIONS.length*100);
+ setScreen('resultScreen');$('playerResult').textContent=player;$('finalPoints').textContent=score;$('finalTotal').textContent=QUESTIONS.length;
+ $('resultMessage').textContent=pct+'% · '+(pct>=85?'You’re an everyday-English superstar!':'Great effort! Review your answers and try again.');chime('finish');particles(100);
+ const old=document.querySelector('.review');if(old)old.remove();const review=document.createElement('details');review.className='review';const sum=document.createElement('summary');sum.textContent='Review all 48 answers';review.append(sum);const list=document.createElement('ol');QUESTIONS.forEach((q,i)=>{const li=document.createElement('li');li.textContent=(state[i].correct?'✅ ':'❌ ')+q.q+' → '+q.answers[0]+(state[i].correct?'':' (Your answer: '+state[i].value+')');list.append(li);});review.append(list);$('playAgainBtn').after(review);
+ const payload={studentName:player,gameTitle:document.title,score,total:QUESTIONS.length,percentage:pct,durationSeconds:Math.max(0,Math.round((Date.now()-startedAt)/1000)),completedAt:new Date().toISOString(),attemptId:thisAttempt,gameUrl:location.href};
+ try{const backups=JSON.parse(localStorage.getItem('travelComparisonAttempts')||'[]');backups.unshift(payload);localStorage.setItem('travelComparisonAttempts',JSON.stringify(backups.slice(0,50)));}catch(_){}
+ if(/\/_templates?\//.test(location.pathname)){$('recordStatus').textContent='Template preview — score not sent.';return;}
+ $('recordStatus').textContent='Sending score to your teacher…';
+ try{if(!window.TeacherRecords)throw Error('unavailable');const result=await TeacherRecords.submit(payload);if(attemptId!==thisAttempt)return;$('recordStatus').textContent=result.sent?'✅ Score submitted to your teacher.':'⚠️ Score saved on this device. Please tell your teacher it could not be sent.';}catch(_){if(attemptId===thisAttempt)$('recordStatus').textContent='⚠️ Score saved on this device. Please tell your teacher it could not be sent.';}
+}
+function toggleSound(){
+  soundOn=!soundOn;
+  $("soundBtn").textContent=soundOn?"🔊 Sound On":"🔇 Sound Off";
+  $("soundBtn").setAttribute("aria-pressed",String(soundOn));
+}
+$("startBtn").addEventListener("click",start);
+$("nameInput").addEventListener("input",()=>$("nameInput").setCustomValidity(""));
+$("nameInput").addEventListener("keydown",e=>{if(e.key==="Enter")start();});
+$("nextBtn").addEventListener("click",next);
+$("backBtn").addEventListener("click",back);
+$("restartBtn").addEventListener("click",restart);
+$("playAgainBtn").addEventListener("click",restart);
+$("soundBtn").addEventListener("click",toggleSound);
+
+</script>
+</body>
+</html>
+

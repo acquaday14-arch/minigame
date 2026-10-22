@@ -64,5 +64,11 @@
     "description": "30 illustrated questions: eight vocabulary items, contextual blanks, be going to plans and predictions, and five everyday conversation responses. No timer.",
     "level": "A2",
     "path": "./going-to-plans/"
+  },
+  {
+    "title": "Travel & Comparison Quest",
+    "description": "48 questions: 18 comparisons, all 14 bathroom words, airport and hotel check-in dialogues, and sentence builders. No timer.",
+    "level": "A2",
+    "path": "./travel-comparison-quest/"
   }
 ]
