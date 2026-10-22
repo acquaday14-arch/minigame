@@ -67,7 +67,7 @@
   },
   {
     "title": "Travel & Comparison Quest",
-    "description": "48 questions: 18 comparisons, all 14 bathroom words, airport and hotel check-in dialogues, and sentence builders. No timer.",
+    "description": "45 questions: 18 comparisons, 12 bathroom words, airport and hotel check-in dialogues, and sentence builders. No timer.",
     "level": "A2",
     "path": "./travel-comparison-quest/"
   }
