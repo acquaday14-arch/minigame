@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="en" data-template-effects-version="2">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Movers Picture Quest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--purple:#5b36d6;--dark:#242b62;--pink:#e64a98;--soft:#f7f5ff;--line:#d9cff8;--yellow:#ffd57a}
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;background:linear-gradient(180deg,#f3f7ff,#f7f1ff);padding:12px;font-family:"Fredoka",ui-rounded,"Trebuchet MS",Arial,sans-serif;color:var(--dark)}
+    button,input{font:inherit}
+    .shell{width:min(1060px,100%);margin:1vh auto;background:white;border:4px solid #4330ad;border-radius:34px;overflow:hidden;box-shadow:0 14px 0 #ded6ff}
+    .hud{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;padding:18px 28px;background:linear-gradient(135deg,#5132c8,#6948df);color:white}
+    .pill{border:1px solid rgba(255,255,255,.45);background:rgba(255,255,255,.12);border-radius:999px;padding:9px 15px;font-weight:700}
+    .hud .pill:nth-child(2){justify-self:center}.hud .pill:last-child{justify-self:end}
+    .track{height:9px;background:#dcd1ff}.bar{height:100%;width:33%;background:#ffd267;transition:.25s}
+    .content{padding:22px 30px 20px;min-height:700px}
+    .kicker{text-align:center;color:var(--pink);font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+    h1{text-align:center;color:#432cb5;font-size:clamp(40px,6vw,60px);line-height:1;margin:8px 0}
+    .instruction{text-align:center;font-size:20px;font-weight:600;margin-bottom:14px}
+    .image-wrap{display:grid;place-items:center;margin:10px 0 18px}
+    .picture{
+      width:min(310px,80vw);aspect-ratio:1/1;border:4px solid #a98bf5;border-radius:28px;overflow:hidden;
+      box-shadow:0 10px 22px rgba(82,58,173,.16);background:linear-gradient(135deg,#ffedf5,#e7f5ff);position:relative
+    }
+    .picture svg{width:100%;height:100%;display:block}
+    .prompt{text-align:center;font-size:clamp(25px,4vw,35px);font-weight:700;margin:12px 0}
+    .answers{width:min(780px,100%);margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .answer{border:3px solid #ded4f9;background:#fbfaff;border-radius:18px;padding:14px;color:var(--dark);font-weight:700;font-size:18px;cursor:pointer}
+    .answer:hover{border-color:#ab95ed}
+    .answer.good{border-color:#63d7a6;background:#eafff5;color:#176a49;animation:pop .28s}
+    .answer.bad{border-color:#ff9fab;background:#fff0f2;color:#a33745;animation:shake .28s}
+    .feedback{text-align:center;min-height:36px;margin:15px 0;font-size:19px;font-weight:700}
+    .controls{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;margin-top:25px}
+    .btn{border:2px solid #dbd3f5;background:#fff;border-radius:15px;padding:11px 18px;font-weight:700;color:#4733a6;cursor:pointer}
+    .next{justify-self:end;background:linear-gradient(135deg,#ffd88b,#ffc586);border:0;color:#785d41}
+    .hidden{display:none!important}
+    .start{text-align:center;padding:65px 30px}.start p{font-size:19px;color:#687086}.start input{width:min(540px,100%);padding:15px 17px;border:2px solid #d8cff4;border-radius:16px}
+    .start .btn{margin-top:12px;background:linear-gradient(135deg,#5532cf,#7754e9);border:0;color:#fff}
+    @keyframes pop{50%{transform:scale(1.035)}}@keyframes shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+    @media(max-width:700px){.hud{grid-template-columns:1fr 1fr}.hud .pill:nth-child(2){grid-column:1/-1;grid-row:2}.content{padding:20px 14px}.answers{grid-template-columns:1fr}.controls{grid-template-columns:1fr 1fr}.controls .restart{display:none}}
+  
+    /* Template FX v2 — reduced-motion aware and dependency-free */
+    .fx-enter{animation:fx-enter .38s cubic-bezier(.2,.8,.2,1) both}
+    .answer{transition:transform .17s ease,border-color .2s ease,box-shadow .2s ease,background .2s ease}
+    .answer:active,.btn:active{transform:scale(.97)}
+    .answer:focus-visible,.btn:focus-visible{outline:4px solid #f7bb56;outline-offset:3px}
+    .answer.good{box-shadow:0 0 0 4px rgba(81,213,157,.13)}
+    .answer.bad{box-shadow:0 0 0 4px rgba(255,118,144,.13)}
+    .answer:disabled{cursor:default}
+    .pill.score-pulse,.score-pulse{animation:fx-pulse .35s ease}
+    .feedback.success{color:#10845c;animation:fx-pop .4s ease both}
+    .feedback.error{color:#b44453;animation:fx-shake .32s ease both}
+    .mid-actions{display:flex;gap:8px;align-items:center;justify-content:center}
+    .mid-actions .btn{white-space:nowrap}
+    .btn:disabled{opacity:.4;cursor:not-allowed;filter:grayscale(.25)}
+    .next.ready{animation:fx-glow 1.8s ease-in-out infinite}
+    .fx-particles{position:fixed;inset:0;z-index:100;pointer-events:none;overflow:hidden}
+    .fx-particles span{position:absolute;top:-24px;width:10px;height:16px;border-radius:3px;animation:fx-rain 1.15s cubic-bezier(.2,.7,.5,1) forwards}
+    .fx-round-toast{position:fixed;inset:0;z-index:90;pointer-events:none;display:flex;justify-content:center;align-items:center;background:rgba(45,29,122,.11)}
+    .fx-round-toast.hidden{display:none!important}
+    .fx-round-pill{
+      text-align:center;border:4px solid #fff;border-radius:28px;
+      background:linear-gradient(135deg,#5b36d6,#8b6cf0);color:white;
+      padding:24px 36px;box-shadow:0 20px 60px rgba(54,38,152,.25);
+      font-size:clamp(25px,4vw,42px);font-weight:700;animation:fx-toast .7s ease both
+    }
+    .fx-round-pill small{display:block;font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:#ffdf85;margin-bottom:4px}
+    .result-area{text-align:center;padding:56px 24px}
+    .result-area h1{font-size:clamp(40px,6vw,64px);margin:10px 0;color:#432cb5}
+    .result-area .result-score{font-size:clamp(60px,10vw,100px);color:#5b36d6;font-weight:700;line-height:1.12}
+    .result-area .result-sub{font-size:21px;margin:8px 0 28px}
+    .result-area .btn{background:#6040d7;color:#fff;border:0;padding:15px 30px;font-size:18px}
+    .result-area .result-stars{font-size:38px;letter-spacing:8px;animation:fx-float 2s ease-in-out infinite}
+    .picture{animation:fx-picture-in .55s cubic-bezier(.2,.8,.2,1) both;transition:transform .25s ease,box-shadow .25s ease}
+    .picture:hover{transform:translateY(-3px) rotate(-1deg);box-shadow:0 17px 34px rgba(82,58,173,.21)}
+    .picture img{width:100%;height:100%;object-fit:cover;display:block}
+    @keyframes fx-enter{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes fx-pop{0%{transform:scale(.83);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+    @keyframes fx-pulse{50%{transform:scale(1.09)}}
+    @keyframes fx-shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+    @keyframes fx-glow{50%{box-shadow:0 0 0 6px rgba(255,205,100,.22)}}
+    @keyframes fx-rain{0%{transform:translateY(-10vh) rotate(0deg);opacity:1}100%{transform:translateY(112vh) rotate(620deg);opacity:0}}
+    @keyframes fx-toast{0%{transform:scale(.7) translateY(25px);opacity:0}40%{transform:scale(1.05);opacity:1}100%{transform:scale(1);opacity:1}}
+    @keyframes fx-float{50%{transform:translateY(-9px)}}
+    @keyframes fx-picture-in{from{opacity:0;transform:scale(.91) rotate(-2deg)}to{opacity:1;transform:scale(1) rotate(0)}}
+    @media(max-width:700px){
+      .controls{grid-template-columns:1fr 1fr}
+      .controls .mid-actions{grid-column:1/-1;grid-row:2;justify-content:center}
+      .controls .restart{display:inline-flex}
+      .result-area{padding:42px 16px}
+      .mid-actions .btn{font-size:14px;padding:10px 12px}
+    }
+    @media(prefers-reduced-motion:reduce){
+      *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+    }
+
+  
+.picture{width:min(900px,100%);aspect-ratio:auto;border-radius:18px;animation:none}
+.picture img{width:100%;height:auto;object-fit:contain;max-height:370px}
+.picture:hover{transform:none}.content{min-height:0}.prompt{font-size:clamp(23px,3vw,30px)}
+#title{font-size:clamp(30px,4vw,44px)}.answer{font-size:21px;min-height:58px}.image-wrap:has(.hidden){display:none}
+.fill-box{grid-column:1/-1;display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.fill-box input{min-width:0;width:min(500px,100%);padding:15px;border:3px solid #a98bf5;border-radius:15px;font-size:22px;color:var(--dark)}
+.words{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px;justify-content:center}.words .btn{font-size:21px;min-height:48px}
+.built{background:#f4f0ff;border:2px dashed #ac97ed;border-radius:16px;padding:12px;min-height:70px}.start label{font-size:21px}
+#nameError{min-height:24px;color:#ad2944}.feedback{min-height:52px}.review{margin:24px auto;max-width:780px;text-align:left;font-size:19px}.review p{padding:12px;border-bottom:1px solid #ded4f9}
+@media(max-width:700px){.hud{padding:12px;gap:7px}.pill{padding:8px;font-size:15px}.content{padding:16px 12px}.picture img{max-height:none}.answer{font-size:20px}.controls{margin-top:12px}.btn{min-height:46px}.start{padding:36px 16px}}
+</style>
+</head>
+<body>
+  <main class="shell" id="startScreen">
+    <section class="start">
+      <div class="kicker">Look · Think · Play</div>
+      <h1>Movers Picture Quest</h1>
+      <p>41 questions · 4 rounds · No timer<br>Town places, spot the differences, odd one out and classroom clues.</p>
+      <label for="nameInput">Your name</label><br><input id="nameInput" maxlength="80" autocomplete="name" placeholder="Enter your name">
+      <div id="nameError" role="alert"></div><button class="btn" id="startBtn">Start Quest</button>
+    </section>
+  </main>
+
+  <main class="shell hidden" id="gameScreen">
+    <div class="hud">
+      <div class="pill" id="round">Round 1 / 2 · Picture questions</div>
+      <div class="pill">⭐ <span id="score">0</span> / <span id="total">3</span> points</div>
+      <div class="pill" id="counter">Question 1 / 3</div>
+    </div>
+    <div class="track"><div class="bar" id="bar"></div></div>
+    <section class="content">
+      <div class="kicker" id="kicker">Picture questions · 1 of 3</div>
+      <h1 id="title">Picture questions</h1>
+      <div class="instruction" id="instruction"></div>
+
+      <div class="image-wrap">
+        <div class="picture" id="picture"></div>
+      </div>
+
+      <div class="prompt" id="prompt"></div>
+      <div class="answers" id="answers"></div>
+      <div class="feedback" id="feedback"></div>
+
+      <div class="controls">
+        <button class="btn" id="backBtn">← Back</button>
+        <div class="mid-actions"><button class="btn" id="soundBtn" aria-pressed="true">🔊 Sound On</button><button class="btn restart" id="restartBtn">↻ Restart</button></div>
+        <button class="btn next" id="nextBtn">Next →</button>
+      </div>
+    </section>
+  </main>
+
+<main class="shell hidden" id="resultScreen">
+      <div class="result-area">
+        <div class="result-stars">🌟 🎉 🌟</div>
+        <h1>Quest Complete, <span id="playerResult"></span>!</h1>
+        <div class="result-score"><span id="finalPoints">0</span>/<span id="finalTotal">3</span></div>
+        <p class="result-sub" id="resultMessage"></p>
+        <p class="result-sub" id="recordStatus" role="status"></p><details class="review"><summary>Review your answers</summary><div id="reviewAnswers"></div></details>
+        <button class="btn" id="playAgainBtn">↻ Play Again</button>
+      </div>
+    </main>
+<div class="fx-particles" id="fxParticles" aria-hidden="true"></div>
+    <div class="fx-round-toast hidden" id="roundToast" aria-hidden="true"><div class="fx-round-pill"><small>LEVEL UP ✨</small><span id="roundToastText"></span></div></div>
+<script src="/minigame/shared/teacher-records-config.js"></script>
+<script src="/minigame/shared/teacher-records.js"></script>
+<script>
+
+const QUESTIONS=[{"round": 1, "prompt": "You can borrow books and read quietly here. Where are you?", "choices": ["library", "pharmacy", "cinema", "bank"], "a": 0, "image": null, "explanation": "", "type": "mc"}, {"round": 1, "prompt": "You can buy medicine, bandages and vitamins here.", "choices": ["bakery", "pharmacy", "hospital", "library"], "a": 1, "image": null, "explanation": "", "type": "mc"}, {"round": 1, "prompt": "You can see doctors and nurses when you feel sick here.", "choices": ["bank", "cinema", "hospital", "post office"], "a": 2, "image": null, "explanation": "", "type": "mc"}, {"round": 1, "prompt": "You can buy fresh vegetables, fruit, meat and fish here.", "choices": ["bakery", "bus station", "library", "market"], "a": 3, "image": null, "explanation": "", "type": "mc"}, {"round": 1, "prompt": "You can watch movies and eat popcorn here.", "choices": ["cinema", "hospital", "pharmacy", "bank"], "a": 0, "image": null, "explanation": "", "type": "mc"}, {"round": 1, "prompt": "You can send letters and parcels here.", "accepted": ["post office", "the post office"], "a": 0, "image": null, "type": "fill"}, {"round": 1, "prompt": "You can withdraw money and save it in an account here.", "accepted": ["bank", "the bank"], "a": 0, "image": null, "type": "fill"}, {"round": 1, "prompt": "You can take a bus to another part of the city from here.", "accepted": ["bus station", "bus stop", "the bus station", "the bus stop"], "a": 0, "image": null, "type": "fill"}, {"round": 1, "prompt": "You can buy bread, cakes and cookies here.", "accepted": ["bakery", "the bakery"], "a": 0, "image": null, "type": "fill"}, {"round": 1, "prompt": "You can borrow or return books, study and do research here.", "accepted": ["library", "the library"], "a": 0, "image": null, "type": "fill"}, {"round": 2, "prompt": "The dog is ___ in Picture 1, but ___ in Picture 2.", "choices": ["running / sleeping", "sleeping / running", "eating / drinking"], "a": 0, "image": "assets/park.webp", "explanation": "", "type": "mc"}, {"round": 2, "prompt": "The girl is eating ___ in Picture 1, but ___ in Picture 2.", "choices": ["a banana / chocolate", "chocolate / a banana", "an apple / a cake"], "a": 1, "image": "assets/park.webp", "explanation": "", "type": "mc"}, {"round": 2, "prompt": "The scarf is ___ in Picture 1, but ___ in Picture 2.", "choices": ["pink / green", "blue / yellow", "green / pink"], "a": 2, "image": "assets/park.webp", "explanation": "", "type": "mc"}, {"round": 2, "prompt": "The bottle is on the ___ in Picture 1, but on the ___ in Picture 2.", "choices": ["grass / mat", "bench / grass", "mat / bench"], "a": 0, "image": "assets/park.webp", "explanation": "", "type": "mc"}, {"round": 2, "prompt": "What is under the bench in Picture 1 but missing in Picture 2?", "choices": ["A dog", "A cat", "A bird"], "a": 1, "image": "assets/park.webp", "explanation": "", "type": "mc"}, {"round": 2, "prompt": "The toy plane is ___ in Picture 1, but ___ in Picture 2.", "choices": ["red / yellow", "blue / green", "yellow / red"], "a": 2, "image": "assets/bedroom.webp", "explanation": "", "type": "mc"}, {"round": 2, "prompt": "What is the boy holding in each picture?", "choices": ["A robot / a yellow toy animal", "A book / a robot", "A ball / a book"], "a": 0, "image": "assets/bedroom.webp", "explanation": "", "type": "mc"}, {"round": 2, "prompt": "The bird is ___ in Picture 1, but ___ in Picture 2.", "choices": ["big / small", "small / big", "red / blue"], "a": 1, "image": "assets/bedroom.webp", "explanation": "", "type": "mc"}, {"round": 2, "prompt": "The mat is ___ in Picture 1, but ___ in Picture 2.", "choices": ["red / green", "blue / yellow", "green / red"], "a": 2, "image": "assets/bedroom.webp", "explanation": "", "type": "mc"}, {"round": 2, "prompt": "How many leaves are on the plant in each picture?", "choices": ["Three / five", "Five / three", "Two / four"], "a": 0, "image": "assets/bedroom.webp", "explanation": "", "type": "mc"}, {"round": 3, "prompt": "Which picture is the odd one out?", "choices": ["A leaf", "A building", "A forest", "A river"], "a": 1, "image": "assets/odd-a1.webp", "explanation": "The building is made by people. The others are parts of nature.", "type": "mc"}, {"round": 3, "prompt": "Which picture is the odd one out?", "choices": ["Canoeing", "Snorkelling", "Surfing", "Swimming in a pool"], "a": 3, "image": "assets/odd-a2.webp", "explanation": "The pool is made by people. The other activities are shown in natural water.", "type": "mc"}, {"round": 3, "prompt": "Which picture is the odd one out?", "choices": ["An apple", "A strawberry", "Chocolate", "An orange"], "a": 2, "image": "assets/odd-a3.webp", "explanation": "Chocolate is not a fruit.", "type": "mc"}, {"round": 3, "prompt": "Which picture is the odd one out?", "choices": ["A bear", "A parrot", "A penguin", "A chicken"], "a": 0, "image": "assets/odd-a4.webp", "explanation": "A bear is a mammal. The others are birds.", "type": "mc"}, {"round": 3, "prompt": "Which picture is the odd one out?", "choices": ["Bananas", "An apple", "A car", "A pear"], "a": 2, "image": "assets/odd-b1.webp", "explanation": "The car is not a fruit.", "type": "mc"}, {"round": 3, "prompt": "Which picture is the odd one out?", "choices": ["A bus", "A car", "A bicycle", "A book"], "a": 3, "image": "assets/odd-b2.webp", "explanation": "The book is not a means of transport.", "type": "mc"}, {"round": 3, "prompt": "Which picture is the odd one out?", "choices": ["A watch", "A sheep", "A dog", "A cow"], "a": 0, "image": "assets/odd-b3.webp", "explanation": "The watch is not an animal.", "type": "mc"}, {"round": 3, "prompt": "Which picture is the odd one out?", "choices": ["A T-shirt", "Underpants", "Trousers", "Rulers"], "a": 3, "image": "assets/odd-b4.webp", "explanation": "Rulers are not clothes.", "type": "mc"}, {"round": 3, "prompt": "Which picture is the odd one out?", "choices": ["An apple", "A red book", "A red pepper", "A glass of water"], "a": 3, "image": "assets/odd-b5.webp", "explanation": "The glass of water is not red. The other three objects are red.", "type": "mc"}, {"round": 4, "prompt": "The girl who is writing on the board…", "choices": ["has got blond hair.", "is reading a book.", "has got red hair."], "a": 0, "image": "assets/classroom.webp", "explanation": "", "type": "mc"}, {"round": 4, "prompt": "The boy with red hair…", "choices": ["is making a plane.", "is reading a book about cars.", "is drawing a bird."], "a": 1, "image": "assets/classroom.webp", "explanation": "", "type": "mc"}, {"round": 4, "prompt": "The boys who are reading…", "choices": ["are next to the window.", "are standing up.", "are sitting on blue chairs."], "a": 2, "image": "assets/classroom.webp", "explanation": "", "type": "mc"}, {"round": 4, "prompt": "The one with glasses…", "choices": ["is wearing brown trousers.", "has got red hair.", "is wearing a green jumper."], "a": 0, "image": "assets/classroom.webp", "explanation": "", "type": "mc"}, {"round": 4, "prompt": "The girls who are making a plane…", "choices": ["are next to the board.", "are next to the window.", "are reading books."], "a": 1, "image": "assets/classroom.webp", "explanation": "", "type": "mc"}, {"round": 4, "prompt": "The one with blue shoes…", "choices": ["is drawing a bird.", "is reading a book.", "has got some purple paint."], "a": 2, "image": "assets/classroom.webp", "explanation": "", "type": "mc"}, {"round": 4, "prompt": "The girl ___ is making a plane. (Describe her hair.)", "accepted": ["with brown hair"], "a": 0, "image": "assets/classroom.webp", "type": "fill"}, {"round": 4, "prompt": "The children ___ are boys. (What are they doing?)", "accepted": ["who are reading", "that are reading"], "a": 0, "image": "assets/classroom.webp", "type": "fill"}, {"round": 4, "prompt": "The girl ___ is writing. (Describe her jumper.)", "accepted": ["with a green jumper", "in a green jumper", "who is wearing a green jumper"], "a": 0, "image": "assets/classroom.webp", "type": "fill"}, {"round": 4, "prompt": "The boy ___ has got a black pen. (What is he doing?)", "accepted": ["who is drawing", "that is drawing"], "a": 0, "image": "assets/classroom.webp", "type": "fill"}, {"round": 4, "prompt": "Put the words in order.", "sentence": "The children who are next to the board have got black trousers.", "a": 0, "image": "assets/classroom.webp", "type": "order"}, {"round": 4, "prompt": "Put the words in order.", "sentence": "The boy with a red book is wearing glasses.", "a": 0, "image": "assets/classroom.webp", "type": "order"}];
+const ROUND_NAMES=["Guess the Place", "Spot the Differences", "Odd One Out", "Classroom Clues"];
+const MODE = "picture";
+const $ = id => document.getElementById(id);
+const state = QUESTIONS.map(() => ({choice:null, text:"", built:[]}));
+let pos = 0;
+let player = "";
+let soundOn = true;
+let audioCtx = null;
+let roundTimer = null;
+let startedAt = null;
+let attemptId="", submitted=false, finished=false;
+const totalRounds = Math.max(...QUESTIONS.map(q=>q.round));
+$("total").textContent = QUESTIONS.length;
+const roundElement = () => $(MODE === "present" ? "roundPill" : "round");
+const counterElement = () => $(MODE === "present" ? "questionPill" : "counter");
+
+function points() {
+  return state.reduce((n,s,idx)=>n+(s.choice === QUESTIONS[idx].a ? 1 : 0),0);
+}
+function chime(kind) {
+  if (!soundOn) return;
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    if (!audioCtx) audioCtx = new AC();
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    const melodies = {
+      correct:[[659,0,.11],[880,.11,.15],[1046,.23,.18]],
+      wrong:[[330,0,.13],[220,.11,.19]],
+      round:[[523,0,.1],[659,.11,.1],[784,.23,.19]],
+      finish:[[523,0,.14],[659,.15,.14],[784,.31,.15],[1046,.49,.28]]
+    };
+    const now = audioCtx.currentTime;
+    (melodies[kind] || melodies.correct).forEach(([hz,delay,len])=>{
+      const osc=audioCtx.createOscillator(),gain=audioCtx.createGain();
+      osc.type=kind==="wrong"?"triangle":"sine";
+      osc.frequency.setValueAtTime(hz,now+delay);
+      gain.gain.setValueAtTime(.0001,now+delay);
+      gain.gain.exponentialRampToValueAtTime(.095,now+delay+.018);
+      gain.gain.exponentialRampToValueAtTime(.0001,now+delay+len);
+      osc.connect(gain);gain.connect(audioCtx.destination);
+      osc.start(now+delay);osc.stop(now+delay+len+.01);
+    });
+  } catch (_) {}
+}
+function particles(count) {
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const box=$("fxParticles"), colors=["#ffc85b","#f65caf","#6de0b1","#77caff","#9e76f2","#ff9d78"];
+  for(let n=0;n<count;n++){
+    const p=document.createElement("span");
+    p.style.left=(Math.random()*100)+"%";
+    p.style.background=colors[n%colors.length];
+    p.style.animationDelay=(Math.random()*.27)+"s";
+    p.style.animationDuration=(.95+Math.random()*.7)+"s";
+    box.appendChild(p);
+    p.addEventListener("animationend",()=>p.remove(),{once:true});
+  }
+}
+function animateScore() {
+  const el=$("score");
+  el.textContent=points();
+  el.classList.remove("score-pulse");
+  void el.offsetWidth;
+  el.classList.add("score-pulse");
+}
+function toastRound(round){
+  if(roundTimer)clearTimeout(roundTimer);
+  $("roundToastText").textContent="Round "+round+" / "+totalRounds;
+  $("roundToast").classList.remove("hidden");
+  chime("round");
+  roundTimer=setTimeout(()=>$("roundToast").classList.add("hidden"),900);
+}
+function setScreen(id){
+  ["startScreen","gameScreen","resultScreen"].forEach(x=>$(x).classList.toggle("hidden",x!==id));
+}
+function start(){
+  const name=$("nameInput").value.trim();
+  if(!name){$("nameError").textContent="Please enter your name first.";$("nameInput").focus();return;}
+  $("nameError").textContent="";
+  player=name;
+  startedAt=Date.now();
+  attemptId=crypto.randomUUID ? crypto.randomUUID() : Date.now()+"-"+Math.random().toString(36).slice(2);
+  submitted=false;finished=false;
+  pos=0;
+  state.forEach(s=>{s.choice=null;s.text="";s.built=[];});
+  setScreen("gameScreen");
+  render();
+  toastRound(QUESTIONS[0].round);
+}
+function render(){
+  const q=QUESTIONS[pos], st=state[pos];
+  roundElement().textContent="Round "+q.round+" / "+totalRounds+" · "+ROUND_NAMES[q.round-1];
+  counterElement().textContent="Question "+(pos+1)+" / "+QUESTIONS.length;
+  $("bar").style.width=((state.filter(s=>s.choice!==null).length/QUESTIONS.length)*100)+"%";
+  $("score").textContent=points();
+  $("kicker").textContent="Movers · "+(pos+1)+" of "+QUESTIONS.length;
+  $("title").textContent=ROUND_NAMES[q.round-1];
+  $("instruction").textContent=q.type==="fill"?"Type your answer, then press Check.":q.type==="order"?"Tap the words to build a sentence. Tap a chosen word to put it back.":q.round===2?"Picture 1 is on the left. Picture 2 is on the right.":q.round===3?"Choose one picture. After checking, explain your reason aloud.":"Read carefully and choose the best answer.";
+  if(MODE==="present"){
+    $("title").textContent=q.title;
+    $("instruction").textContent=q.instruction;
+    $("question").textContent=q.q;
+  }else{
+    $("prompt").textContent=q.prompt;
+    const photo=$("picture");
+    photo.innerHTML="";
+    photo.classList.toggle("hidden",!q.image);
+    if(q.image){
+      const img=document.createElement("img");img.src=q.image;img.alt=q.alt||q.picture||"Question picture";
+      photo.appendChild(img);
+    }
+    photo.style.animation="none";
+    void photo.offsetWidth;
+    photo.style.animation="";
+  }
+  const answerBox=$("answers");
+  answerBox.innerHTML="";
+  if(q.type==="mc") q.choices.forEach((label,n)=>{
+    const b=document.createElement("button");b.type="button";b.className="answer";b.textContent=label;
+    if(st.choice!==null){b.disabled=true;if(n===q.a)b.classList.add("good");if(n===st.choice&&n!==q.a)b.classList.add("bad");}
+    else b.onclick=()=>answer(n);
+    answerBox.appendChild(b);
+  });
+  else if(q.type==="fill"){
+    const box=document.createElement("div");box.className="fill-box";
+    const input=document.createElement("input");input.id="typedAnswer";input.setAttribute("aria-label","Your answer");input.autocomplete="off";input.spellcheck=false;input.value=st.text;input.disabled=st.choice!==null;
+    input.oninput=()=>st.text=input.value;
+    const check=document.createElement("button");check.className="btn next";check.textContent="Check ✓";check.disabled=st.choice!==null;
+    const submit=()=>{if(!input.value.trim())return;st.text=input.value;answer(q.accepted.some(a=>normalize(a)===normalize(st.text))?0:-1);};
+    check.onclick=submit;input.onkeydown=e=>{if(e.key==="Enter")submit();};box.append(input,check);answerBox.append(box);
+  }else{
+    const words=q.sentence.split(" ");
+    if(!q.wordIndices){q.wordIndices=words.map((_,i)=>i);for(let i=words.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[q.wordIndices[i],q.wordIndices[j]]=[q.wordIndices[j],q.wordIndices[i]];}}
+    const built=document.createElement("div");built.className="words built";built.setAttribute("aria-label","Your sentence");
+    st.built.forEach((idx,n)=>{const b=document.createElement("button");b.className="btn";b.textContent=words[idx];b.disabled=st.choice!==null;b.onclick=()=>{st.built.splice(n,1);render();};built.append(b);});
+    const bank=document.createElement("div");bank.className="words";
+    q.wordIndices.filter(i=>!st.built.includes(i)).forEach(idx=>{const b=document.createElement("button");b.className="btn";b.textContent=words[idx];b.disabled=st.choice!==null;b.onclick=()=>{st.built.push(idx);render();};bank.append(b);});
+    const check=document.createElement("button");check.className="btn next";check.textContent="Check ✓";check.disabled=st.choice!==null||st.built.length!==words.length;check.onclick=()=>{st.text=st.built.map(i=>words[i]).join(" ");answer(normalize(st.text)===normalize(q.sentence)?0:-1);};
+    answerBox.append(built,bank,check);
+  }
+  const feedback=$("feedback");
+  feedback.textContent=st.choice===null ? "" : ((st.choice===q.a ? "Correct! ⭐ " : "Incorrect. 💡 Answer: "+correctAnswer(q)+". ")+(q.explanation||""));
+  feedback.className="feedback"+(st.choice===null?"":st.choice===q.a?" success":" error");
+  feedback.setAttribute("aria-live","polite");
+  $("nextBtn").disabled=st.choice===null;
+  $("nextBtn").classList.toggle("ready",st.choice!==null);
+  $("nextBtn").textContent=pos===QUESTIONS.length-1?"See Results →":"Next →";
+  $("backBtn").disabled=pos===0;
+  const scene=$("gameScreen").querySelector(MODE==="present"?".stage":".content");
+  scene.classList.remove("fx-enter");
+  void scene.offsetWidth;
+  scene.classList.add("fx-enter");
+}
+function normalize(v){return v.toLowerCase().replace(/[.,!?]/g,"").replace(/\s+/g," ").trim();}
+function correctAnswer(q){return q.type==="mc"?q.choices[q.a]:q.type==="fill"?q.accepted[0]:q.sentence;}
+function answer(choice){
+  if(state[pos].choice!==null)return;
+  state[pos].choice=choice;
+  const correct=choice===QUESTIONS[pos].a;
+  chime(correct?"correct":"wrong");
+  if(correct)particles(24);
+  render();
+  animateScore();
+}
+function next(){
+  if(state[pos].choice===null)return;
+  if(pos===QUESTIONS.length-1){finish();return;}
+  const prevRound=QUESTIONS[pos].round;
+  pos++;
+  render();
+  if(QUESTIONS[pos].round!==prevRound)toastRound(QUESTIONS[pos].round);
+}
+function back(){if(pos>0){pos--;render();}}
+function restart(){
+  if(roundTimer)clearTimeout(roundTimer);
+  startedAt=Date.now();
+  attemptId=crypto.randomUUID ? crypto.randomUUID() : Date.now()+"-"+Math.random().toString(36).slice(2);
+  submitted=false;finished=false;
+  pos=0;state.forEach(s=>{s.choice=null;s.text="";s.built=[];});setScreen("gameScreen");render();toastRound(QUESTIONS[0].round);
+}
+async function finish(){
+  if(finished)return;
+  finished=true;
+  const finishingAttempt=attemptId;
+  setScreen("resultScreen");
+  const score=points();
+  $("playerResult").textContent=player;
+  $("finalPoints").textContent=score;
+  $("finalTotal").textContent=QUESTIONS.length;
+  const pct=Math.round(score/QUESTIONS.length*100);
+  $("resultMessage").textContent = pct>=85 ? "Amazing! You're a Movers superstar!" : pct>=60 ? "Great effort! Keep practicing and level up!" : "Every try makes you stronger. Play again!";
+  $("resultMessage").textContent += " · "+pct+"% · "+Math.round((Date.now()-startedAt)/1000)+" seconds";
+  $("bar").style.width="100%";
+  $("reviewAnswers").replaceChildren();
+  QUESTIONS.forEach((q,i)=>{const p=document.createElement("p");p.textContent=(i+1)+". "+q.prompt+" — "+(state[i].choice===q.a?"✓":"✗")+" Answer: "+correctAnswer(q);$("reviewAnswers").append(p);});
+  chime("finish");
+  particles(100);
+
+  const preview = /\/_templates?\//.test(location.pathname);
+  if(preview){
+    $("recordStatus").textContent="Template preview — score not sent.";
+    return;
+  }
+
+  $("recordStatus").textContent="Sending score to your teacher…";
+  if(window.TeacherRecords){
+    if(submitted)return;submitted=true;
+    const payload={
+      attemptId, completedAt:new Date().toISOString(), gameUrl:location.href, percentage:pct,
+      studentName:player,
+      gameTitle:document.title,
+      score,
+      total:QUESTIONS.length,
+      durationSeconds:startedAt ? Math.max(0,Math.round((Date.now()-startedAt)/1000)) : 0
+    };
+    try{localStorage.setItem("moversAttempt:"+attemptId,JSON.stringify(payload));}catch(_){}
+    let result;try{result=await submitTeacherRecord(payload);}catch(_){result={sent:false};}
+    if(attemptId!==finishingAttempt)return;
+    $("recordStatus").textContent=result.sent
+      ? "✅ Score sent to your teacher."
+      : "⚠️ Score saved on this device, but could not be sent right now.";
+  }else{
+    $("recordStatus").textContent="⚠️ Teacher Records is unavailable.";
+  }
+}
+// The shared helper omits percentage; enrich only this submission without changing shared files.
+function submitTeacherRecord(payload){
+  const originalFetch=window.fetch;
+  window.fetch=(url,options)=>{
+    if(url===window.TEACHER_RECORDS_CONFIG?.endpoint && options?.method==="POST"){
+      const body=JSON.parse(options.body);
+      if(body.attemptId===payload.attemptId) options={...options,body:JSON.stringify({...body,percentage:payload.percentage})};
+    }
+    return originalFetch.call(window,url,options);
+  };
+  try{return TeacherRecords.submit(payload);}finally{window.fetch=originalFetch;}
+}
+function toggleSound(){
+  soundOn=!soundOn;
+  $("soundBtn").textContent=soundOn?"🔊 Sound On":"🔇 Sound Off";
+  $("soundBtn").setAttribute("aria-pressed",String(soundOn));
+}
+$("startBtn").addEventListener("click",start);
+$("nameInput").addEventListener("keydown",e=>{if(e.key==="Enter")start();});
+$("nextBtn").addEventListener("click",next);
+$("backBtn").addEventListener("click",back);
+$("restartBtn").addEventListener("click",restart);
+$("playAgainBtn").addEventListener("click",restart);
+$("soundBtn").addEventListener("click",toggleSound);
+
+</script>
+</body>
+</html>

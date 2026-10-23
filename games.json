@@ -70,5 +70,11 @@
     "description": "45 questions: 18 comparisons, 12 bathroom words, airport and hotel check-in dialogues, and sentence builders. No timer.",
     "level": "A2",
     "path": "./travel-comparison-quest/"
+  },
+  {
+    "title": "Movers Picture Quest",
+    "description": "41 questions in 4 rounds: town places, spot the differences, 9 odd-one-out sets and classroom clues. Picture questions, typed answers and sentence builders. No timer.",
+    "level": "A1–A2 · Movers",
+    "path": "./movers-picture-quest/"
   }
 ]

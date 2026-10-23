@@ -1,0 +1,523 @@
+[
+  {
+    "round": 1,
+    "prompt": "You can borrow books and read quietly here. Where are you?",
+    "choices": [
+      "library",
+      "pharmacy",
+      "cinema",
+      "bank"
+    ],
+    "a": 0,
+    "image": null,
+    "explanation": "",
+    "type": "mc"
+  },
+  {
+    "round": 1,
+    "prompt": "You can buy medicine, bandages and vitamins here.",
+    "choices": [
+      "bakery",
+      "pharmacy",
+      "hospital",
+      "library"
+    ],
+    "a": 1,
+    "image": null,
+    "explanation": "",
+    "type": "mc"
+  },
+  {
+    "round": 1,
+    "prompt": "You can see doctors and nurses when you feel sick here.",
+    "choices": [
+      "bank",
+      "cinema",
+      "hospital",
+      "post office"
+    ],
+    "a": 2,
+    "image": null,
+    "explanation": "",
+    "type": "mc"
+  },
+  {
+    "round": 1,
+    "prompt": "You can buy fresh vegetables, fruit, meat and fish here.",
+    "choices": [
+      "bakery",
+      "bus station",
+      "library",
+      "market"
+    ],
+    "a": 3,
+    "image": null,
+    "explanation": "",
+    "type": "mc"
+  },
+  {
+    "round": 1,
+    "prompt": "You can watch movies and eat popcorn here.",
+    "choices": [
+      "cinema",
+      "hospital",
+      "pharmacy",
+      "bank"
+    ],
+    "a": 0,
+    "image": null,
+    "explanation": "",
+    "type": "mc"
+  },
+  {
+    "round": 1,
+    "prompt": "You can send letters and parcels here.",
+    "accepted": [
+      "post office",
+      "the post office"
+    ],
+    "a": 0,
+    "image": null,
+    "type": "fill"
+  },
+  {
+    "round": 1,
+    "prompt": "You can withdraw money and save it in an account here.",
+    "accepted": [
+      "bank",
+      "the bank"
+    ],
+    "a": 0,
+    "image": null,
+    "type": "fill"
+  },
+  {
+    "round": 1,
+    "prompt": "You can take a bus to another part of the city from here.",
+    "accepted": [
+      "bus station",
+      "bus stop",
+      "the bus station",
+      "the bus stop"
+    ],
+    "a": 0,
+    "image": null,
+    "type": "fill"
+  },
+  {
+    "round": 1,
+    "prompt": "You can buy bread, cakes and cookies here.",
+    "accepted": [
+      "bakery",
+      "the bakery"
+    ],
+    "a": 0,
+    "image": null,
+    "type": "fill"
+  },
+  {
+    "round": 1,
+    "prompt": "You can borrow or return books, study and do research here.",
+    "accepted": [
+      "library",
+      "the library"
+    ],
+    "a": 0,
+    "image": null,
+    "type": "fill"
+  },
+  {
+    "round": 2,
+    "prompt": "The dog is ___ in Picture 1, but ___ in Picture 2.",
+    "choices": [
+      "running / sleeping",
+      "sleeping / running",
+      "eating / drinking"
+    ],
+    "a": 0,
+    "image": "assets/park.webp",
+    "explanation": "",
+    "type": "mc"
+  },
+  {
+    "round": 2,
+    "prompt": "The girl is eating ___ in Picture 1, but ___ in Picture 2.",
+    "choices": [
+      "a banana / chocolate",
+      "chocolate / a banana",
+      "an apple / a cake"
+    ],
+    "a": 1,
+    "image": "assets/park.webp",
+    "explanation": "",
+    "type": "mc"
+  },
+  {
+    "round": 2,
+    "prompt": "The scarf is ___ in Picture 1, but ___ in Picture 2.",
+    "choices": [
+      "pink / green",
+      "blue / yellow",
+      "green / pink"
+    ],
+    "a": 2,
+    "image": "assets/park.webp",
+    "explanation": "",
+    "type": "mc"
+  },
+  {
+    "round": 2,
+    "prompt": "The bottle is on the ___ in Picture 1, but on the ___ in Picture 2.",
+    "choices": [
+      "grass / mat",
+      "bench / grass",
+      "mat / bench"
+    ],
+    "a": 0,
+    "image": "assets/park.webp",
+    "explanation": "",
+    "type": "mc"
+  },
+  {
+    "round": 2,
+    "prompt": "What is under the bench in Picture 1 but missing in Picture 2?",
+    "choices": [
+      "A dog",
+      "A cat",
+      "A bird"
+    ],
+    "a": 1,
+    "image": "assets/park.webp",
+    "explanation": "",
+    "type": "mc"
+  },
+  {
+    "round": 2,
+    "prompt": "The toy plane is ___ in Picture 1, but ___ in Picture 2.",
+    "choices": [
+      "red / yellow",
+      "blue / green",
+      "yellow / red"
+    ],
+    "a": 2,
+    "image": "assets/bedroom.webp",
+    "explanation": "",
+    "type": "mc"
+  },
+  {
+    "round": 2,
+    "prompt": "What is the boy holding in each picture?",
+    "choices": [
+      "A robot / a yellow toy animal",
+      "A book / a robot",
+      "A ball / a book"
+    ],
+    "a": 0,
+    "image": "assets/bedroom.webp",
+    "explanation": "",
+    "type": "mc"
+  },
+  {
+    "round": 2,
+    "prompt": "The bird is ___ in Picture 1, but ___ in Picture 2.",
+    "choices": [
+      "big / small",
+      "small / big",
+      "red / blue"
+    ],
+    "a": 1,
+    "image": "assets/bedroom.webp",
+    "explanation": "",
+    "type": "mc"
+  },
+  {
+    "round": 2,
+    "prompt": "The mat is ___ in Picture 1, but ___ in Picture 2.",
+    "choices": [
+      "red / green",
+      "blue / yellow",
+      "green / red"
+    ],
+    "a": 2,
+    "image": "assets/bedroom.webp",
+    "explanation": "",
+    "type": "mc"
+  },
+  {
+    "round": 2,
+    "prompt": "How many leaves are on the plant in each picture?",
+    "choices": [
+      "Three / five",
+      "Five / three",
+      "Two / four"
+    ],
+    "a": 0,
+    "image": "assets/bedroom.webp",
+    "explanation": "",
+    "type": "mc"
+  },
+  {
+    "round": 3,
+    "prompt": "Which picture is the odd one out?",
+    "choices": [
+      "A leaf",
+      "A building",
+      "A forest",
+      "A river"
+    ],
+    "a": 1,
+    "image": "assets/odd-a1.webp",
+    "explanation": "The building is made by people. The others are parts of nature.",
+    "type": "mc"
+  },
+  {
+    "round": 3,
+    "prompt": "Which picture is the odd one out?",
+    "choices": [
+      "Canoeing",
+      "Snorkelling",
+      "Surfing",
+      "Swimming in a pool"
+    ],
+    "a": 3,
+    "image": "assets/odd-a2.webp",
+    "explanation": "The pool is made by people. The other activities are shown in natural water.",
+    "type": "mc"
+  },
+  {
+    "round": 3,
+    "prompt": "Which picture is the odd one out?",
+    "choices": [
+      "An apple",
+      "A strawberry",
+      "Chocolate",
+      "An orange"
+    ],
+    "a": 2,
+    "image": "assets/odd-a3.webp",
+    "explanation": "Chocolate is not a fruit.",
+    "type": "mc"
+  },
+  {
+    "round": 3,
+    "prompt": "Which picture is the odd one out?",
+    "choices": [
+      "A bear",
+      "A parrot",
+      "A penguin",
+      "A chicken"
+    ],
+    "a": 0,
+    "image": "assets/odd-a4.webp",
+    "explanation": "A bear is a mammal. The others are birds.",
+    "type": "mc"
+  },
+  {
+    "round": 3,
+    "prompt": "Which picture is the odd one out?",
+    "choices": [
+      "Bananas",
+      "An apple",
+      "A car",
+      "A pear"
+    ],
+    "a": 2,
+    "image": "assets/odd-b1.webp",
+    "explanation": "The car is not a fruit.",
+    "type": "mc"
+  },
+  {
+    "round": 3,
+    "prompt": "Which picture is the odd one out?",
+    "choices": [
+      "A bus",
+      "A car",
+      "A bicycle",
+      "A book"
+    ],
+    "a": 3,
+    "image": "assets/odd-b2.webp",
+    "explanation": "The book is not a means of transport.",
+    "type": "mc"
+  },
+  {
+    "round": 3,
+    "prompt": "Which picture is the odd one out?",
+    "choices": [
+      "A watch",
+      "A sheep",
+      "A dog",
+      "A cow"
+    ],
+    "a": 0,
+    "image": "assets/odd-b3.webp",
+    "explanation": "The watch is not an animal.",
+    "type": "mc"
+  },
+  {
+    "round": 3,
+    "prompt": "Which picture is the odd one out?",
+    "choices": [
+      "A T-shirt",
+      "Underpants",
+      "Trousers",
+      "Rulers"
+    ],
+    "a": 3,
+    "image": "assets/odd-b4.webp",
+    "explanation": "Rulers are not clothes.",
+    "type": "mc"
+  },
+  {
+    "round": 3,
+    "prompt": "Which picture is the odd one out?",
+    "choices": [
+      "An apple",
+      "A red book",
+      "A red pepper",
+      "A glass of water"
+    ],
+    "a": 3,
+    "image": "assets/odd-b5.webp",
+    "explanation": "The glass of water is not red. The other three objects are red.",
+    "type": "mc"
+  },
+  {
+    "round": 4,
+    "prompt": "The girl who is writing on the board…",
+    "choices": [
+      "has got blond hair.",
+      "is reading a book.",
+      "has got red hair."
+    ],
+    "a": 0,
+    "image": "assets/classroom.webp",
+    "explanation": "",
+    "type": "mc"
+  },
+  {
+    "round": 4,
+    "prompt": "The boy with red hair…",
+    "choices": [
+      "is making a plane.",
+      "is reading a book about cars.",
+      "is drawing a bird."
+    ],
+    "a": 1,
+    "image": "assets/classroom.webp",
+    "explanation": "",
+    "type": "mc"
+  },
+  {
+    "round": 4,
+    "prompt": "The boys who are reading…",
+    "choices": [
+      "are next to the window.",
+      "are standing up.",
+      "are sitting on blue chairs."
+    ],
+    "a": 2,
+    "image": "assets/classroom.webp",
+    "explanation": "",
+    "type": "mc"
+  },
+  {
+    "round": 4,
+    "prompt": "The one with glasses…",
+    "choices": [
+      "is wearing brown trousers.",
+      "has got red hair.",
+      "is wearing a green jumper."
+    ],
+    "a": 0,
+    "image": "assets/classroom.webp",
+    "explanation": "",
+    "type": "mc"
+  },
+  {
+    "round": 4,
+    "prompt": "The girls who are making a plane…",
+    "choices": [
+      "are next to the board.",
+      "are next to the window.",
+      "are reading books."
+    ],
+    "a": 1,
+    "image": "assets/classroom.webp",
+    "explanation": "",
+    "type": "mc"
+  },
+  {
+    "round": 4,
+    "prompt": "The one with blue shoes…",
+    "choices": [
+      "is drawing a bird.",
+      "is reading a book.",
+      "has got some purple paint."
+    ],
+    "a": 2,
+    "image": "assets/classroom.webp",
+    "explanation": "",
+    "type": "mc"
+  },
+  {
+    "round": 4,
+    "prompt": "The girl ___ is making a plane. (Describe her hair.)",
+    "accepted": [
+      "with brown hair"
+    ],
+    "a": 0,
+    "image": "assets/classroom.webp",
+    "type": "fill"
+  },
+  {
+    "round": 4,
+    "prompt": "The children ___ are boys. (What are they doing?)",
+    "accepted": [
+      "who are reading",
+      "that are reading"
+    ],
+    "a": 0,
+    "image": "assets/classroom.webp",
+    "type": "fill"
+  },
+  {
+    "round": 4,
+    "prompt": "The girl ___ is writing. (Describe her jumper.)",
+    "accepted": [
+      "with a green jumper",
+      "in a green jumper",
+      "who is wearing a green jumper"
+    ],
+    "a": 0,
+    "image": "assets/classroom.webp",
+    "type": "fill"
+  },
+  {
+    "round": 4,
+    "prompt": "The boy ___ has got a black pen. (What is he doing?)",
+    "accepted": [
+      "who is drawing",
+      "that is drawing"
+    ],
+    "a": 0,
+    "image": "assets/classroom.webp",
+    "type": "fill"
+  },
+  {
+    "round": 4,
+    "prompt": "Put the words in order.",
+    "sentence": "The children who are next to the board have got black trousers.",
+    "a": 0,
+    "image": "assets/classroom.webp",
+    "type": "order"
+  },
+  {
+    "round": 4,
+    "prompt": "Put the words in order.",
+    "sentence": "The boy with a red book is wearing glasses.",
+    "a": 0,
+    "image": "assets/classroom.webp",
+    "type": "order"
+  }
+]
