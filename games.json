@@ -76,5 +76,11 @@
     "description": "41 questions in 4 rounds: town places, spot the differences, 9 odd-one-out sets and classroom clues. Picture questions, typed answers and sentence builders. No timer.",
     "level": "A1–A2 · Movers",
     "path": "./movers-picture-quest/"
+  },
+  {
+    "title": "Everyday English Quest",
+    "description": "40 questions in 5 rounds: clothes, telling time, home, hobbies and meals. Present simple, past simple, present continuous, quantifiers, too and enough. Choices, typed blanks and word order. No timer.",
+    "level": "A1–A2",
+    "path": "./everyday-english-quest/"
   }
 ]
