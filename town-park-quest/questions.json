@@ -1,0 +1,336 @@
+[
+  {
+    "round": 1,
+    "prompt": "You can borrow books and read quietly here. Where are you?",
+    "choices": [
+      "library",
+      "pharmacy",
+      "cinema",
+      "bank"
+    ],
+    "a": 0,
+    "image": null,
+    "explanation": "",
+    "type": "mc"
+  },
+  {
+    "round": 1,
+    "prompt": "You can buy medicine, bandages and vitamins here.",
+    "choices": [
+      "bakery",
+      "pharmacy",
+      "hospital",
+      "library"
+    ],
+    "a": 1,
+    "image": null,
+    "explanation": "",
+    "type": "mc"
+  },
+  {
+    "round": 1,
+    "prompt": "You can see doctors and nurses when you feel sick here.",
+    "choices": [
+      "bank",
+      "cinema",
+      "hospital",
+      "post office"
+    ],
+    "a": 2,
+    "image": null,
+    "explanation": "",
+    "type": "mc"
+  },
+  {
+    "round": 1,
+    "prompt": "You can buy fresh vegetables, fruit, meat and fish here.",
+    "choices": [
+      "bakery",
+      "bus station",
+      "library",
+      "market"
+    ],
+    "a": 3,
+    "image": null,
+    "explanation": "",
+    "type": "mc"
+  },
+  {
+    "round": 1,
+    "prompt": "You can watch movies and eat popcorn here.",
+    "choices": [
+      "cinema",
+      "hospital",
+      "pharmacy",
+      "bank"
+    ],
+    "a": 0,
+    "image": null,
+    "explanation": "",
+    "type": "mc"
+  },
+  {
+    "round": 1,
+    "prompt": "You can send letters and parcels here.",
+    "accepted": [
+      "post office",
+      "the post office"
+    ],
+    "a": 0,
+    "image": null,
+    "type": "fill"
+  },
+  {
+    "round": 1,
+    "prompt": "You can withdraw money and save it in an account here.",
+    "accepted": [
+      "bank",
+      "the bank"
+    ],
+    "a": 0,
+    "image": null,
+    "type": "fill"
+  },
+  {
+    "round": 1,
+    "prompt": "You can take a bus to another part of the city from here.",
+    "accepted": [
+      "bus station",
+      "bus stop",
+      "the bus station",
+      "the bus stop"
+    ],
+    "a": 0,
+    "image": null,
+    "type": "fill"
+  },
+  {
+    "round": 1,
+    "prompt": "You can buy bread, cakes and cookies here.",
+    "accepted": [
+      "bakery",
+      "the bakery"
+    ],
+    "a": 0,
+    "image": null,
+    "type": "fill"
+  },
+  {
+    "round": 1,
+    "prompt": "You can borrow or return books, study and do research here.",
+    "accepted": [
+      "library",
+      "the library"
+    ],
+    "a": 0,
+    "image": null,
+    "type": "fill"
+  },
+  {
+    "round": 2,
+    "prompt": "Which picture is the odd one out?",
+    "choices": [
+      "Bananas",
+      "An apple",
+      "A car",
+      "A pear"
+    ],
+    "a": 2,
+    "image": "assets/odd-1.webp",
+    "type": "mc",
+    "explanation": "A car is not a fruit.",
+    "alt": "Four objects from the odd-one-out worksheet"
+  },
+  {
+    "round": 2,
+    "prompt": "Which picture is the odd one out?",
+    "choices": [
+      "A bus",
+      "A car",
+      "A bicycle",
+      "A book"
+    ],
+    "a": 3,
+    "image": "assets/odd-2.webp",
+    "type": "mc",
+    "explanation": "A book is not a means of transport.",
+    "alt": "Four objects from the odd-one-out worksheet"
+  },
+  {
+    "round": 2,
+    "prompt": "Which picture is the odd one out?",
+    "choices": [
+      "A watch",
+      "A sheep",
+      "A dog",
+      "A cow"
+    ],
+    "a": 0,
+    "image": "assets/odd-3.webp",
+    "type": "mc",
+    "explanation": "A watch is not an animal.",
+    "alt": "Four objects from the odd-one-out worksheet"
+  },
+  {
+    "round": 2,
+    "prompt": "Which picture is the odd one out?",
+    "choices": [
+      "A T-shirt",
+      "Underpants",
+      "Trousers",
+      "Rulers"
+    ],
+    "a": 3,
+    "image": "assets/odd-4.webp",
+    "type": "mc",
+    "explanation": "Rulers are not clothes.",
+    "alt": "Four objects from the odd-one-out worksheet"
+  },
+  {
+    "round": 2,
+    "prompt": "Which picture is the odd one out?",
+    "choices": [
+      "An apple",
+      "A red book",
+      "A red pepper",
+      "A glass of water"
+    ],
+    "a": 3,
+    "image": "assets/odd-5.webp",
+    "type": "mc",
+    "explanation": "The glass of water is not red. The other three objects are red.",
+    "alt": "Four objects from the odd-one-out worksheet"
+  },
+  {
+    "round": 3,
+    "prompt": "What is behind the bench in Picture 2, but not in Picture 1?",
+    "choices": [
+      "Buildings",
+      "A river",
+      "A mountain"
+    ],
+    "a": 0,
+    "image": "assets/park-pair.webp",
+    "type": "mc",
+    "explanation": "There are buildings behind the bench in Picture 2.",
+    "alt": "Two park scenes for finding differences; Picture 1 on the left and Picture 2 on the right"
+  },
+  {
+    "round": 3,
+    "prompt": "How are the kites different?",
+    "choices": [
+      "Picture 1: a green kite. Picture 2: a blue kite.",
+      "Picture 1: a purple kite. Picture 2: a pink kite.",
+      "Picture 1: a pink kite. Picture 2: a purple kite."
+    ],
+    "a": 1,
+    "image": "assets/park-pair.webp",
+    "type": "mc",
+    "explanation": "The kite is purple in Picture 1 and pink in Picture 2. Their shapes are different too.",
+    "alt": "Two park scenes for finding differences; Picture 1 on the left and Picture 2 on the right"
+  },
+  {
+    "round": 3,
+    "prompt": "Who is chasing the red flying disc?",
+    "choices": [
+      "Picture 1: a girl. Picture 2: a dog.",
+      "Picture 1: a boy. Picture 2: a cat.",
+      "Picture 1: a dog. Picture 2: a girl."
+    ],
+    "a": 2,
+    "image": "assets/park-pair.webp",
+    "type": "mc",
+    "explanation": "A dog is chasing the flying disc in Picture 1. A girl is chasing it in Picture 2.",
+    "alt": "Two park scenes for finding differences; Picture 1 on the left and Picture 2 on the right"
+  },
+  {
+    "round": 3,
+    "prompt": "What animal is in the water?",
+    "choices": [
+      "Picture 1: a duck. Picture 2: a fish.",
+      "Picture 1: a fish. Picture 2: a duck.",
+      "Picture 1: a dog. Picture 2: a frog."
+    ],
+    "a": 0,
+    "image": "assets/park-pair.webp",
+    "type": "mc",
+    "explanation": "There is a duck in Picture 1, but there is a fish in Picture 2.",
+    "alt": "Two park scenes for finding differences; Picture 1 on the left and Picture 2 on the right"
+  },
+  {
+    "round": 3,
+    "prompt": "How many baby birds are in the nest?",
+    "choices": [
+      "Picture 1: three. Picture 2: two.",
+      "Picture 1: two. Picture 2: three.",
+      "Picture 1: one. Picture 2: four."
+    ],
+    "a": 1,
+    "image": "assets/park-pair.webp",
+    "type": "mc",
+    "explanation": "There are two baby birds in Picture 1 and three in Picture 2.",
+    "alt": "Two park scenes for finding differences; Picture 1 on the left and Picture 2 on the right"
+  },
+  {
+    "round": 4,
+    "prompt": "Where ___ you go yesterday?",
+    "choices": [
+      "do",
+      "did",
+      "does",
+      "were"
+    ],
+    "a": 1,
+    "type": "mc",
+    "image": null,
+    "explanation": "Use did + subject + base verb for past simple questions."
+  },
+  {
+    "round": 4,
+    "prompt": "What did you ___ yesterday?",
+    "choices": [
+      "did",
+      "does",
+      "do",
+      "doing"
+    ],
+    "a": 2,
+    "type": "mc",
+    "image": null,
+    "explanation": "After did, use the base form: do."
+  },
+  {
+    "round": 4,
+    "prompt": "I ___ to the supermarket with my mother yesterday. (go)",
+    "accepted": [
+      "went"
+    ],
+    "a": 0,
+    "type": "fill",
+    "image": null,
+    "explanation": "The past simple of go is went."
+  },
+  {
+    "round": 4,
+    "prompt": "Where did Tom go last Sunday?",
+    "choices": [
+      "He goes to the park.",
+      "He went to the park.",
+      "He go to the park.",
+      "He going to the park."
+    ],
+    "a": 1,
+    "type": "mc",
+    "image": null,
+    "explanation": "Last Sunday is in the past: He went to the park."
+  },
+  {
+    "round": 4,
+    "prompt": "What did Anna do yesterday afternoon? Build the answer.",
+    "sentence": "She watched TV.",
+    "a": 0,
+    "type": "order",
+    "image": null,
+    "explanation": "Use watched to talk about yesterday afternoon."
+  }
+]

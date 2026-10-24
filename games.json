@@ -88,5 +88,11 @@
     "description": "40-question classroom quest or all 67 worksheet items: eight sentence builders, adjective suffixes, word stress, adjective grammar, one/ones, comparisons and much/a bit. No timer.",
     "level": "B1–B2",
     "path": "./adjective-workshop/"
+  },
+  {
+    "title": "Town & Park Quest",
+    "description": "25 questions: 10 town clues, 5 odd-one-out sets, 5 park differences and 5 past-simple activities. Choices, typed answers and a sentence builder. No timer.",
+    "level": "A1–A2",
+    "path": "./town-park-quest/"
   }
 ]
