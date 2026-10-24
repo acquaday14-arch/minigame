@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="en" data-template-effects-version="2">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Adjective Workshop Quest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --purple:#5b36d6;--purple2:#7a57eb;--ink:#20285c;--pink:#ef5aa7;
+      --yellow:#ffd76a;--mint:#6be0b2;--sky:#74c7ff;--soft:#f8f6ff;--line:#d9cff8;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;min-height:100vh;padding:18px;
+      font-family:"Fredoka",ui-rounded,"Trebuchet MS",Arial,sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at 9% 12%,#ffe2f0 0 7%,transparent 7.5%),
+        radial-gradient(circle at 90% 14%,#dff5ff 0 8%,transparent 8.5%),
+        linear-gradient(180deg,#f8fbff,#f4efff);
+    }
+    button,input{font:inherit}
+    .app{width:min(1060px,98vw);margin:1vh auto}
+    .frame{
+      background:#fff;border:4px solid #4b32bf;border-radius:32px;overflow:hidden;
+      box-shadow:0 14px 0 #ded5ff,0 24px 44px rgba(63,47,147,.14)
+    }
+    .top{
+      background:linear-gradient(135deg,var(--purple),#6541dc);
+      padding:18px 28px;color:#fff;display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:center
+    }
+    .pill{border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.12);padding:9px 15px;border-radius:999px;font-weight:700}
+    .top .pill:last-child{justify-self:end}
+    .progress{height:10px;background:#dacdfd}
+    .progress>div{height:100%;width:25%;background:linear-gradient(90deg,#ffd75f,#ffae73);transition:.25s}
+    .stage{padding:28px 34px 24px;min-height:650px;position:relative}
+    .kicker{text-align:center;color:var(--pink);font-size:14px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+    h1{text-align:center;font-size:clamp(38px,6vw,62px);margin:8px 0 8px;color:#432cb5;line-height:.98}
+    .instruction{text-align:center;font-size:20px;font-weight:600;margin-bottom:24px}
+    .card{
+      width:min(780px,100%);margin:0 auto;border:2px solid var(--line);border-radius:24px;padding:24px;
+      background:linear-gradient(180deg,#fff,#fcfbff)
+    }
+    .question{font-size:clamp(24px,4vw,36px);font-weight:700;text-align:center;margin:6px 0 22px}
+    .answers{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .answer{
+      border:3px solid #ded3fa;background:#fbf9ff;border-radius:18px;padding:15px 18px;color:var(--ink);
+      font-weight:700;font-size:18px;cursor:pointer;transition:.14s
+    }
+    .answer:hover{transform:translateY(-2px);border-color:#aa8df3}
+    .answer.good{border-color:#65d5a8;background:#ebfff6;color:#17734e;animation:pop .28s ease}
+    .answer.bad{border-color:#ff98a4;background:#fff0f2;color:#a63a47;animation:shake .28s ease}
+    .feedback{min-height:42px;text-align:center;margin:18px 0 4px;font-size:19px;font-weight:700}
+    .controls{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:14px;margin-top:28px}
+    .btn{border:2px solid #dbd2f8;border-radius:15px;background:#fff;color:#4734a9;padding:12px 18px;font-weight:700;cursor:pointer}
+    .controls .next{justify-self:end;background:linear-gradient(135deg,#ffd37c,#ffbd84);border:0;color:#76563b}
+    .center{text-align:center}
+    .hidden{display:none!important}
+    .start{padding:60px 32px;text-align:center}
+    .start p{font-size:19px;color:#667085}
+    .start input{width:min(560px,100%);padding:15px 17px;border:2px solid #d8cff4;border-radius:16px;font-size:18px}
+    .start .btn{margin-top:12px;background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;border:0}
+    .stars{font-size:26px;letter-spacing:5px}
+    .confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:20}
+    .confetti i{position:absolute;width:10px;height:16px;border-radius:3px;animation:fall 900ms linear forwards}
+    @keyframes pop{50%{transform:scale(1.035)}}
+    @keyframes shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+    @keyframes fall{from{transform:translateY(-10vh) rotate(0)}to{transform:translateY(110vh) rotate(500deg);opacity:.7}}
+    @media(max-width:700px){.top{grid-template-columns:1fr 1fr}.top>div:nth-child(2){grid-column:1/-1;grid-row:2;text-align:center}.stage{padding:22px 16px}.answers{grid-template-columns:1fr}.controls{grid-template-columns:1fr 1fr}.controls .restart{display:none}}
+  
+    /* Template FX v2 — reduced-motion aware and dependency-free */
+    .fx-enter{animation:fx-enter .38s cubic-bezier(.2,.8,.2,1) both}
+    .answer{transition:transform .17s ease,border-color .2s ease,box-shadow .2s ease,background .2s ease}
+    .answer:active,.btn:active{transform:scale(.97)}
+    .answer:focus-visible,.btn:focus-visible{outline:4px solid #f7bb56;outline-offset:3px}
+    .answer.good{box-shadow:0 0 0 4px rgba(81,213,157,.13)}
+    .answer.bad{box-shadow:0 0 0 4px rgba(255,118,144,.13)}
+    .answer:disabled{cursor:default}
+    .pill.score-pulse,.score-pulse{animation:fx-pulse .35s ease}
+    .feedback.success{color:#10845c;animation:fx-pop .4s ease both}
+    .feedback.error{color:#b44453;animation:fx-shake .32s ease both}
+    .mid-actions{display:flex;gap:8px;align-items:center;justify-content:center}
+    .mid-actions .btn{white-space:nowrap}
+    .btn:disabled{opacity:.4;cursor:not-allowed;filter:grayscale(.25)}
+    .next.ready{animation:fx-glow 1.8s ease-in-out infinite}
+    .fx-particles{position:fixed;inset:0;z-index:100;pointer-events:none;overflow:hidden}
+    .fx-particles span{position:absolute;top:-24px;width:10px;height:16px;border-radius:3px;animation:fx-rain 1.15s cubic-bezier(.2,.7,.5,1) forwards}
+    .fx-round-toast{position:fixed;inset:0;z-index:90;pointer-events:none;display:flex;justify-content:center;align-items:center;background:rgba(45,29,122,.11)}
+    .fx-round-toast.hidden{display:none!important}
+    .fx-round-pill{
+      text-align:center;border:4px solid #fff;border-radius:28px;
+      background:linear-gradient(135deg,#5b36d6,#8b6cf0);color:white;
+      padding:24px 36px;box-shadow:0 20px 60px rgba(54,38,152,.25);
+      font-size:clamp(25px,4vw,42px);font-weight:700;animation:fx-toast .7s ease both
+    }
+    .fx-round-pill small{display:block;font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:#ffdf85;margin-bottom:4px}
+    .result-area{text-align:center;padding:56px 24px}
+    .result-area h1{font-size:clamp(40px,6vw,64px);margin:10px 0;color:#432cb5}
+    .result-area .result-score{font-size:clamp(60px,10vw,100px);color:#5b36d6;font-weight:700;line-height:1.12}
+    .result-area .result-sub{font-size:21px;margin:8px 0 28px}
+    .result-area .btn{background:#6040d7;color:#fff;border:0;padding:15px 30px;font-size:18px}
+    .result-area .result-stars{font-size:38px;letter-spacing:8px;animation:fx-float 2s ease-in-out infinite}
+    .picture{animation:fx-picture-in .55s cubic-bezier(.2,.8,.2,1) both;transition:transform .25s ease,box-shadow .25s ease}
+    .picture:hover{transform:translateY(-3px) rotate(-1deg);box-shadow:0 17px 34px rgba(82,58,173,.21)}
+    .picture img{width:100%;height:100%;object-fit:cover;display:block}
+    @keyframes fx-enter{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes fx-pop{0%{transform:scale(.83);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+    @keyframes fx-pulse{50%{transform:scale(1.09)}}
+    @keyframes fx-shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+    @keyframes fx-glow{50%{box-shadow:0 0 0 6px rgba(255,205,100,.22)}}
+    @keyframes fx-rain{0%{transform:translateY(-10vh) rotate(0deg);opacity:1}100%{transform:translateY(112vh) rotate(620deg);opacity:0}}
+    @keyframes fx-toast{0%{transform:scale(.7) translateY(25px);opacity:0}40%{transform:scale(1.05);opacity:1}100%{transform:scale(1);opacity:1}}
+    @keyframes fx-float{50%{transform:translateY(-9px)}}
+    @keyframes fx-picture-in{from{opacity:0;transform:scale(.91) rotate(-2deg)}to{opacity:1;transform:scale(1) rotate(0)}}
+    @media(max-width:700px){
+      .controls{grid-template-columns:1fr 1fr}
+      .controls .mid-actions{grid-column:1/-1;grid-row:2;justify-content:center}
+      .controls .restart{display:inline-flex}
+      .result-area{padding:42px 16px}
+      .mid-actions .btn{font-size:14px;padding:10px 12px}
+    }
+    @media(prefers-reduced-motion:reduce){
+      *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+    }
+
+  
+.stage{min-height:0}#title{font-size:clamp(30px,5vw,48px)}.answer{font-size:22px;min-height:60px}.btn{min-height:48px;font-size:19px}.start label{font-size:21px}.start select{margin:10px 0 18px;border:2px solid #b49be8;border-radius:16px;padding:14px;max-width:100%;font:inherit;background:white;color:var(--ink)}#nameError{min-height:26px;color:#b44453}.words{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;grid-column:1/-1}.built{min-height:74px;padding:12px;border:2px dashed #b19ae8;border-radius:16px;background:#f5f0ff}.typed{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:12px;justify-content:center}.typed input{width:min(470px,100%);min-width:0;padding:15px;border:3px solid #aa8df3;border-radius:15px;font-size:24px}.feedback{min-height:64px}#picture{width:min(580px,100%);margin:0 auto 18px;border:3px solid #bba2ee;border-radius:18px;overflow:hidden}#picture img{width:100%;height:auto;display:block;max-height:190px;object-fit:contain;background:white}#context{font-size:20px;text-align:center;color:#695482;margin-bottom:12px;white-space:pre-line}.question{white-space:pre-line}#syllables{text-align:center;font-size:27px;color:#6a52a0;margin-bottom:20px}#syllables:empty{display:none}#review{text-align:left;margin:24px auto;max-width:780px;font-size:20px}#review p{border-bottom:1px solid #ddd;padding:12px}.progress>div{width:0%}.app{max-width:100%}#changeModeBtn{background:#fff;color:#5b36d6;border:2px solid #bba2ee;margin:12px}summary{cursor:pointer}.answer:disabled{opacity:1}select:focus-visible,input:focus-visible{outline:3px solid #ffc24b;outline-offset:3px}@media(max-width:700px){body{padding:8px}.top{padding:14px;gap:8px}.pill{padding:8px;font-size:15px}.card{padding:16px}.controls{margin-top:18px}.btn{padding:12px}.stage{padding:20px 12px}.start{padding:38px 16px}.start select{font-size:16px}.question{font-size:25px}}
+</style>
+</head>
+<body>
+  <main class="app">
+    <section class="frame" id="startScreen">
+      <div class="start">
+        <div class="stars">⭐ ✨ ⭐</div>
+        <div class="kicker">Build · Describe · Compare</div>
+        <h1>Adjective Workshop Quest</h1>
+        <p>Sentence builders, adjective suffixes, word stress and comparisons.<br>8 playful rounds · B1–B2 · No timer</p>
+        <label for="nameInput">Your name</label><br><input id="nameInput" maxlength="80" autocomplete="name" placeholder="Enter your name"><div id="nameError" role="alert"></div><label for="modeSelect">Choose your quest</label><br><select id="modeSelect"><option value="quick">Classroom Quest · 40 questions · 20–30 min</option><option value="full">Full Worksheet · 67 questions · Extra practice</option></select>
+        <br>
+        <button class="btn" id="startBtn">Start Challenge</button>
+      </div>
+    </section>
+
+    <section class="frame hidden" id="gameScreen">
+      <div class="top">
+        <div class="pill" id="roundPill">Round 1 / 3</div>
+        <div class="pill">⭐ <span id="score">0</span> / <span id="total">4</span> points</div>
+        <div class="pill" id="questionPill">Question 1 / 4</div>
+      </div>
+      <div class="progress"><div id="bar"></div></div>
+
+      <div class="stage">
+        <div class="kicker" id="kicker">Quick choice · 1 of 4</div>
+        <h1 id="title">Choose the best answer</h1>
+        <div class="instruction" id="instruction">Pick the sentence that sounds natural.</div>
+
+        <div class="card">
+          <div id="picture" class="hidden"></div><div id="context"></div><div class="question" id="question"></div><div id="syllables"></div>
+          <div class="answers" id="answers"></div>
+          <div class="feedback" id="feedback"></div>
+        </div>
+
+        <div class="controls">
+          <button class="btn" id="backBtn">← Back</button>
+          <div class="mid-actions"><button class="btn" id="soundBtn" aria-pressed="true">🔊 Sound On</button><button class="btn restart" id="restartBtn">↻ Restart</button></div>
+          <button class="btn next" id="nextBtn">Next →</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="frame hidden" id="resultScreen">
+      <div class="result-area">
+        <div class="result-stars">🌟 🎉 🌟</div>
+        <h1>Great Job, <span id="playerResult"></span>!</h1>
+        <div class="result-score"><span id="finalPoints">0</span>/<span id="finalTotal">4</span></div>
+        <p class="result-sub" id="resultMessage"></p>
+        <p class="result-sub" id="recordStatus" role="status"></p><details id="review"><summary>Review your answers</summary><div id="reviewAnswers"></div></details>
+        <button class="btn" id="playAgainBtn">↻ Play Again</button><button class="btn" id="changeModeBtn">Choose another quest</button>
+      </div>
+    </section>
+  <div class="fx-particles" id="fxParticles" aria-hidden="true"></div>
+    <div class="fx-round-toast hidden" id="roundToast" aria-hidden="true"><div class="fx-round-pill"><small>LEVEL UP ✨</small><span id="roundToastText"></span></div></div>
+  </main>
+
+<script src="/minigame/shared/teacher-records-config.js"></script>
+<script src="/minigame/shared/teacher-records.js"></script>
+<script>
+
+const BANK=[{"id": 1, "round": 1, "type": "order", "q": "Order the words to make a sentence.", "a": 0, "explanation": "Use every word once. The capital letter helps you begin.", "words": ["has", "present", "bought", "His", "him", "a", "girlfriend", "surprise"], "image": "assets/surprise-car.webp", "alt": "A woman presenting a surprise car to a man", "variants": [], "sentence": "His girlfriend has bought him a surprise present.", "title": "Sentence Builders", "kicker": "Round 1", "instruction": "Tap the words in order. Tap a chosen word to remove it.", "source": "Worksheet 1"}, {"id": 2, "round": 1, "type": "order", "q": "Order the words to make a sentence.", "a": 0, "explanation": "Use every word once. The capital letter helps you begin.", "words": ["parents", "us", "names", "gave", "very", "My", "unusual"], "image": null, "alt": "", "variants": [], "sentence": "My parents gave us very unusual names.", "title": "Sentence Builders", "kicker": "Round 1", "instruction": "Tap the words in order. Tap a chosen word to remove it.", "source": "Worksheet 1"}, {"id": 3, "round": 1, "type": "order", "q": "Order the words to make a sentence.", "a": 0, "explanation": "Use every word once. The capital letter helps you begin.", "words": ["friend", "tonight", "me", "is", "A", "dinner", "cooking", "for"], "image": null, "alt": "", "variants": ["A friend is cooking dinner tonight for me.", "Tonight a friend is cooking dinner for me."], "sentence": "A friend is cooking dinner for me tonight.", "title": "Sentence Builders", "kicker": "Round 1", "instruction": "Tap the words in order. Tap a chosen word to remove it.", "source": "Worksheet 1"}, {"id": 4, "round": 1, "type": "order", "q": "Order the words to make a sentence.", "a": 0, "explanation": "Use every word once. The capital letter helps you begin.", "words": ["is", "weekend", "the", "going", "us", "apartment", "Our", "to", "neighbour", "lend", "his", "for"], "image": null, "alt": "", "variants": ["For the weekend our neighbour is going to lend us his apartment."], "sentence": "Our neighbour is going to lend us his apartment for the weekend.", "title": "Sentence Builders", "kicker": "Round 1", "instruction": "Tap the words in order. Tap a chosen word to remove it.", "source": "Worksheet 1"}, {"id": 5, "round": 1, "type": "order", "q": "Order the words to make a sentence.", "a": 0, "explanation": "Use every word once. The capital letter helps you begin.", "words": ["is", "dress", "making", "Becky's", "a", "her", "party", "mum", "for", "the"], "image": null, "alt": "", "variants": ["For the party Becky's mum is making her a dress."], "sentence": "Becky's mum is making her a dress for the party.", "title": "Sentence Builders", "kicker": "Round 1", "instruction": "Tap the words in order. Tap a chosen word to remove it.", "source": "Worksheet 1"}, {"id": 6, "round": 1, "type": "order", "q": "Order the words to make a sentence.", "a": 0, "explanation": "Use every word once. The capital letter helps you begin.", "words": ["to", "sell", "car", "to", "I'm", "my", "neighbour", "old", "going", "a"], "image": null, "alt": "", "variants": [], "sentence": "I'm going to sell my old car to a neighbour.", "title": "Sentence Builders", "kicker": "Round 1", "instruction": "Tap the words in order. Tap a chosen word to remove it.", "source": "Worksheet 1"}, {"id": 7, "round": 1, "type": "order", "q": "Order the words to make a sentence.", "a": 0, "explanation": "Use every word once. The capital letter helps you begin.", "words": ["lot", "writes", "letters", "of", "friends", "My", "a", "to", "dad", "old", "his"], "image": null, "alt": "", "variants": ["My old dad writes a lot of letters to his friends.", "My dad writes letters to a lot of his old friends."], "sentence": "My dad writes a lot of letters to his old friends.", "title": "Sentence Builders", "kicker": "Round 1", "instruction": "Tap the words in order. Tap a chosen word to remove it.", "source": "Worksheet 1"}, {"id": 8, "round": 1, "type": "order", "q": "Order the words to make a sentence.", "a": 0, "explanation": "Use every word once. The capital letter helps you begin.", "words": ["box", "gave", "a", "of", "the", "chocolates", "We", "hosts"], "image": null, "alt": "", "variants": [], "sentence": "We gave the hosts a box of chocolates.", "title": "Sentence Builders", "kicker": "Round 1", "instruction": "Tap the words in order. Tap a chosen word to remove it.", "source": "Worksheet 1"}, {"id": 9, "round": 2, "type": "fill", "q": "Jack is extremely ___. He would like to be the company director.", "a": 0, "explanation": "Ambition → ambitious: determined to succeed.", "context": "Make an adjective from: ambition", "accepted": ["ambitious"], "title": "Personality Lab", "kicker": "Round 2", "instruction": "Type the missing word or words.", "source": "Worksheet 2"}, {"id": 10, "round": 2, "type": "fill", "q": "My colleague is really ___. She is always telling me what to do.", "a": 0, "explanation": "Boss → bossy: always telling other people what to do.", "context": "Make an adjective from: boss", "accepted": ["bossy"], "title": "Personality Lab", "kicker": "Round 2", "instruction": "Type the missing word or words.", "source": "Worksheet 2"}, {"id": 11, "round": 2, "type": "fill", "q": "Dave's girlfriend is very ___. She does not let him talk to other girls.", "a": 0, "explanation": "Possess → possessive: wanting all of someone’s attention.", "context": "Make an adjective from: possess", "accepted": ["possessive"], "title": "Personality Lab", "kicker": "Round 2", "instruction": "Type the missing word or words.", "source": "Worksheet 2"}, {"id": 12, "round": 2, "type": "fill", "q": "My sister is always ___. She looks happy all the time.", "a": 0, "explanation": "Cheer → cheerful: happy and positive.", "context": "Make an adjective from: cheer", "accepted": ["cheerful"], "title": "Personality Lab", "kicker": "Round 2", "instruction": "Type the missing word or words.", "source": "Worksheet 2"}, {"id": 13, "round": 2, "type": "fill", "q": "Jane's husband is really ___. He only ever thinks of himself.", "a": 0, "explanation": "Self → selfish: thinking only about yourself.", "context": "Make an adjective from: self", "accepted": ["selfish"], "title": "Personality Lab", "kicker": "Round 2", "instruction": "Type the missing word or words.", "source": "Worksheet 2"}, {"id": 14, "round": 2, "type": "fill", "q": "My best friend is very ___. She is always there when I need her.", "a": 0, "explanation": "Rely → reliable: someone you can depend on.", "context": "Make an adjective from: rely", "accepted": ["reliable"], "title": "Personality Lab", "kicker": "Round 2", "instruction": "Type the missing word or words.", "source": "Worksheet 2"}, {"id": 15, "round": 2, "type": "fill", "q": "Mike is really ___. He enjoys being with other people.", "a": 0, "explanation": "Social → sociable: enjoying the company of others.", "context": "Make an adjective from: social", "accepted": ["sociable"], "title": "Personality Lab", "kicker": "Round 2", "instruction": "Type the missing word or words.", "source": "Worksheet 2"}, {"id": 16, "round": 2, "type": "fill", "q": "My brother's wife is very ___. She looks like an actress!", "a": 0, "explanation": "Glamour → glamorous: attractive and exciting. Glamorous is the standard spelling.", "context": "Make an adjective from: glamour", "accepted": ["glamorous"], "title": "Personality Lab", "kicker": "Round 2", "instruction": "Type the missing word or words.", "source": "Worksheet 2"}, {"id": 17, "round": 2, "type": "fill", "q": "He is a very ___ businessman. He has a lot of influence over other people.", "a": 0, "explanation": "Power → powerful: having a lot of influence.", "context": "Make an adjective from: power", "accepted": ["powerful"], "title": "Personality Lab", "kicker": "Round 2", "instruction": "Type the missing word or words.", "source": "Worksheet 2"}, {"id": 18, "round": 2, "type": "fill", "q": "Anna is really ___. She has made some wonderful sculptures.", "a": 0, "explanation": "Create → creative: good at making new things.", "context": "Make an adjective from: create", "accepted": ["creative"], "title": "Personality Lab", "kicker": "Round 2", "instruction": "Type the missing word or words.", "source": "Worksheet 2"}, {"id": 19, "round": 3, "type": "fill", "q": "In the past, very few people ate at the restaurant because it was dark and ___ inside.", "a": 0, "explanation": "Dirt → dirty.", "context": "Restaurant makeover · Form an adjective from dirt. Add un- if needed.", "image": "assets/restaurant.webp", "alt": "The restaurant dining area from the worksheet", "accepted": ["dirty"], "title": "Restaurant Makeover", "kicker": "Round 3", "instruction": "Type the missing word or words.", "source": "Worksheet 2"}, {"id": 20, "round": 3, "type": "fill", "q": "It was also very ___ because the owner liked loud music.", "a": 0, "explanation": "Noise → noisy: full of noise.", "context": "Restaurant makeover · Form an adjective from noise. Add un- if needed.", "image": "assets/restaurant.webp", "alt": "The restaurant dining area from the worksheet", "accepted": ["noisy"], "title": "Restaurant Makeover", "kicker": "Round 3", "instruction": "Type the missing word or words.", "source": "Worksheet 2"}, {"id": 21, "round": 3, "type": "fill", "q": "In the end, it closed down because it was ___.", "a": 0, "explanation": "Unprofitable means it did not make enough money.", "context": "Restaurant makeover · Form an adjective from profit. Add un- if needed.", "image": "assets/restaurant.webp", "alt": "The restaurant dining area from the worksheet", "accepted": ["unprofitable"], "title": "Restaurant Makeover", "kicker": "Round 3", "instruction": "Type the missing word or words.", "source": "Worksheet 2"}, {"id": 22, "round": 3, "type": "fill", "q": "Last year, the restaurant changed hands and now it is ___.", "a": 0, "explanation": "Unrecognizable / unrecognisable: so changed that you cannot recognize it.", "context": "Restaurant makeover · Form an adjective from recognize. Add un- if needed.", "image": "assets/restaurant.webp", "alt": "The restaurant dining area from the worksheet", "accepted": ["unrecognizable", "unrecognisable"], "title": "Restaurant Makeover", "kicker": "Round 3", "instruction": "Type the missing word or words.", "source": "Worksheet 2"}, {"id": 23, "round": 3, "type": "fill", "q": "The new owner has painted the walls yellow, so it looks cleaner and much more ___.", "a": 0, "explanation": "Space → spacious: having plenty of room.", "context": "Restaurant makeover · Form an adjective from space. Add un- if needed.", "image": "assets/restaurant.webp", "alt": "The restaurant dining area from the worksheet", "accepted": ["spacious"], "title": "Restaurant Makeover", "kicker": "Round 3", "instruction": "Type the missing word or words.", "source": "Worksheet 2"}, {"id": 24, "round": 3, "type": "fill", "q": "He has bought new tables and chairs, which are more ___ than the old ones.", "a": 0, "explanation": "Comfort → comfortable.", "context": "Restaurant makeover · Form an adjective from comfort. Add un- if needed.", "image": "assets/restaurant.webp", "alt": "The restaurant dining area from the worksheet", "accepted": ["comfortable"], "title": "Restaurant Makeover", "kicker": "Round 3", "instruction": "Type the missing word or words.", "source": "Worksheet 2"}, {"id": 25, "round": 3, "type": "fill", "q": "The old menu was full of ___ fast food like burgers and chips.", "a": 0, "explanation": "The negative prefix un- changes healthy to unhealthy.", "context": "Restaurant makeover · Form an adjective from health. Add un- if needed.", "image": "assets/restaurant.webp", "alt": "The restaurant dining area from the worksheet", "accepted": ["unhealthy"], "title": "Restaurant Makeover", "kicker": "Round 3", "instruction": "Type the missing word or words.", "source": "Worksheet 2"}, {"id": 26, "round": 3, "type": "fill", "q": "Now they serve ___ three-course meals.", "a": 0, "explanation": "Impress → impressive: making you admire something.", "context": "Restaurant makeover · Form an adjective from impress. Add un- if needed.", "image": "assets/restaurant.webp", "alt": "The restaurant dining area from the worksheet", "accepted": ["impressive"], "title": "Restaurant Makeover", "kicker": "Round 3", "instruction": "Type the missing word or words.", "source": "Worksheet 2"}, {"id": 27, "round": 3, "type": "fill", "q": "We often go there for Sunday lunch because the food is quite ___.", "a": 0, "explanation": "Afford → affordable: not too expensive.", "context": "Restaurant makeover · Form an adjective from afford. Add un- if needed.", "image": "assets/restaurant.webp", "alt": "The restaurant dining area from the worksheet", "accepted": ["affordable"], "title": "Restaurant Makeover", "kicker": "Round 3", "instruction": "Type the missing word or words.", "source": "Worksheet 2"}, {"id": 28, "round": 4, "type": "mc", "q": "active", "a": 0, "explanation": "Main stress: AC · tive.", "context": "Word stress · Which syllable has the main stress?", "syllables": ["ac", "tive"], "choices": ["First syllable", "Second syllable", "Third syllable"], "title": "Stress Detectives", "kicker": "Round 4", "instruction": "Choose the best answer.", "source": "Worksheet 2"}, {"id": 29, "round": 4, "type": "mc", "q": "addictive", "a": 1, "explanation": "Main stress: ad · DIC · tive.", "context": "Word stress · Which syllable has the main stress?", "syllables": ["ad", "dic", "tive"], "choices": ["First syllable", "Second syllable", "Third syllable"], "title": "Stress Detectives", "kicker": "Round 4", "instruction": "Choose the best answer.", "source": "Worksheet 2"}, {"id": 30, "round": 4, "type": "mc", "q": "aggressive", "a": 1, "explanation": "Main stress: ag · GRES · sive.", "context": "Word stress · Which syllable has the main stress?", "syllables": ["ag", "gres", "sive"], "choices": ["First syllable", "Second syllable", "Third syllable"], "title": "Stress Detectives", "kicker": "Round 4", "instruction": "Choose the best answer.", "source": "Worksheet 2"}, {"id": 31, "round": 4, "type": "mc", "q": "desirable", "a": 1, "explanation": "Main stress: de · SIR · a · ble.", "context": "Word stress · Which syllable has the main stress?", "syllables": ["de", "sir", "a", "ble"], "choices": ["First syllable", "Second syllable", "Third syllable"], "title": "Stress Detectives", "kicker": "Round 4", "instruction": "Choose the best answer.", "source": "Worksheet 2"}, {"id": 32, "round": 4, "type": "mc", "q": "envious", "a": 0, "explanation": "Main stress: EN · vi · ous.", "context": "Word stress · Which syllable has the main stress?", "syllables": ["en", "vi", "ous"], "choices": ["First syllable", "Second syllable", "Third syllable"], "title": "Stress Detectives", "kicker": "Round 4", "instruction": "Choose the best answer.", "source": "Worksheet 2"}, {"id": 33, "round": 4, "type": "mc", "q": "inexpensive", "a": 2, "explanation": "Main stress: in · ex · PEN · sive.", "context": "Word stress · Which syllable has the main stress?", "syllables": ["in", "ex", "pen", "sive"], "choices": ["First syllable", "Second syllable", "Third syllable"], "title": "Stress Detectives", "kicker": "Round 4", "instruction": "Choose the best answer.", "source": "Worksheet 2"}, {"id": 34, "round": 4, "type": "mc", "q": "irresponsible", "a": 2, "explanation": "Main stress: ir · re · SPON · si · ble.", "context": "Word stress · Which syllable has the main stress?", "syllables": ["ir", "re", "spon", "si", "ble"], "choices": ["First syllable", "Second syllable", "Third syllable"], "title": "Stress Detectives", "kicker": "Round 4", "instruction": "Choose the best answer.", "source": "Worksheet 2"}, {"id": 35, "round": 4, "type": "mc", "q": "rebellious", "a": 1, "explanation": "Main stress: re · BEL · lious.", "context": "Word stress · Which syllable has the main stress?", "syllables": ["re", "bel", "lious"], "choices": ["First syllable", "Second syllable", "Third syllable"], "title": "Stress Detectives", "kicker": "Round 4", "instruction": "Choose the best answer.", "source": "Worksheet 2"}, {"id": 36, "round": 4, "type": "mc", "q": "sensible", "a": 0, "explanation": "Main stress: SEN · si · ble.", "context": "Word stress · Which syllable has the main stress?", "syllables": ["sen", "si", "ble"], "choices": ["First syllable", "Second syllable", "Third syllable"], "title": "Stress Detectives", "kicker": "Round 4", "instruction": "Choose the best answer.", "source": "Worksheet 2"}, {"id": 37, "round": 4, "type": "mc", "q": "stylish", "a": 0, "explanation": "Main stress: STY · lish.", "context": "Word stress · Which syllable has the main stress?", "syllables": ["sty", "lish"], "choices": ["First syllable", "Second syllable", "Third syllable"], "title": "Stress Detectives", "kicker": "Round 4", "instruction": "Choose the best answer.", "source": "Worksheet 2"}, {"id": 38, "round": 4, "type": "mc", "q": "unattractive", "a": 2, "explanation": "Main stress: un · a · TTRAC · tive.", "context": "Word stress · Which syllable has the main stress?", "syllables": ["un", "a", "ttrac", "tive"], "choices": ["First syllable", "Second syllable", "Third syllable"], "title": "Stress Detectives", "kicker": "Round 4", "instruction": "Choose the best answer.", "source": "Worksheet 2"}, {"id": 39, "round": 4, "type": "mc", "q": "unsuccessful", "a": 2, "explanation": "Main stress: un · suc · CESS · ful.", "context": "Word stress · Which syllable has the main stress?", "syllables": ["un", "suc", "cess", "ful"], "choices": ["First syllable", "Second syllable", "Third syllable"], "title": "Stress Detectives", "kicker": "Round 4", "instruction": "Choose the best answer.", "source": "Worksheet 2"}, {"id": 40, "round": 5, "type": "mc", "q": "Blue eyes are ___ brown eyes.", "a": 0, "explanation": "Comparative phrase: less common than.", "context": "Choose the correct phrase. Some original worksheet phrases were already correct.", "choices": ["less common than", "less common that", "less common as"], "title": "Grammar Fixers", "kicker": "Round 5", "instruction": "Choose the best answer.", "source": "Worksheet 2"}, {"id": 41, "round": 5, "type": "mc", "q": "I like ___ best.", "a": 1, "explanation": "An adjective normally comes before a noun: the purple hat.", "context": "Choose the correct phrase. Some original worksheet phrases were already correct.", "choices": ["that purple best hat", "the purple hat", "the hat purple"], "title": "Grammar Fixers", "kicker": "Round 5", "instruction": "Choose the best answer.", "source": "Worksheet 2"}, {"id": 42, "round": 5, "type": "mc", "q": "Your glasses are ___ mine.", "a": 2, "explanation": "Use more stylish than, not more stylish that.", "context": "Choose the correct phrase. Some original worksheet phrases were already correct.", "choices": ["more stylish that", "stylisher than", "more stylish than"], "title": "Grammar Fixers", "kicker": "Round 5", "instruction": "Choose the best answer.", "source": "Worksheet 2"}, {"id": 43, "round": 5, "type": "mc", "q": "She bought ___ in the sale.", "a": 0, "explanation": "Adjectives do not take a plural -s: different jackets.", "context": "Choose the correct phrase. Some original worksheet phrases were already correct.", "choices": ["two different jackets", "two differents jackets", "two jackets different"], "title": "Grammar Fixers", "kicker": "Round 5", "instruction": "Choose the best answer.", "source": "Worksheet 2"}, {"id": 44, "round": 5, "type": "mc", "q": "Silver is not ___ gold.", "a": 1, "explanation": "The equality structure is as + adjective + as.", "context": "Choose the correct phrase. Some original worksheet phrases were already correct.", "choices": ["as expensive than", "as expensive as", "so expensive than"], "title": "Grammar Fixers", "kicker": "Round 5", "instruction": "Choose the best answer.", "source": "Worksheet 2"}, {"id": 45, "round": 5, "type": "mc", "q": "My best friend is ___ I know.", "a": 2, "explanation": "Superlative: the most reliable person.", "context": "Choose the correct phrase. Some original worksheet phrases were already correct.", "choices": ["the more reliable person", "the reliable most person", "the most reliable person"], "title": "Grammar Fixers", "kicker": "Round 5", "instruction": "Choose the best answer.", "source": "Worksheet 2"}, {"id": 46, "round": 5, "type": "mc", "q": "Your hair is ___ mine.", "a": 0, "explanation": "The usual comparative of dark is darker.", "context": "Choose the correct phrase. Some original worksheet phrases were already correct.", "choices": ["darker than", "more dark than", "darkest than"], "title": "Grammar Fixers", "kicker": "Round 5", "instruction": "Choose the best answer.", "source": "Worksheet 2"}, {"id": 47, "round": 5, "type": "mc", "q": "My aunt wears ___.", "a": 1, "explanation": "Adjectives come before nouns: very colourful clothes.", "context": "Choose the correct phrase. Some original worksheet phrases were already correct.", "choices": ["clothes very colourful", "very colourful clothes", "very colourfully clothes"], "title": "Grammar Fixers", "kicker": "Round 5", "instruction": "Choose the best answer.", "source": "Worksheet 2"}, {"id": 48, "round": 5, "type": "mc", "q": "These are ___ I have ever bought.", "a": 2, "explanation": "Superlative: the most comfortable jeans.", "context": "Choose the correct phrase. Some original worksheet phrases were already correct.", "choices": ["the more comfortable jeans", "the most comfortablest jeans", "the most comfortable jeans"], "title": "Grammar Fixers", "kicker": "Round 5", "instruction": "Choose the best answer.", "source": "Worksheet 2"}, {"id": 49, "round": 5, "type": "mc", "q": "Yellow is ___ red this season.", "a": 0, "explanation": "Popular is a longer adjective: more popular than.", "context": "Choose the correct phrase. Some original worksheet phrases were already correct.", "choices": ["more popular than", "popularer than", "popularest than"], "title": "Grammar Fixers", "kicker": "Round 5", "instruction": "Choose the best answer.", "source": "Worksheet 2"}, {"id": 50, "round": 6, "type": "mc", "q": "A: Which is your coat?\nB: The red ___.", "a": 0, "explanation": "One replaces the singular countable noun coat.", "context": "Choose one, ones or no extra word.", "choices": ["one", "ones", "— (no extra word)"], "title": "One or Ones?", "kicker": "Round 6", "instruction": "Choose the best answer.", "source": "Worksheet 3"}, {"id": 51, "round": 6, "type": "mc", "q": "A: Which biscuits shall I get?\nB: The chocolate ___. They are my favourite.", "a": 1, "explanation": "Ones replaces the plural countable noun biscuits.", "context": "Choose one, ones or no extra word.", "choices": ["one", "ones", "— (no extra word)"], "title": "One or Ones?", "kicker": "Round 6", "instruction": "Choose the best answer.", "source": "Worksheet 3"}, {"id": 52, "round": 6, "type": "mc", "q": "A: Shall I use brown or white bread for the sandwiches?\nB: Brown ___. There is not any white left.", "a": 2, "explanation": "Bread is uncountable. Say Brown, without one or ones.", "context": "Choose one, ones or no extra word.", "choices": ["one", "ones", "— (no extra word)"], "title": "One or Ones?", "kicker": "Round 6", "instruction": "Choose the best answer.", "source": "Worksheet 3"}, {"id": 53, "round": 6, "type": "mc", "q": "A: Where is your car?\nB: Over there. It is the green ___.", "a": 0, "explanation": "One replaces car, a singular countable noun.", "context": "Choose one, ones or no extra word.", "choices": ["one", "ones", "— (no extra word)"], "title": "One or Ones?", "kicker": "Round 6", "instruction": "Choose the best answer.", "source": "Worksheet 3"}, {"id": 54, "round": 6, "type": "mc", "q": "A: Do you prefer Chinese or Indian food?\nB: Indian ___. I love really spicy food.", "a": 2, "explanation": "Food is uncountable here. Say Indian, without one or ones.", "context": "Choose one, ones or no extra word.", "choices": ["one", "ones", "— (no extra word)"], "title": "One or Ones?", "kicker": "Round 6", "instruction": "Choose the best answer.", "source": "Worksheet 3"}, {"id": 55, "round": 6, "type": "mc", "q": "A: Which earrings do you like best?\nB: The gold ___. They look great.", "a": 1, "explanation": "Ones replaces the plural noun earrings.", "context": "Choose one, ones or no extra word.", "choices": ["one", "ones", "— (no extra word)"], "title": "One or Ones?", "kicker": "Round 6", "instruction": "Choose the best answer.", "source": "Worksheet 3"}, {"id": 56, "round": 7, "type": "fill", "q": "Michelle is the ___ person in our office.", "a": 0, "explanation": "Quietest and most quiet are both possible.", "context": "Comparative or superlative · quiet", "accepted": ["quietest", "most quiet"], "title": "Comparison Challenge", "kicker": "Round 7", "instruction": "Type the missing word or words.", "source": "Worksheet 3"}, {"id": 57, "round": 7, "type": "fill", "q": "I was ___ than my husband by our daughter's new haircut.", "a": 0, "explanation": "Use more + shocked + than.", "context": "Comparative or superlative · shocked", "accepted": ["more shocked"], "title": "Comparison Challenge", "kicker": "Round 7", "instruction": "Type the missing word or words.", "source": "Worksheet 3"}, {"id": 58, "round": 7, "type": "fill", "q": "My friend's new boyfriend is the ___ person I know.", "a": 0, "explanation": "Both stupidest and most stupid are possible.", "context": "Comparative or superlative · stupid", "accepted": ["stupidest", "most stupid"], "title": "Comparison Challenge", "kicker": "Round 7", "instruction": "Type the missing word or words.", "source": "Worksheet 3"}, {"id": 59, "round": 7, "type": "fill", "q": "The person who is ___ about the birth is the baby's grandmother.", "a": 0, "explanation": "With this adjective, use most thrilled.", "context": "Comparative or superlative · thrilled", "accepted": ["most thrilled"], "title": "Comparison Challenge", "kicker": "Round 7", "instruction": "Type the missing word or words.", "source": "Worksheet 3"}, {"id": 60, "round": 7, "type": "fill", "q": "My sister is ___ than me.", "a": 0, "explanation": "Cleverer and more clever are both correct.", "context": "Comparative or superlative · clever", "accepted": ["cleverer", "more clever"], "title": "Comparison Challenge", "kicker": "Round 7", "instruction": "Type the missing word or words.", "source": "Worksheet 3"}, {"id": 61, "round": 7, "type": "fill", "q": "I am ___ in class this year than I was last year.", "a": 0, "explanation": "Use more bored, not boreder.", "context": "Comparative or superlative · bored", "accepted": ["more bored"], "title": "Comparison Challenge", "kicker": "Round 7", "instruction": "Type the missing word or words.", "source": "Worksheet 3"}, {"id": 62, "round": 7, "type": "fill", "q": "I have never been ___ than when I bought my first flat.", "a": 0, "explanation": "Than signals a comparative: more stressed.", "context": "Comparative or superlative · stressed", "accepted": ["more stressed"], "title": "Comparison Challenge", "kicker": "Round 7", "instruction": "Type the missing word or words.", "source": "Worksheet 3"}, {"id": 63, "round": 8, "type": "fill", "q": "His girlfriend is ___ than he is. She really says what she thinks.", "a": 0, "explanation": "Much strengthens a comparative: much more assertive.", "context": "Use much or a bit + comparative · assertive", "image": "assets/dinner.webp", "alt": "The worksheet dinner scene: a woman speaking confidently at the table", "accepted": ["much more assertive"], "title": "Much or a Bit?", "kicker": "Round 8", "instruction": "Type the missing word or words.", "source": "Worksheet 3"}, {"id": 64, "round": 8, "type": "fill", "q": "I am ___ than my brother. He is 1.82 m and I am 1.80 m.", "a": 0, "explanation": "The small height difference calls for a bit shorter.", "context": "Use much or a bit + comparative · short", "image": null, "alt": "", "accepted": ["a bit shorter"], "title": "Much or a Bit?", "kicker": "Round 8", "instruction": "Type the missing word or words.", "source": "Worksheet 3"}, {"id": 65, "round": 8, "type": "fill", "q": "My children are ___ than my sister's. Hers never even say please or thank you.", "a": 0, "explanation": "Use much for the large difference. More polite and politer are both possible.", "context": "Use much or a bit + comparative · polite", "image": null, "alt": "", "accepted": ["much more polite", "much politer"], "title": "Much or a Bit?", "kicker": "Round 8", "instruction": "Type the missing word or words.", "source": "Worksheet 3"}, {"id": 66, "round": 8, "type": "fill", "q": "I am feeling ___ than yesterday, but I do not think I will be able to go back to work until next week at the earliest.", "a": 0, "explanation": "A small improvement: a bit better. Good → better.", "context": "Use much or a bit + comparative · good", "image": null, "alt": "", "accepted": ["a bit better"], "title": "Much or a Bit?", "kicker": "Round 8", "instruction": "Type the missing word or words.", "source": "Worksheet 3"}, {"id": 67, "round": 8, "type": "fill", "q": "My new flat is ___ than the old one. It is 80 m², and the old one was 70 m².", "a": 0, "explanation": "For the modest increase in size, use a bit more spacious.", "context": "Use much or a bit + comparative · spacious", "image": null, "alt": "", "accepted": ["a bit more spacious"], "title": "Much or a Bit?", "kicker": "Round 8", "instruction": "Type the missing word or words.", "source": "Worksheet 3"}];
+const QUICK_IDS=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 18, 20, 21, 22, 23, 25, 28, 29, 33, 38, 41, 42, 43, 44, 47, 50, 51, 52, 54, 57, 58, 60, 62, 64, 66];
+let QUESTIONS=BANK.filter(q=>QUICK_IDS.includes(q.id));
+
+
+const MODE = "present";
+const $ = id => document.getElementById(id);
+let state = QUESTIONS.map(() => ({choice:null,text:"",built:[]}));
+let pos = 0;
+let player = "";
+let soundOn = true;
+let audioCtx = null;
+let roundTimer = null;
+let startedAt = null;
+let attemptId="",finished=false,mode="quick";
+const totalRounds = Math.max(...QUESTIONS.map(q=>q.round));
+$("total").textContent = QUESTIONS.length;
+const roundElement = () => $(MODE === "present" ? "roundPill" : "round");
+const counterElement = () => $(MODE === "present" ? "questionPill" : "counter");
+
+function points() {
+  return state.reduce((n,s,idx)=>n+(s.choice === QUESTIONS[idx].a ? 1 : 0),0);
+}
+function chime(kind) {
+  if (!soundOn) return;
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    if (!audioCtx) audioCtx = new AC();
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    const melodies = {
+      correct:[[659,0,.11],[880,.11,.15],[1046,.23,.18]],
+      wrong:[[330,0,.13],[220,.11,.19]],
+      round:[[523,0,.1],[659,.11,.1],[784,.23,.19]],
+      finish:[[523,0,.14],[659,.15,.14],[784,.31,.15],[1046,.49,.28]]
+    };
+    const now = audioCtx.currentTime;
+    (melodies[kind] || melodies.correct).forEach(([hz,delay,len])=>{
+      const osc=audioCtx.createOscillator(),gain=audioCtx.createGain();
+      osc.type=kind==="wrong"?"triangle":"sine";
+      osc.frequency.setValueAtTime(hz,now+delay);
+      gain.gain.setValueAtTime(.0001,now+delay);
+      gain.gain.exponentialRampToValueAtTime(.095,now+delay+.018);
+      gain.gain.exponentialRampToValueAtTime(.0001,now+delay+len);
+      osc.connect(gain);gain.connect(audioCtx.destination);
+      osc.start(now+delay);osc.stop(now+delay+len+.01);
+    });
+  } catch (_) {}
+}
+function particles(count) {
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const box=$("fxParticles"), colors=["#ffc85b","#f65caf","#6de0b1","#77caff","#9e76f2","#ff9d78"];
+  for(let n=0;n<count;n++){
+    const p=document.createElement("span");
+    p.style.left=(Math.random()*100)+"%";
+    p.style.background=colors[n%colors.length];
+    p.style.animationDelay=(Math.random()*.27)+"s";
+    p.style.animationDuration=(.95+Math.random()*.7)+"s";
+    box.appendChild(p);
+    p.addEventListener("animationend",()=>p.remove(),{once:true});
+  }
+}
+function animateScore() {
+  const el=$("score");
+  el.textContent=points();
+  el.classList.remove("score-pulse");
+  void el.offsetWidth;
+  el.classList.add("score-pulse");
+}
+function toastRound(round){
+  if(roundTimer)clearTimeout(roundTimer);
+  $("roundToastText").textContent="Round "+round+" / "+totalRounds;
+  $("roundToast").classList.remove("hidden");
+  chime("round");
+  roundTimer=setTimeout(()=>$("roundToast").classList.add("hidden"),900);
+}
+function setScreen(id){
+  ["startScreen","gameScreen","resultScreen"].forEach(x=>$(x).classList.toggle("hidden",x!==id));
+}
+function start(){
+  const name=$("nameInput").value.trim();
+  if(!name){$("nameError").textContent="Please enter your name first.";$("nameInput").focus();return;}
+  player=name;
+  $("nameError").textContent="";
+  mode=$("modeSelect").value;
+  QUESTIONS=mode==="full"?BANK.slice():BANK.filter(q=>QUICK_IDS.includes(q.id));
+  state=QUESTIONS.map(()=>({choice:null,text:"",built:[]}));
+  $("total").textContent=QUESTIONS.length;
+  startedAt=Date.now();
+  attemptId=window.crypto?.randomUUID?.() || Date.now()+"-"+Math.random().toString(36).slice(2); finished=false;
+  pos=0;
+  state.forEach(s=>{s.choice=null;s.text="";s.built=[];});
+  setScreen("gameScreen");
+  render();
+  toastRound(QUESTIONS[0].round);
+}
+function render(){
+  const q=QUESTIONS[pos], st=state[pos];
+  roundElement().textContent="Round "+q.round+" / "+totalRounds+(MODE==="picture"?" · Picture questions":"");
+  counterElement().textContent="Question "+(pos+1)+" / "+QUESTIONS.length;
+  $("bar").style.width=((state.filter(s=>s.choice!==null).length/QUESTIONS.length)*100)+"%";
+  $("score").textContent=points();
+  $("kicker").textContent=(q.kicker||"Picture questions")+" · "+(pos+1)+" of "+QUESTIONS.length;
+  if(MODE==="present"){
+    $("title").textContent=q.title;
+    $("instruction").textContent=q.instruction;
+    $("question").textContent=q.q;
+  }else{
+    $("prompt").textContent=q.prompt;
+    const photo=$("picture");
+    photo.innerHTML="";
+    if(q.image){
+      const img=document.createElement("img");img.src=q.image;img.alt=q.alt||q.picture||"Question picture";
+      photo.appendChild(img);
+    }else{photo.innerHTML=placeholder(q.picture||"Picture prompt");}
+    photo.style.animation="none";
+    void photo.offsetWidth;
+    photo.style.animation="";
+  }
+  const answerBox=$("answers");
+  answerBox.innerHTML="";
+  const picture=$('picture');picture.replaceChildren();picture.classList.toggle('hidden',!q.image);
+  if(q.image){const img=document.createElement('img');img.src=q.image;img.alt=q.alt;picture.append(img);}
+  $('context').textContent=q.context||'';
+  $('syllables').textContent=q.syllables?q.syllables.join(' · '):'';
+  if(q.type==='mc')q.choices.forEach((label,n)=>{
+    const b=document.createElement('button');b.type='button';b.className='answer';b.textContent=label;
+    if(st.choice!==null){b.disabled=true;if(n===q.a)b.classList.add('good');if(n===st.choice&&n!==q.a)b.classList.add('bad');}
+    else b.onclick=()=>answer(n);
+    answerBox.append(b);
+  });
+  else if(q.type==='fill'){
+    const box=document.createElement('form');box.className='typed';
+    const input=document.createElement('input');input.id='typedAnswer';input.setAttribute('aria-label','Your answer');input.autocomplete='off';input.spellcheck=false;input.value=st.text;input.disabled=st.choice!==null;input.oninput=()=>{st.text=input.value;check.disabled=!input.value.trim();};
+    const check=document.createElement('button');check.id='checkBtn';check.className='btn';check.textContent='Check ✓';check.disabled=st.choice!==null||!st.text.trim();
+    box.onsubmit=e=>{e.preventDefault();if(st.choice!==null||!input.value.trim())return;st.text=input.value;answer(q.accepted.some(x=>normalize(x)===normalize(st.text))?0:-1);};
+    box.append(input,check);answerBox.append(box);
+  }else{
+    const words=q.words;
+    const built=document.createElement('div');built.id='builtSentence';built.className='words built';built.setAttribute('aria-label','Your sentence');
+    if(!st.built.length){const hint=document.createElement('span');hint.textContent='Your sentence goes here…';built.append(hint);}
+    st.built.forEach((idx,n)=>{const b=document.createElement('button');b.className='btn';b.textContent=words[idx];b.disabled=st.choice!==null;b.onclick=()=>{st.built.splice(n,1);render();};built.append(b);});
+    const bank=document.createElement('div');bank.className='words';bank.id='wordBank';
+    words.forEach((word,idx)=>{if(st.built.includes(idx))return;const b=document.createElement('button');b.className='btn';b.textContent=word;b.disabled=st.choice!==null;b.onclick=()=>{st.built.push(idx);render();};bank.append(b);});
+    const check=document.createElement('button');check.id='checkBtn';check.className='btn';check.textContent='Check ✓';check.disabled=st.choice!==null||st.built.length!==words.length;check.onclick=()=>{st.text=st.built.map(i=>words[i]).join(' ');answer([q.sentence,...(q.variants||[])].some(s=>normalize(st.text)===normalize(s))?0:-1);};
+    answerBox.append(built,bank,check);
+  }
+  const feedback=$("feedback");
+  feedback.textContent=st.choice===null ? "" : (st.choice===q.a ? "Correct! ⭐ "+q.explanation : "Incorrect. 💡 Answer: "+correctAnswer(q)+". "+q.explanation);
+  feedback.className="feedback"+(st.choice===null?"":st.choice===q.a?" success":" error");
+  feedback.setAttribute("aria-live","polite");
+  $("nextBtn").disabled=st.choice===null;
+  $("nextBtn").classList.toggle("ready",st.choice!==null);
+  $("nextBtn").textContent=pos===QUESTIONS.length-1?"See Results →":"Next →";
+  $("backBtn").disabled=pos===0;
+  const scene=$("gameScreen").querySelector(MODE==="present"?".stage":".content");
+  scene.classList.remove("fx-enter");
+  void scene.offsetWidth;
+  scene.classList.add("fx-enter");
+}
+function answer(choice){
+  if(finished)return;
+  if(state[pos].choice!==null)return;
+  state[pos].choice=choice;
+  const correct=choice===QUESTIONS[pos].a;
+  chime(correct?"correct":"wrong");
+  if(correct)particles(24);
+  render();
+  animateScore();
+}
+function next(){
+  if(state[pos].choice===null)return;
+  if(pos===QUESTIONS.length-1){finish();return;}
+  const prevRound=QUESTIONS[pos].round;
+  pos++;
+  render();
+  if(QUESTIONS[pos].round!==prevRound)toastRound(QUESTIONS[pos].round);
+}
+function back(){if(pos>0){pos--;render();}}
+function restart(){
+  startedAt=Date.now();
+  attemptId=window.crypto?.randomUUID?.() || Date.now()+"-"+Math.random().toString(36).slice(2); finished=false;
+  pos=0;state.forEach(s=>{s.choice=null;s.text="";s.built=[];});setScreen("gameScreen");render();toastRound(QUESTIONS[0].round);
+}
+function normalize(v){return v.toLowerCase().replace(/’/g,"'").replace(/[.,!?]/g,'').replace(/\s+/g,' ').trim();}
+function correctAnswer(q){return q.type==='mc'?q.choices[q.a]:q.type==='fill'?q.accepted[0]:q.sentence;}
+async function finish(){
+  if(finished||state.some(s=>s.choice===null))return;
+  finished=true;const currentAttempt=attemptId;
+  setScreen('resultScreen');const score=points(),pct=Math.round(score/QUESTIONS.length*100);
+  const payload={studentName:player,gameTitle:document.title,score,total:QUESTIONS.length,mode,percentage:pct,durationSeconds:Math.max(0,Math.round((Date.now()-startedAt)/1000)),completedAt:new Date().toISOString(),attemptId,gameUrl:location.href};
+  $('playerResult').textContent=player;$('finalPoints').textContent=score;$('finalTotal').textContent=QUESTIONS.length;
+  $('resultMessage').textContent=pct+'% · '+payload.durationSeconds+' seconds · '+(pct>=85?'You are an English superstar!':pct>=60?'Great effort! Keep practising!':'Keep practising and try again!');
+  $('review').open=false;$('reviewAnswers').replaceChildren();
+  QUESTIONS.forEach((q,i)=>{const p=document.createElement('p');const given=q.type==='mc'?q.choices[state[i].choice]:state[i].text;p.textContent=(i+1)+'. '+q.q+' — Your answer: '+given+' '+(state[i].choice===q.a?'✓':'✗')+' · Answer: '+correctAnswer(q);$('reviewAnswers').append(p);});
+  chime('finish');particles(100);
+  if(/\/_templates?\//.test(location.pathname)){$('recordStatus').textContent='Template preview — score not sent.';return;}
+  try{const key='adjectiveWorkshopAttemptsV1',rows=JSON.parse(localStorage.getItem(key)||'[]');rows.unshift(payload);localStorage.setItem(key,JSON.stringify(rows.slice(0,100)));}catch(_){}
+  $('recordStatus').textContent='Sending score to your teacher…';
+  let result={sent:false};
+  try{if(window.TeacherRecords)result=await submitTeacherRecord(payload);}catch(_){}
+  if(attemptId!==currentAttempt)return;
+  $('recordStatus').textContent=result.sent?'✅ Score sent to your teacher.':'⚠️ Score saved on this device; it could not be sent right now.';
+}
+// Add the required percentage to this game's shared-helper request only.
+// The helper calls fetch synchronously before yielding; restore fetch immediately.
+function submitTeacherRecord(payload){
+  const originalFetch=window.fetch;
+  window.fetch=function(url,options){
+    if(url===window.TEACHER_RECORDS_CONFIG?.endpoint&&options?.method==='POST'){
+      const body=JSON.parse(options.body);
+      if(body.attemptId===payload.attemptId)options={...options,body:JSON.stringify({...body,percentage:payload.percentage,mode:payload.mode})};
+    }
+    return originalFetch.call(window,url,options);
+  };
+  try{return TeacherRecords.submit(payload);}finally{window.fetch=originalFetch;}
+}
+function toggleSound(){
+  soundOn=!soundOn;
+  $("soundBtn").textContent=soundOn?"🔊 Sound On":"🔇 Sound Off";
+  $("soundBtn").setAttribute("aria-pressed",String(soundOn));
+}
+$("startBtn").addEventListener("click",start);
+$("nameInput").addEventListener("keydown",e=>{if(e.key==="Enter")start();});
+$("nextBtn").addEventListener("click",next);
+$("backBtn").addEventListener("click",back);
+$("restartBtn").addEventListener("click",restart);
+$("playAgainBtn").addEventListener("click",restart);
+$("soundBtn").addEventListener("click",toggleSound);
+$("changeModeBtn").addEventListener("click",()=>{setScreen("startScreen");$("nameInput").focus();});
+
+</script>
+</body>
+</html>

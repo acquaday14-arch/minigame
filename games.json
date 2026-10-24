@@ -82,5 +82,11 @@
     "description": "40 questions in 5 rounds: clothes, telling time, home, hobbies and meals. Present simple, past simple, present continuous, quantifiers, too and enough. Choices, typed blanks and word order. No timer.",
     "level": "A1–A2",
     "path": "./everyday-english-quest/"
+  },
+  {
+    "title": "Adjective Workshop Quest",
+    "description": "40-question classroom quest or all 67 worksheet items: eight sentence builders, adjective suffixes, word stress, adjective grammar, one/ones, comparisons and much/a bit. No timer.",
+    "level": "B1–B2",
+    "path": "./adjective-workshop/"
   }
 ]
