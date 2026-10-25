@@ -100,5 +100,11 @@
     "description": "40 questions in 4 rounds: present simple, present continuous, past simple and quantifiers. Choices, typed blanks and sentence builders. No timer.",
     "level": "A1–A2",
     "path": "./grammar-four-quest/"
+  },
+  {
+    "title": "Three Tenses & Kind Words Quest",
+    "description": "43 questions: 20 verb-form challenges, 10 everyday dialogues and all 13 reading questions from The Boy Who Learned Kind Words. Present simple, present continuous and past simple. No timer.",
+    "level": "A1–A2",
+    "path": "./three-tense-kindness/"
   }
 ]
