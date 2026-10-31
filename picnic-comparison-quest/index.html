@@ -304,7 +304,7 @@ async function finish(){
  safeSave('picnicAttempt:'+attemptId,{...payload,story,writingStatus:'Teacher review'});
  setScreen("resultScreen");$("playerResult").textContent=player;$("finalPoints").textContent=score;$("finalTotal").textContent=15;$("resultMessage").textContent=payload.percentage+"% · Grammar score. Story completed: "+wordCount(story)+" words · Teacher review.";
  $("writingResult").innerHTML='<h2>Your picnic story</h2><p class="story-copy" id="submittedStory"></p><p class="hint">Saved on this device. Download your story and results to share with your teacher.</p><details id="modelStory"><summary>See one possible model story</summary><p class="story-copy"></p><p class="hint">Different stories are possible. Check that yours connects all three pictures.</p></details>';
- $("submittedStory").textContent=story;$("modelStory p").textContent=MODEL;chime('finish');particles(100);
+ $("submittedStory").textContent=story;$("modelStory").querySelector("p").textContent=MODEL;chime('finish');particles(100);
  if(/\/_templates?\//.test(location.pathname)){$("recordStatus").textContent="Template preview — score not sent.";return}
  $("recordStatus").textContent="Sending grammar score to your teacher…";
  try{if(!window.TeacherRecords)throw Error('unavailable');const result=await TeacherRecords.submit(payload);if(attemptId!==thisAttempt||!finished)return;$("recordStatus").textContent=result.sent?"✅ Score sent to your teacher.":"⚠️ Score saved on this device. Could not send right now."}catch(_){if(attemptId===thisAttempt&&finished)$("recordStatus").textContent="⚠️ Score saved on this device. Could not send right now."}
