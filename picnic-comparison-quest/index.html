@@ -131,6 +131,7 @@
     .story-picture{margin:0 auto 22px;max-width:650px;text-align:center}.story-picture img{display:block;width:100%;max-height:500px;object-fit:contain;border-radius:20px;border:2px solid var(--line);background:#f8fbff}.story-picture figcaption{font-size:18px;margin-top:8px;color:#5b5772}
     .card:has(.story-picture){width:min(900px,100%)}.answers.story-answers{grid-template-columns:1fr}.story-answers .answer{font-size:21px;text-align:left;line-height:1.45}
     #storyResult{margin-top:24px;text-align:left}#storyResult h2{color:var(--purple)}#storySummary{font:21px/1.6 "Trebuchet MS",Arial,sans-serif}.start label{font-size:21px}#nameError{color:#b44453}button{touch-action:manipulation}#checkBtn{grid-column:1/-1;background:var(--purple);color:#fff}
+    @media(min-width:850px){.card:has(.story-picture){display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;width:100%;align-items:center}.card:has(.story-picture)>.question,.card:has(.story-picture)>.feedback{grid-column:1/-1}.card:has(.story-picture)>.question{margin-bottom:2px}#pictureArea{grid-column:1;grid-row:2}.answers.story-answers{grid-column:2;grid-row:2}.story-picture{margin:0}.story-picture img{max-height:400px}.story-answers .answer{padding:15px;font-size:20px}}
     @media(max-width:520px){body{padding:8px}.app{width:100%}.top{padding:14px 10px;gap:8px}.pill{padding:8px 10px;font-size:15px}.start{padding:34px 18px}.card{padding:16px}.stage{min-height:0}.controls{gap:8px}.btn{padding:12px}.story-answers .answer{font-size:19px}}
 
   </style>
