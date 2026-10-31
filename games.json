@@ -106,5 +106,11 @@
     "description": "30 questions: 17 selected verb-form and everyday dialogue challenges, plus all 13 reading questions from The Boy Who Learned Kind Words. Present simple, present continuous and past simple. No timer.",
     "level": "A1–A2",
     "path": "./three-tense-kindness/"
+  },
+  {
+    "title": "Picnic & Comparison Quest",
+    "description": "5 short/long adjective questions, 10 comparative/superlative questions and a 35-word picture story for KET-style Part 7 practice. Grammar score plus teacher-reviewed writing. No timer.",
+    "level": "A2 · KET",
+    "path": "./picnic-comparison-quest/"
   }
 ]

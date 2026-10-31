@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en" data-template-effects-version="2">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Picnic &amp; Comparison Quest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --purple:#5b36d6;--purple2:#7a57eb;--ink:#20285c;--pink:#ef5aa7;
+      --yellow:#ffd76a;--mint:#6be0b2;--sky:#74c7ff;--soft:#f8f6ff;--line:#d9cff8;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;min-height:100vh;padding:18px;
+      font-family:"Fredoka",ui-rounded,"Trebuchet MS",Arial,sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at 9% 12%,#ffe2f0 0 7%,transparent 7.5%),
+        radial-gradient(circle at 90% 14%,#dff5ff 0 8%,transparent 8.5%),
+        linear-gradient(180deg,#f8fbff,#f4efff);
+    }
+    button,input{font:inherit}
+    .app{width:min(1060px,98vw);margin:1vh auto}
+    .frame{
+      background:#fff;border:4px solid #4b32bf;border-radius:32px;overflow:hidden;
+      box-shadow:0 14px 0 #ded5ff,0 24px 44px rgba(63,47,147,.14)
+    }
+    .top{
+      background:linear-gradient(135deg,var(--purple),#6541dc);
+      padding:18px 28px;color:#fff;display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:center
+    }
+    .pill{border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.12);padding:9px 15px;border-radius:999px;font-weight:700}
+    .top .pill:last-child{justify-self:end}
+    .progress{height:10px;background:#dacdfd}
+    .progress>div{height:100%;width:25%;background:linear-gradient(90deg,#ffd75f,#ffae73);transition:.25s}
+    .stage{padding:28px 34px 24px;min-height:650px;position:relative}
+    .kicker{text-align:center;color:var(--pink);font-size:14px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+    h1{text-align:center;font-size:clamp(38px,6vw,62px);margin:8px 0 8px;color:#432cb5;line-height:.98}
+    .instruction{text-align:center;font-size:20px;font-weight:600;margin-bottom:24px}
+    .card{
+      width:min(780px,100%);margin:0 auto;border:2px solid var(--line);border-radius:24px;padding:24px;
+      background:linear-gradient(180deg,#fff,#fcfbff)
+    }
+    .question{font-size:clamp(24px,4vw,36px);font-weight:700;text-align:center;margin:6px 0 22px}
+    .answers{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .answer{
+      border:3px solid #ded3fa;background:#fbf9ff;border-radius:18px;padding:15px 18px;color:var(--ink);
+      font-weight:700;font-size:18px;cursor:pointer;transition:.14s
+    }
+    .answer:hover{transform:translateY(-2px);border-color:#aa8df3}
+    .answer.good{border-color:#65d5a8;background:#ebfff6;color:#17734e;animation:pop .28s ease}
+    .answer.bad{border-color:#ff98a4;background:#fff0f2;color:#a63a47;animation:shake .28s ease}
+    .feedback{min-height:42px;text-align:center;margin:18px 0 4px;font-size:19px;font-weight:700}
+    .controls{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:14px;margin-top:28px}
+    .btn{border:2px solid #dbd2f8;border-radius:15px;background:#fff;color:#4734a9;padding:12px 18px;font-weight:700;cursor:pointer}
+    .controls .next{justify-self:end;background:linear-gradient(135deg,#ffd37c,#ffbd84);border:0;color:#76563b}
+    .center{text-align:center}
+    .hidden{display:none!important}
+    .start{padding:60px 32px;text-align:center}
+    .start p{font-size:19px;color:#667085}
+    .start input{width:min(560px,100%);padding:15px 17px;border:2px solid #d8cff4;border-radius:16px;font-size:18px}
+    .start .btn{margin-top:12px;background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;border:0}
+    .stars{font-size:26px;letter-spacing:5px}
+    .confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:20}
+    .confetti i{position:absolute;width:10px;height:16px;border-radius:3px;animation:fall 900ms linear forwards}
+    @keyframes pop{50%{transform:scale(1.035)}}
+    @keyframes shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+    @keyframes fall{from{transform:translateY(-10vh) rotate(0)}to{transform:translateY(110vh) rotate(500deg);opacity:.7}}
+    @media(max-width:700px){.top{grid-template-columns:1fr 1fr}.top>div:nth-child(2){grid-column:1/-1;grid-row:2;text-align:center}.stage{padding:22px 16px}.answers{grid-template-columns:1fr}.controls{grid-template-columns:1fr 1fr}.controls .restart{display:none}}
+  
+    /* Template FX v2 — reduced-motion aware and dependency-free */
+    .fx-enter{animation:fx-enter .38s cubic-bezier(.2,.8,.2,1) both}
+    .answer{transition:transform .17s ease,border-color .2s ease,box-shadow .2s ease,background .2s ease}
+    .answer:active,.btn:active{transform:scale(.97)}
+    .answer:focus-visible,.btn:focus-visible{outline:4px solid #f7bb56;outline-offset:3px}
+    .answer.good{box-shadow:0 0 0 4px rgba(81,213,157,.13)}
+    .answer.bad{box-shadow:0 0 0 4px rgba(255,118,144,.13)}
+    .answer:disabled{cursor:default}
+    .pill.score-pulse,.score-pulse{animation:fx-pulse .35s ease}
+    .feedback.success{color:#10845c;animation:fx-pop .4s ease both}
+    .feedback.error{color:#b44453;animation:fx-shake .32s ease both}
+    .mid-actions{display:flex;gap:8px;align-items:center;justify-content:center}
+    .mid-actions .btn{white-space:nowrap}
+    .btn:disabled{opacity:.4;cursor:not-allowed;filter:grayscale(.25)}
+    .next.ready{animation:fx-glow 1.8s ease-in-out infinite}
+    .fx-particles{position:fixed;inset:0;z-index:100;pointer-events:none;overflow:hidden}
+    .fx-particles span{position:absolute;top:-24px;width:10px;height:16px;border-radius:3px;animation:fx-rain 1.15s cubic-bezier(.2,.7,.5,1) forwards}
+    .fx-round-toast{position:fixed;inset:0;z-index:90;pointer-events:none;display:flex;justify-content:center;align-items:center;background:rgba(45,29,122,.11)}
+    .fx-round-toast.hidden{display:none!important}
+    .fx-round-pill{
+      text-align:center;border:4px solid #fff;border-radius:28px;
+      background:linear-gradient(135deg,#5b36d6,#8b6cf0);color:white;
+      padding:24px 36px;box-shadow:0 20px 60px rgba(54,38,152,.25);
+      font-size:clamp(25px,4vw,42px);font-weight:700;animation:fx-toast .7s ease both
+    }
+    .fx-round-pill small{display:block;font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:#ffdf85;margin-bottom:4px}
+    .result-area{text-align:center;padding:56px 24px}
+    .result-area h1{font-size:clamp(40px,6vw,64px);margin:10px 0;color:#432cb5}
+    .result-area .result-score{font-size:clamp(60px,10vw,100px);color:#5b36d6;font-weight:700;line-height:1.12}
+    .result-area .result-sub{font-size:21px;margin:8px 0 28px}
+    .result-area .btn{background:#6040d7;color:#fff;border:0;padding:15px 30px;font-size:18px}
+    .result-area .result-stars{font-size:38px;letter-spacing:8px;animation:fx-float 2s ease-in-out infinite}
+    .picture{animation:fx-picture-in .55s cubic-bezier(.2,.8,.2,1) both;transition:transform .25s ease,box-shadow .25s ease}
+    .picture:hover{transform:translateY(-3px) rotate(-1deg);box-shadow:0 17px 34px rgba(82,58,173,.21)}
+    .picture img{width:100%;height:100%;object-fit:cover;display:block}
+    @keyframes fx-enter{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes fx-pop{0%{transform:scale(.83);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+    @keyframes fx-pulse{50%{transform:scale(1.09)}}
+    @keyframes fx-shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+    @keyframes fx-glow{50%{box-shadow:0 0 0 6px rgba(255,205,100,.22)}}
+    @keyframes fx-rain{0%{transform:translateY(-10vh) rotate(0deg);opacity:1}100%{transform:translateY(112vh) rotate(620deg);opacity:0}}
+    @keyframes fx-toast{0%{transform:scale(.7) translateY(25px);opacity:0}40%{transform:scale(1.05);opacity:1}100%{transform:scale(1);opacity:1}}
+    @keyframes fx-float{50%{transform:translateY(-9px)}}
+    @keyframes fx-picture-in{from{opacity:0;transform:scale(.91) rotate(-2deg)}to{opacity:1;transform:scale(1) rotate(0)}}
+    @media(max-width:700px){
+      .controls{grid-template-columns:1fr 1fr}
+      .controls .mid-actions{grid-column:1/-1;grid-row:2;justify-content:center}
+      .controls .restart{display:inline-flex}
+      .result-area{padding:42px 16px}
+      .mid-actions .btn{font-size:14px;padding:10px 12px}
+    }
+    @media(prefers-reduced-motion:reduce){
+      *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+    }
+
+  
+    textarea{font:inherit;font-family:"Trebuchet MS",Arial,sans-serif;width:100%;min-height:230px;resize:vertical;padding:18px;border:2px solid var(--line);border-radius:16px;font-size:21px;line-height:1.6;color:var(--ink)}
+    #typedAnswer{font:inherit;font-size:25px;width:100%;padding:16px;border:2px solid var(--line);border-radius:16px}
+    .story-pictures{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:18px 0}.story-pictures figure{margin:0}.story-pictures img{display:block;width:100%;border:2px solid var(--line);border-radius:12px;image-rendering:auto}.story-pictures figcaption{text-align:center;margin-top:6px;font-size:17px}
+    .writing-card{width:100%}.writing-card .question{font-size:26px}.writing-card p{font-size:19px;line-height:1.5}.story-copy{white-space:pre-wrap;overflow-wrap:anywhere;text-align:left;font:20px/1.6 "Trebuchet MS",Arial,sans-serif}.hint{color:#5b5772;font-size:17px}.checkline{display:flex;align-items:center;gap:10px;margin:14px 0;font-size:18px}.checkline input{width:24px;height:24px}.round-note{padding:12px;background:#f0eaff;border-radius:12px;text-align:center}#writingResult{margin-top:24px;text-align:left}#writingResult h2{color:var(--purple)}#nameError{color:#b44453}.start label{font-size:21px}button{touch-action:manipulation}#checkBtn{grid-column:1/-1;background:var(--purple);color:#fff}#wordCount{font-size:20px;font-weight:bold}.card:has(textarea){width:100%}.result-area .btn{margin:6px}.result-area .result-sub{overflow-wrap:anywhere}
+    @media(max-width:520px){body{padding:8px}.app{width:100%}.top{padding:14px 10px;gap:8px}.pill{padding:8px 10px;font-size:15px}.start{padding:34px 18px}.card{padding:16px}.story-pictures{gap:5px}.stage{min-height:0}.controls{gap:8px}.btn{padding:12px}.result-area .btn{max-width:100%}}
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="frame" id="startScreen">
+      <div class="start">
+        <div class="stars">⭐ ✨ ⭐</div>
+        <div class="kicker">A2 · Grammar + KET writing practice</div>
+        <h1>Picnic &amp;<br>Comparison Quest</h1>
+        <p>5 short/long adjective questions + 10 comparison questions.<br>Then write a story of 35 words or more using three pictures.<br>No timer. Grammar: 15 points. Writing: teacher review.</p>
+        <label for="nameInput">Your name</label><br><input id="nameInput" placeholder="Enter your name" maxlength="80" autocomplete="name"><p id="nameError" role="alert"></p>
+        <br>
+        <button class="btn" id="startBtn">Start Challenge</button>
+      </div>
+    </section>
+
+    <section class="frame hidden" id="gameScreen">
+      <div class="top">
+        <div class="pill" id="roundPill">Round 1 / 3</div>
+        <div class="pill">⭐ <span id="score">0</span> / <span id="total">4</span> points</div>
+        <div class="pill" id="questionPill">Question 1 / 4</div>
+      </div>
+      <div class="progress"><div id="bar"></div></div>
+
+      <div class="stage">
+        <div class="kicker" id="kicker">Quick choice · 1 of 4</div>
+        <h1 id="title">Choose the best answer</h1>
+        <div class="instruction" id="instruction">Pick the sentence that sounds natural.</div>
+
+        <div class="card">
+          <div class="question" id="question"></div>
+          <div class="answers" id="answers"></div><div id="writingArea" class="hidden"></div>
+          <div class="feedback" id="feedback"></div>
+        </div>
+
+        <div class="controls">
+          <button class="btn" id="backBtn">← Back</button>
+          <div class="mid-actions"><button class="btn" id="soundBtn" aria-pressed="true">🔊 Sound On</button><button class="btn restart" id="restartBtn">↻ Restart</button></div>
+          <button class="btn next" id="nextBtn">Next →</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="frame hidden" id="resultScreen">
+      <div class="result-area">
+        <div class="result-stars">🌟 🎉 🌟</div>
+        <h1>Great Job, <span id="playerResult"></span>!</h1>
+        <div class="result-score"><span id="finalPoints">0</span>/<span id="finalTotal">4</span></div>
+        <p class="result-sub" id="resultMessage"></p>
+        <p class="result-sub" id="recordStatus" role="status"></p><section id="writingResult" class="card"></section><p><button class="btn" id="downloadBtn">Download my results &amp; story</button></p>
+        <button class="btn" id="playAgainBtn">↻ Play Again</button>
+      </div>
+    </section>
+  <div class="fx-particles" id="fxParticles" aria-hidden="true"></div>
+    <div class="fx-round-toast hidden" id="roundToast" aria-hidden="true"><div class="fx-round-pill"><small>LEVEL UP ✨</small><span id="roundToastText"></span></div></div>
+  </main>
+
+<script src="/minigame/shared/teacher-records-config.js"></script>
+<script src="/minigame/shared/teacher-records.js"></script>
+<script>
+
+const QUESTIONS=[{"round": 1, "title": "Short or Long?", "q": "Classify “tall” for making comparisons.", "choices": ["Short adjective", "Long adjective"], "a": 0, "ex": "Tall has one syllable. Use taller / tallest.", "type": "choice"}, {"round": 1, "title": "Short or Long?", "q": "Classify “expensive” for making comparisons.", "choices": ["Short adjective", "Long adjective"], "a": 1, "ex": "Expensive has three syllables. Use more / most expensive.", "type": "choice"}, {"round": 1, "title": "Short or Long?", "q": "Classify “happy” for making comparisons.", "choices": ["Short adjective", "Long adjective"], "a": 0, "ex": "Happy has two syllables and ends in -y. In comparison practice, use happier / happiest.", "type": "choice"}, {"round": 1, "title": "Short or Long?", "q": "Classify “beautiful” for making comparisons.", "choices": ["Short adjective", "Long adjective"], "a": 1, "ex": "Beautiful has three syllables. Use more / most beautiful.", "type": "choice"}, {"round": 1, "title": "Short or Long?", "q": "Classify “big” for making comparisons.", "choices": ["Short adjective", "Long adjective"], "a": 0, "ex": "Big has one syllable. Double the final g: bigger / biggest.", "type": "choice"}, {"round": 2, "title": "Comparative Challenge", "q": "An elephant is _____ than a horse.", "choices": ["biggest", "bigger", "more big"], "a": 1, "ex": "Compare two animals: big → bigger + than.", "type": "choice"}, {"round": 2, "title": "Comparative Challenge", "q": "This story is _____ than that story. (interesting)", "choices": ["most interesting", "interestinger", "more interesting"], "a": 2, "ex": "Use more + a long adjective + than.", "type": "choice"}, {"round": 2, "title": "Superlative Challenge", "q": "It was the _____ day of my holiday. (happy)", "choices": ["happiest", "happier", "most happy"], "a": 0, "ex": "Use the superlative for one day in a whole holiday: happy → happiest.", "type": "choice"}, {"round": 2, "title": "Irregular Challenge", "q": "My English is _____ than it was last year. (good)", "choices": ["best", "more good", "better"], "a": 2, "ex": "Good → better → best.", "type": "choice"}, {"round": 2, "title": "Superlative Challenge", "q": "This is the _____ bike in the shop. (expensive)", "choices": ["more expensive", "most expensive", "expensivest"], "a": 1, "ex": "Use the most + a long adjective to compare one item with a whole group.", "type": "choice"}, {"round": 2, "title": "Comparison Builder", "q": "This exercise is _____ than the last one. (easy)", "accepted": ["easier"], "ex": "Easy ends in consonant + y: change y to i and add -er.", "type": "fill"}, {"round": 2, "title": "Comparison Builder", "q": "My bag is heavier _____ your bag.", "accepted": ["than"], "ex": "Use than after a comparative adjective.", "type": "fill"}, {"round": 2, "title": "Comparison Builder", "q": "Of all the flowers here, this is the _____. (beautiful)", "accepted": ["most beautiful"], "ex": "The is already in the sentence: write most beautiful.", "type": "fill"}, {"round": 2, "title": "Irregular Challenge", "q": "The weather today is _____ than yesterday. (bad)", "choices": ["worse", "worst", "more bad"], "a": 0, "ex": "Bad → worse → worst.", "type": "choice"}, {"round": 2, "title": "Comparison Builder", "q": "This is the _____ river in the country. (long)", "accepted": ["longest"], "ex": "Use the + adjective-est to compare one river with all the others in the country.", "type": "fill"}];
+const MODE="present", $=id=>document.getElementById(id);
+const state=QUESTIONS.map(()=>({choice:null,correct:false,text:""}));
+let pos=0,player="",soundOn=true,audioCtx=null,roundTimer=null,startedAt=null,attemptId="",finished=false,story="",reviewed=false,completedAt="";
+const totalRounds=3;
+const roundElement=()=>$("roundPill"),counterElement=()=>$("questionPill");
+$("total").textContent=15;
+function points(){return state.reduce((n,s)=>n+Number(s.correct),0)}
+function safeSave(key,value){try{localStorage.setItem(key,JSON.stringify(value));return true}catch(_){return false}}
+function draftKey(){return "picnicStoryDraft:"+player.toLowerCase()}
+function wordCount(text){return (text.trim().match(/[\p{L}\p{N}]+(?:['’\-][\p{L}\p{N}]+)*/gu)||[]).length}
+function normal(text){return text.trim().toLowerCase().replace(/\s+/g," ").replace(/[.!?]+$/,"")}
+function chime(kind) {
+  if (!soundOn) return;
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    if (!audioCtx) audioCtx = new AC();
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    const melodies = {
+      correct:[[659,0,.11],[880,.11,.15],[1046,.23,.18]],
+      wrong:[[330,0,.13],[220,.11,.19]],
+      round:[[523,0,.1],[659,.11,.1],[784,.23,.19]],
+      finish:[[523,0,.14],[659,.15,.14],[784,.31,.15],[1046,.49,.28]]
+    };
+    const now = audioCtx.currentTime;
+    (melodies[kind] || melodies.correct).forEach(([hz,delay,len])=>{
+      const osc=audioCtx.createOscillator(),gain=audioCtx.createGain();
+      osc.type=kind==="wrong"?"triangle":"sine";
+      osc.frequency.setValueAtTime(hz,now+delay);
+      gain.gain.setValueAtTime(.0001,now+delay);
+      gain.gain.exponentialRampToValueAtTime(.095,now+delay+.018);
+      gain.gain.exponentialRampToValueAtTime(.0001,now+delay+len);
+      osc.connect(gain);gain.connect(audioCtx.destination);
+      osc.start(now+delay);osc.stop(now+delay+len+.01);
+    });
+  } catch (_) {}
+}
+function particles(count) {
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const box=$("fxParticles"), colors=["#ffc85b","#f65caf","#6de0b1","#77caff","#9e76f2","#ff9d78"];
+  for(let n=0;n<count;n++){
+    const p=document.createElement("span");
+    p.style.left=(Math.random()*100)+"%";
+    p.style.background=colors[n%colors.length];
+    p.style.animationDelay=(Math.random()*.27)+"s";
+    p.style.animationDuration=(.95+Math.random()*.7)+"s";
+    box.appendChild(p);
+    p.addEventListener("animationend",()=>p.remove(),{once:true});
+  }
+}
+function animateScore() {
+  const el=$("score");
+  el.textContent=points();
+  el.classList.remove("score-pulse");
+  void el.offsetWidth;
+  el.classList.add("score-pulse");
+}
+function toastRound(round){
+  if(roundTimer)clearTimeout(roundTimer);
+  $("roundToastText").textContent="Round "+round+" / "+totalRounds;
+  $("roundToast").classList.remove("hidden");
+  chime("round");
+  roundTimer=setTimeout(()=>$("roundToast").classList.add("hidden"),900);
+}
+function setScreen(id){
+  ["startScreen","gameScreen","resultScreen"].forEach(x=>$(x).classList.toggle("hidden",x!==id));
+}
+function newAttempt(){
+ attemptId=window.crypto?.randomUUID?.()||Date.now()+"-"+Math.random().toString(36).slice(2);startedAt=Date.now();finished=false;completedAt="";pos=0;story="";reviewed=false;
+ state.forEach(s=>Object.assign(s,{choice:null,correct:false,text:""}));
+ setScreen("gameScreen");render();toastRound(1);
+}
+function start(){const name=$("nameInput").value.trim();if(!name){$("nameError").textContent="Please enter your name first.";$("nameInput").focus();return}player=name;newAttempt()}
+function restart(){newAttempt()}
+function render(){
+ const isWriting=pos===15,q=QUESTIONS[pos],st=state[pos];
+ roundElement().textContent="Round "+(isWriting?3:q.round)+" / 3";
+ counterElement().textContent="Activity "+(pos+1)+" / 16";
+ $("bar").style.width=((state.filter(s=>s.choice!==null).length+Number(finished))/16*100)+"%";
+ $("score").textContent=points();$("backBtn").disabled=pos===0;
+ $("answers").innerHTML="";$("writingArea").innerHTML="";$("writingArea").classList.toggle("hidden",!isWriting);
+ $("feedback").textContent="";$("feedback").className="feedback";$("feedback").setAttribute("aria-live","polite");
+ $("nextBtn").textContent=isWriting?"Finish & save →":"Next →";
+ if(isWriting){renderWriting();return}
+ $("kicker").textContent=q.round===1?"Round 1 · Adjective types":"Round 2 · Comparatives & superlatives";
+ $("title").textContent=q.title;$("instruction").textContent=q.type==='fill'?"Type the missing word or words. Check your answer once.":"Choose one answer. Each question is worth 1 point.";
+ $("question").textContent=q.q;
+ if(q.type==='choice')q.choices.forEach((label,n)=>{const b=document.createElement("button");b.className="answer";b.textContent=label;b.disabled=st.choice!==null;if(st.choice!==null){if(n===q.a)b.classList.add("good");if(n===st.choice&&n!==q.a)b.classList.add("bad")}b.onclick=()=>answer(n);$("answers").append(b)});
+ else {const input=document.createElement("input");input.id="typedAnswer";input.setAttribute("aria-label","Missing word or words");input.autocomplete="off";input.spellcheck=false;input.value=st.text;input.disabled=st.choice!==null;input.style.gridColumn="1/-1";input.addEventListener("input",()=>{st.text=input.value});input.addEventListener("keydown",e=>{if(e.key==='Enter')answer(input.value)});const b=document.createElement("button");b.id="checkBtn";b.className="btn";b.textContent="Check answer";b.disabled=st.choice!==null;b.onclick=()=>answer(input.value);$("answers").append(input,b)}
+ if(st.choice!==null){$("feedback").textContent=(st.correct?"Correct! ⭐ ":"Incorrect. 💡 ")+(q.type==='fill'&&!st.correct?'Answer: '+q.accepted[0]+'. ':'')+q.ex;$("feedback").className="feedback "+(st.correct?"success":"error")}
+ $("nextBtn").disabled=st.choice===null;$("nextBtn").classList.toggle("ready",st.choice!==null);
+ const stage=$("gameScreen").querySelector('.stage');stage.classList.remove('fx-enter');void stage.offsetWidth;stage.classList.add('fx-enter');
+}
+function answer(value){if(pos>=15||state[pos].choice!==null)return;const q=QUESTIONS[pos];if(q.type==='fill'&&!normal(String(value))){$("feedback").textContent="Type your answer first.";return}const st=state[pos];st.choice=value;st.correct=q.type==='fill'?q.accepted.includes(normal(value)):value===q.a;if(q.type==='fill')st.text=value;chime(st.correct?'correct':'wrong');if(st.correct)particles(24);render();animateScore()}
+function renderWriting(){
+ $("kicker").textContent="Round 3 · KET-style Part 7 practice";$("title").textContent="Going on a Picnic";$("instruction").textContent="Look at all three pictures. Write the story shown in the pictures. Write 35 words or more.";$("question").textContent="Tell one story with a beginning, a middle and an ending.";
+ $("writingArea").innerHTML=`<div class="story-pictures"><figure><img src="assets/picnic-1.webp" alt="Picture 1 of the story: a family at home with food on a table"><figcaption>Picture 1</figcaption></figure><figure><img src="assets/picnic-2.webp" alt="Picture 2 of the story: people having a picnic beside a lake"><figcaption>Picture 2</figcaption></figure><figure><img src="assets/picnic-3.webp" alt="Picture 3 of the story: people looking towards ducks on the lake"><figcaption>Picture 3</figcaption></figure></div><p class="hint">Zoom your browser to see the pictures more closely. Use past-tense verbs and linking words such as <b>first, then, suddenly</b> and <b>finally</b>.</p><label for="storyInput">Your story</label><textarea id="storyInput" placeholder="Write your story here…" spellcheck="true"></textarea><p id="wordCount" role="status"></p><p id="draftStatus" class="hint"></p><button class="btn" id="restoreDraft">Restore my last saved story</button><label class="checkline"><input type="checkbox" id="reviewed"> I checked all three pictures, capital letters and full stops.</label><p class="round-note">Writing is for teacher review. The word count does not grade your English. Your story stays on this device; download it on the result screen to share with your teacher.</p>`;
+ $("storyInput").value=story;$("reviewed").checked=reviewed;
+ function update(){story=$("storyInput").value;reviewed=$("reviewed").checked;const n=wordCount(story);$("wordCount").textContent=n+" words · "+(n>=35?"Minimum reached ✓":(35-n)+" more needed");$("nextBtn").disabled=n<35||!reviewed;$("nextBtn").classList.toggle("ready",n>=35&&reviewed);if(story.trim())$("draftStatus").textContent=safeSave(draftKey(),{story,updatedAt:new Date().toISOString()})?"Draft saved on this device.":"Please copy your story: browser storage is unavailable.";}
+ $("storyInput").oninput=update;$("reviewed").onchange=update;$("restoreDraft").onclick=()=>{try{const saved=JSON.parse(localStorage.getItem(draftKey())||'null');if(saved?.story){$("storyInput").value=saved.story;update()}else $("draftStatus").textContent="No saved story for this name yet."}catch(_){$("draftStatus").textContent="Saved draft is unavailable."}};update();
+}
+function next(){if(finished)return;if(pos===15){if(wordCount(story)>=35&&reviewed)finish();return}if(state[pos].choice===null)return;const prev=QUESTIONS[pos].round;pos++;render();const round=pos===15?3:QUESTIONS[pos].round;if(round!==prev)toastRound(round)}
+function back(){if(pos>0){pos--;render()}}
+const MODEL="Last Sunday, Tom and his family made some sandwiches at home. Then they went to a park and had a picnic beside the lake. After lunch, they watched the ducks swimming on the water. Everyone enjoyed the lovely afternoon.";
+async function finish(){
+ if(finished||pos!==15||wordCount(story)<35||!reviewed)return;finished=true;completedAt=new Date().toISOString();const thisAttempt=attemptId,score=points(),durationSeconds=Math.max(0,Math.round((Date.now()-startedAt)/1000));
+ const payload={studentName:player,gameTitle:document.title,score,total:15,percentage:Math.round(score/15*100),durationSeconds,completedAt,attemptId,gameUrl:location.href};
+ safeSave('picnicAttempt:'+attemptId,{...payload,story,writingStatus:'Teacher review'});
+ setScreen("resultScreen");$("playerResult").textContent=player;$("finalPoints").textContent=score;$("finalTotal").textContent=15;$("resultMessage").textContent=payload.percentage+"% · Grammar score. Story completed: "+wordCount(story)+" words · Teacher review.";
+ $("writingResult").innerHTML='<h2>Your picnic story</h2><p class="story-copy" id="submittedStory"></p><p class="hint">Saved on this device. Download your story and results to share with your teacher.</p><details id="modelStory"><summary>See one possible model story</summary><p class="story-copy"></p><p class="hint">Different stories are possible. Check that yours connects all three pictures.</p></details>';
+ $("submittedStory").textContent=story;$("modelStory p").textContent=MODEL;chime('finish');particles(100);
+ if(/\/_templates?\//.test(location.pathname)){$("recordStatus").textContent="Template preview — score not sent.";return}
+ $("recordStatus").textContent="Sending grammar score to your teacher…";
+ try{if(!window.TeacherRecords)throw Error('unavailable');const result=await TeacherRecords.submit(payload);if(attemptId!==thisAttempt||!finished)return;$("recordStatus").textContent=result.sent?"✅ Score sent to your teacher.":"⚠️ Score saved on this device. Could not send right now."}catch(_){if(attemptId===thisAttempt&&finished)$("recordStatus").textContent="⚠️ Score saved on this device. Could not send right now."}
+}
+function downloadResults(){const text=player+" — Picnic & Comparison Quest\nGrammar: "+points()+"/15 ("+Math.round(points()/15*100)+"%)\nCompleted: "+completedAt+"\nAttempt: "+attemptId+"\nWriting: teacher review · "+wordCount(story)+" words\n\n"+story;const url=URL.createObjectURL(new Blob([text],{type:'text/plain;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='picnic-story-'+attemptId+'.txt';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+function toggleSound(){soundOn=!soundOn;$("soundBtn").textContent=soundOn?"🔊 Sound On":"🔇 Sound Off";$("soundBtn").setAttribute('aria-pressed',String(soundOn))}
+$("startBtn").onclick=start;$("nameInput").onkeydown=e=>{if(e.key==='Enter')start()};$("nextBtn").onclick=next;$("backBtn").onclick=back;$("restartBtn").onclick=restart;$("playAgainBtn").onclick=restart;$("soundBtn").onclick=toggleSound;$("downloadBtn").onclick=downloadResults;
+</script></body></html>
