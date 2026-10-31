@@ -127,11 +127,12 @@
     }
 
   
-    textarea{font:inherit;font-family:"Trebuchet MS",Arial,sans-serif;width:100%;min-height:230px;resize:vertical;padding:18px;border:2px solid var(--line);border-radius:16px;font-size:21px;line-height:1.6;color:var(--ink)}
     #typedAnswer{font:inherit;font-size:25px;width:100%;padding:16px;border:2px solid var(--line);border-radius:16px}
-    .story-pictures{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:18px 0}.story-pictures figure{margin:0}.story-pictures img{display:block;width:100%;border:2px solid var(--line);border-radius:12px;image-rendering:auto}.story-pictures figcaption{text-align:center;margin-top:6px;font-size:17px}
-    .writing-card{width:100%}.writing-card .question{font-size:26px}.writing-card p{font-size:19px;line-height:1.5}.story-copy{white-space:pre-wrap;overflow-wrap:anywhere;text-align:left;font:20px/1.6 "Trebuchet MS",Arial,sans-serif}.hint{color:#5b5772;font-size:17px}.checkline{display:flex;align-items:center;gap:10px;margin:14px 0;font-size:18px}.checkline input{width:24px;height:24px}.round-note{padding:12px;background:#f0eaff;border-radius:12px;text-align:center}#writingResult{margin-top:24px;text-align:left}#writingResult h2{color:var(--purple)}#nameError{color:#b44453}.start label{font-size:21px}button{touch-action:manipulation}#checkBtn{grid-column:1/-1;background:var(--purple);color:#fff}#wordCount{font-size:20px;font-weight:bold}.card:has(textarea){width:100%}.result-area .btn{margin:6px}.result-area .result-sub{overflow-wrap:anywhere}
-    @media(max-width:520px){body{padding:8px}.app{width:100%}.top{padding:14px 10px;gap:8px}.pill{padding:8px 10px;font-size:15px}.start{padding:34px 18px}.card{padding:16px}.story-pictures{gap:5px}.stage{min-height:0}.controls{gap:8px}.btn{padding:12px}.result-area .btn{max-width:100%}}
+    .story-picture{margin:0 auto 22px;max-width:650px;text-align:center}.story-picture img{display:block;width:100%;max-height:500px;object-fit:contain;border-radius:20px;border:2px solid var(--line);background:#f8fbff}.story-picture figcaption{font-size:18px;margin-top:8px;color:#5b5772}
+    .card:has(.story-picture){width:min(900px,100%)}.answers.story-answers{grid-template-columns:1fr}.story-answers .answer{font-size:21px;text-align:left;line-height:1.45}
+    #storyResult{margin-top:24px;text-align:left}#storyResult h2{color:var(--purple)}#storySummary{font:21px/1.6 "Trebuchet MS",Arial,sans-serif}.start label{font-size:21px}#nameError{color:#b44453}button{touch-action:manipulation}#checkBtn{grid-column:1/-1;background:var(--purple);color:#fff}
+    @media(max-width:520px){body{padding:8px}.app{width:100%}.top{padding:14px 10px;gap:8px}.pill{padding:8px 10px;font-size:15px}.start{padding:34px 18px}.card{padding:16px}.stage{min-height:0}.controls{gap:8px}.btn{padding:12px}.story-answers .answer{font-size:19px}}
+
   </style>
 </head>
 <body>
@@ -139,9 +140,9 @@
     <section class="frame" id="startScreen">
       <div class="start">
         <div class="stars">⭐ ✨ ⭐</div>
-        <div class="kicker">A2 · Grammar + KET writing practice</div>
+        <div class="kicker">A2 · Grammar + picture story</div>
         <h1>Picnic &amp;<br>Comparison Quest</h1>
-        <p>5 short/long adjective questions + 10 comparison questions.<br>Then write a story of 35 words or more using three pictures.<br>No timer. Grammar: 15 points. Writing: teacher review.</p>
+        <p>5 short/long adjective questions + 10 comparison questions.<br>Then tell a picnic story: choose one sentence for each picture.<br>18 questions · No typing in the story round · No timer.</p>
         <label for="nameInput">Your name</label><br><input id="nameInput" placeholder="Enter your name" maxlength="80" autocomplete="name"><p id="nameError" role="alert"></p>
         <br>
         <button class="btn" id="startBtn">Start Challenge</button>
@@ -163,7 +164,7 @@
 
         <div class="card">
           <div class="question" id="question"></div>
-          <div class="answers" id="answers"></div><div id="writingArea" class="hidden"></div>
+          <div id="pictureArea" class="hidden"></div><div class="answers" id="answers"></div>
           <div class="feedback" id="feedback"></div>
         </div>
 
@@ -181,7 +182,7 @@
         <h1>Great Job, <span id="playerResult"></span>!</h1>
         <div class="result-score"><span id="finalPoints">0</span>/<span id="finalTotal">4</span></div>
         <p class="result-sub" id="resultMessage"></p>
-        <p class="result-sub" id="recordStatus" role="status"></p><section id="writingResult" class="card"></section><p><button class="btn" id="downloadBtn">Download my results &amp; story</button></p>
+        <p class="result-sub" id="recordStatus" role="status"></p><section id="storyResult" class="card"></section>
         <button class="btn" id="playAgainBtn">↻ Play Again</button>
       </div>
     </section>
@@ -193,17 +194,15 @@
 <script src="/minigame/shared/teacher-records.js"></script>
 <script>
 
-const QUESTIONS=[{"round": 1, "title": "Short or Long?", "q": "Classify “tall” for making comparisons.", "choices": ["Short adjective", "Long adjective"], "a": 0, "ex": "Tall has one syllable. Use taller / tallest.", "type": "choice"}, {"round": 1, "title": "Short or Long?", "q": "Classify “expensive” for making comparisons.", "choices": ["Short adjective", "Long adjective"], "a": 1, "ex": "Expensive has three syllables. Use more / most expensive.", "type": "choice"}, {"round": 1, "title": "Short or Long?", "q": "Classify “happy” for making comparisons.", "choices": ["Short adjective", "Long adjective"], "a": 0, "ex": "Happy has two syllables and ends in -y. In comparison practice, use happier / happiest.", "type": "choice"}, {"round": 1, "title": "Short or Long?", "q": "Classify “beautiful” for making comparisons.", "choices": ["Short adjective", "Long adjective"], "a": 1, "ex": "Beautiful has three syllables. Use more / most beautiful.", "type": "choice"}, {"round": 1, "title": "Short or Long?", "q": "Classify “big” for making comparisons.", "choices": ["Short adjective", "Long adjective"], "a": 0, "ex": "Big has one syllable. Double the final g: bigger / biggest.", "type": "choice"}, {"round": 2, "title": "Comparative Challenge", "q": "An elephant is _____ than a horse.", "choices": ["biggest", "bigger", "more big"], "a": 1, "ex": "Compare two animals: big → bigger + than.", "type": "choice"}, {"round": 2, "title": "Comparative Challenge", "q": "This story is _____ than that story. (interesting)", "choices": ["most interesting", "interestinger", "more interesting"], "a": 2, "ex": "Use more + a long adjective + than.", "type": "choice"}, {"round": 2, "title": "Superlative Challenge", "q": "It was the _____ day of my holiday. (happy)", "choices": ["happiest", "happier", "most happy"], "a": 0, "ex": "Use the superlative for one day in a whole holiday: happy → happiest.", "type": "choice"}, {"round": 2, "title": "Irregular Challenge", "q": "My English is _____ than it was last year. (good)", "choices": ["best", "more good", "better"], "a": 2, "ex": "Good → better → best.", "type": "choice"}, {"round": 2, "title": "Superlative Challenge", "q": "This is the _____ bike in the shop. (expensive)", "choices": ["more expensive", "most expensive", "expensivest"], "a": 1, "ex": "Use the most + a long adjective to compare one item with a whole group.", "type": "choice"}, {"round": 2, "title": "Comparison Builder", "q": "This exercise is _____ than the last one. (easy)", "accepted": ["easier"], "ex": "Easy ends in consonant + y: change y to i and add -er.", "type": "fill"}, {"round": 2, "title": "Comparison Builder", "q": "My bag is heavier _____ your bag.", "accepted": ["than"], "ex": "Use than after a comparative adjective.", "type": "fill"}, {"round": 2, "title": "Comparison Builder", "q": "Of all the flowers here, this is the _____. (beautiful)", "accepted": ["most beautiful"], "ex": "The is already in the sentence: write most beautiful.", "type": "fill"}, {"round": 2, "title": "Irregular Challenge", "q": "The weather today is _____ than yesterday. (bad)", "choices": ["worse", "worst", "more bad"], "a": 0, "ex": "Bad → worse → worst.", "type": "choice"}, {"round": 2, "title": "Comparison Builder", "q": "This is the _____ river in the country. (long)", "accepted": ["longest"], "ex": "Use the + adjective-est to compare one river with all the others in the country.", "type": "fill"}];
+const QUESTIONS=[{"round": 1, "title": "Short or Long?", "q": "Classify “tall” for making comparisons.", "choices": ["Short adjective", "Long adjective"], "a": 0, "ex": "Tall has one syllable. Use taller / tallest.", "type": "choice"}, {"round": 1, "title": "Short or Long?", "q": "Classify “expensive” for making comparisons.", "choices": ["Short adjective", "Long adjective"], "a": 1, "ex": "Expensive has three syllables. Use more / most expensive.", "type": "choice"}, {"round": 1, "title": "Short or Long?", "q": "Classify “happy” for making comparisons.", "choices": ["Short adjective", "Long adjective"], "a": 0, "ex": "Happy has two syllables and ends in -y. In comparison practice, use happier / happiest.", "type": "choice"}, {"round": 1, "title": "Short or Long?", "q": "Classify “beautiful” for making comparisons.", "choices": ["Short adjective", "Long adjective"], "a": 1, "ex": "Beautiful has three syllables. Use more / most beautiful.", "type": "choice"}, {"round": 1, "title": "Short or Long?", "q": "Classify “big” for making comparisons.", "choices": ["Short adjective", "Long adjective"], "a": 0, "ex": "Big has one syllable. Double the final g: bigger / biggest.", "type": "choice"}, {"round": 2, "title": "Comparative Challenge", "q": "An elephant is _____ than a horse.", "choices": ["biggest", "bigger", "more big"], "a": 1, "ex": "Compare two animals: big → bigger + than.", "type": "choice"}, {"round": 2, "title": "Comparative Challenge", "q": "This story is _____ than that story. (interesting)", "choices": ["most interesting", "interestinger", "more interesting"], "a": 2, "ex": "Use more + a long adjective + than.", "type": "choice"}, {"round": 2, "title": "Superlative Challenge", "q": "It was the _____ day of my holiday. (happy)", "choices": ["happiest", "happier", "most happy"], "a": 0, "ex": "Use the superlative for one day in a whole holiday: happy → happiest.", "type": "choice"}, {"round": 2, "title": "Irregular Challenge", "q": "My English is _____ than it was last year. (good)", "choices": ["best", "more good", "better"], "a": 2, "ex": "Good → better → best.", "type": "choice"}, {"round": 2, "title": "Superlative Challenge", "q": "This is the _____ bike in the shop. (expensive)", "choices": ["more expensive", "most expensive", "expensivest"], "a": 1, "ex": "Use the most + a long adjective to compare one item with a whole group.", "type": "choice"}, {"round": 2, "title": "Comparison Builder", "q": "This exercise is _____ than the last one. (easy)", "accepted": ["easier"], "ex": "Easy ends in consonant + y: change y to i and add -er.", "type": "fill"}, {"round": 2, "title": "Comparison Builder", "q": "My bag is heavier _____ your bag.", "accepted": ["than"], "ex": "Use than after a comparative adjective.", "type": "fill"}, {"round": 2, "title": "Comparison Builder", "q": "Of all the flowers here, this is the _____. (beautiful)", "accepted": ["most beautiful"], "ex": "The is already in the sentence: write most beautiful.", "type": "fill"}, {"round": 2, "title": "Irregular Challenge", "q": "The weather today is _____ than yesterday. (bad)", "choices": ["worse", "worst", "more bad"], "a": 0, "ex": "Bad → worse → worst.", "type": "choice"}, {"round": 2, "title": "Comparison Builder", "q": "This is the _____ river in the country. (long)", "accepted": ["longest"], "ex": "Use the + adjective-est to compare one river with all the others in the country.", "type": "fill"}, {"round": 3, "type": "choice", "title": "Tell the Story · Picture 1", "q": "Choose the best beginning for this story.", "image": "assets/picnic-clear-1.webp", "alt": "Picture 1: the family in their kitchen before the picnic.", "choices": ["First, the family bought new clothes at a shop.", "First, the family made sandwiches and packed a picnic basket.", "First, the family washed their car outside."], "a": 1, "ex": "The family prepared food at home before their picnic."}, {"round": 3, "type": "choice", "title": "Tell the Story · Picture 2", "q": "What happened next?", "image": "assets/picnic-clear-2.webp", "alt": "Picture 2: the family together in a park by a lake.", "choices": ["Then, they ate dinner in a restaurant.", "Then, they played football in the garden.", "Then, they had a picnic beside the lake."], "a": 2, "ex": "They sat on a blanket and enjoyed their picnic beside the lake."}, {"round": 3, "type": "choice", "title": "Tell the Story · Picture 3", "q": "Choose the best ending for this story.", "image": "assets/picnic-clear-3.webp", "alt": "Picture 3: the family facing the water at the end of the picnic.", "choices": ["Finally, they watched the ducks swimming on the lake.", "Finally, they went swimming in the lake.", "Finally, they caught a big fish for dinner."], "a": 0, "ex": "They watched the ducks on the lake after their picnic."}];
 const MODE="present", $=id=>document.getElementById(id);
 const state=QUESTIONS.map(()=>({choice:null,correct:false,text:""}));
-let pos=0,player="",soundOn=true,audioCtx=null,roundTimer=null,startedAt=null,attemptId="",finished=false,story="",reviewed=false,completedAt="";
+let pos=0,player="",soundOn=true,audioCtx=null,roundTimer=null,startedAt=null,attemptId="",finished=false,completedAt="";
 const totalRounds=3;
 const roundElement=()=>$("roundPill"),counterElement=()=>$("questionPill");
-$("total").textContent=15;
+$("total").textContent=QUESTIONS.length;
 function points(){return state.reduce((n,s)=>n+Number(s.correct),0)}
 function safeSave(key,value){try{localStorage.setItem(key,JSON.stringify(value));return true}catch(_){return false}}
-function draftKey(){return "picnicStoryDraft:"+player.toLowerCase()}
-function wordCount(text){return (text.trim().match(/[\p{L}\p{N}]+(?:['’\-][\p{L}\p{N}]+)*/gu)||[]).length}
 function normal(text){return text.trim().toLowerCase().replace(/\s+/g," ").replace(/[.!?]+$/,"")}
 function chime(kind) {
   if (!soundOn) return;
@@ -262,24 +261,24 @@ function setScreen(id){
   ["startScreen","gameScreen","resultScreen"].forEach(x=>$(x).classList.toggle("hidden",x!==id));
 }
 function newAttempt(){
- attemptId=window.crypto?.randomUUID?.()||Date.now()+"-"+Math.random().toString(36).slice(2);startedAt=Date.now();finished=false;completedAt="";pos=0;story="";reviewed=false;
+ attemptId=window.crypto?.randomUUID?.()||Date.now()+"-"+Math.random().toString(36).slice(2);startedAt=Date.now();finished=false;completedAt="";pos=0;
  state.forEach(s=>Object.assign(s,{choice:null,correct:false,text:""}));
  setScreen("gameScreen");render();toastRound(1);
 }
 function start(){const name=$("nameInput").value.trim();if(!name){$("nameError").textContent="Please enter your name first.";$("nameInput").focus();return}player=name;newAttempt()}
 function restart(){newAttempt()}
 function render(){
- const isWriting=pos===15,q=QUESTIONS[pos],st=state[pos];
- roundElement().textContent="Round "+(isWriting?3:q.round)+" / 3";
- counterElement().textContent="Activity "+(pos+1)+" / 16";
- $("bar").style.width=((state.filter(s=>s.choice!==null).length+Number(finished))/16*100)+"%";
+ const q=QUESTIONS[pos],st=state[pos];
+ roundElement().textContent="Round "+q.round+" / 3";
+ counterElement().textContent="Activity "+(pos+1)+" / "+QUESTIONS.length;
+ $("bar").style.width=(state.filter(s=>s.choice!==null).length/QUESTIONS.length*100)+"%";
  $("score").textContent=points();$("backBtn").disabled=pos===0;
- $("answers").innerHTML="";$("writingArea").innerHTML="";$("writingArea").classList.toggle("hidden",!isWriting);
+ $("answers").innerHTML="";$("pictureArea").innerHTML="";$("pictureArea").classList.toggle("hidden",!q.image);$("answers").classList.toggle("story-answers",!!q.image);
  $("feedback").textContent="";$("feedback").className="feedback";$("feedback").setAttribute("aria-live","polite");
- $("nextBtn").textContent=isWriting?"Finish & save →":"Next →";
- if(isWriting){renderWriting();return}
- $("kicker").textContent=q.round===1?"Round 1 · Adjective types":"Round 2 · Comparatives & superlatives";
- $("title").textContent=q.title;$("instruction").textContent=q.type==='fill'?"Type the missing word or words. Check your answer once.":"Choose one answer. Each question is worth 1 point.";
+ $("nextBtn").textContent=pos===QUESTIONS.length-1?"Finish & save →":"Next →";
+ if(q.image){const figure=document.createElement("figure");figure.className="story-picture";const img=document.createElement("img");img.src=q.image;img.alt=q.alt;const caption=document.createElement("figcaption");caption.textContent="Picture "+(pos-14)+" of 3";figure.append(img,caption);$("pictureArea").append(figure)}
+ $("kicker").textContent=q.round===1?"Round 1 · Adjective types":q.round===2?"Round 2 · Comparatives & superlatives":"Round 3 · Tell the story";
+ $("title").textContent=q.title;$("instruction").textContent=q.type==='fill'?"Type the missing word or words. Check your answer once.":q.image?"Look at the picture and choose the sentence that tells this part of the story.":"Choose one answer. Each question is worth 1 point.";
  $("question").textContent=q.q;
  if(q.type==='choice')q.choices.forEach((label,n)=>{const b=document.createElement("button");b.className="answer";b.textContent=label;b.disabled=st.choice!==null;if(st.choice!==null){if(n===q.a)b.classList.add("good");if(n===st.choice&&n!==q.a)b.classList.add("bad")}b.onclick=()=>answer(n);$("answers").append(b)});
  else {const input=document.createElement("input");input.id="typedAnswer";input.setAttribute("aria-label","Missing word or words");input.autocomplete="off";input.spellcheck=false;input.value=st.text;input.disabled=st.choice!==null;input.style.gridColumn="1/-1";input.addEventListener("input",()=>{st.text=input.value});input.addEventListener("keydown",e=>{if(e.key==='Enter')answer(input.value)});const b=document.createElement("button");b.id="checkBtn";b.className="btn";b.textContent="Check answer";b.disabled=st.choice!==null;b.onclick=()=>answer(input.value);$("answers").append(input,b)}
@@ -287,29 +286,20 @@ function render(){
  $("nextBtn").disabled=st.choice===null;$("nextBtn").classList.toggle("ready",st.choice!==null);
  const stage=$("gameScreen").querySelector('.stage');stage.classList.remove('fx-enter');void stage.offsetWidth;stage.classList.add('fx-enter');
 }
-function answer(value){if(pos>=15||state[pos].choice!==null)return;const q=QUESTIONS[pos];if(q.type==='fill'&&!normal(String(value))){$("feedback").textContent="Type your answer first.";return}const st=state[pos];st.choice=value;st.correct=q.type==='fill'?q.accepted.includes(normal(value)):value===q.a;if(q.type==='fill')st.text=value;chime(st.correct?'correct':'wrong');if(st.correct)particles(24);render();animateScore()}
-function renderWriting(){
- $("kicker").textContent="Round 3 · KET-style Part 7 practice";$("title").textContent="Going on a Picnic";$("instruction").textContent="Look at all three pictures. Write the story shown in the pictures. Write 35 words or more.";$("question").textContent="Tell one story with a beginning, a middle and an ending.";
- $("writingArea").innerHTML=`<div class="story-pictures"><figure><img src="assets/picnic-1.webp" alt="Picture 1 of the story: a family at home with food on a table"><figcaption>Picture 1</figcaption></figure><figure><img src="assets/picnic-2.webp" alt="Picture 2 of the story: people having a picnic beside a lake"><figcaption>Picture 2</figcaption></figure><figure><img src="assets/picnic-3.webp" alt="Picture 3 of the story: people looking towards ducks on the lake"><figcaption>Picture 3</figcaption></figure></div><p class="hint">Zoom your browser to see the pictures more closely. Use past-tense verbs and linking words such as <b>first, then, suddenly</b> and <b>finally</b>.</p><label for="storyInput">Your story</label><textarea id="storyInput" placeholder="Write your story here…" spellcheck="true"></textarea><p id="wordCount" role="status"></p><p id="draftStatus" class="hint"></p><button class="btn" id="restoreDraft">Restore my last saved story</button><label class="checkline"><input type="checkbox" id="reviewed"> I checked all three pictures, capital letters and full stops.</label><p class="round-note">Writing is for teacher review. The word count does not grade your English. Your story stays on this device; download it on the result screen to share with your teacher.</p>`;
- $("storyInput").value=story;$("reviewed").checked=reviewed;
- function update(){story=$("storyInput").value;reviewed=$("reviewed").checked;const n=wordCount(story);$("wordCount").textContent=n+" words · "+(n>=35?"Minimum reached ✓":(35-n)+" more needed");$("nextBtn").disabled=n<35||!reviewed;$("nextBtn").classList.toggle("ready",n>=35&&reviewed);if(story.trim())$("draftStatus").textContent=safeSave(draftKey(),{story,updatedAt:new Date().toISOString()})?"Draft saved on this device.":"Please copy your story: browser storage is unavailable.";}
- $("storyInput").oninput=update;$("reviewed").onchange=update;$("restoreDraft").onclick=()=>{try{const saved=JSON.parse(localStorage.getItem(draftKey())||'null');if(saved?.story){$("storyInput").value=saved.story;update()}else $("draftStatus").textContent="No saved story for this name yet."}catch(_){$("draftStatus").textContent="Saved draft is unavailable."}};update();
-}
-function next(){if(finished)return;if(pos===15){if(wordCount(story)>=35&&reviewed)finish();return}if(state[pos].choice===null)return;const prev=QUESTIONS[pos].round;pos++;render();const round=pos===15?3:QUESTIONS[pos].round;if(round!==prev)toastRound(round)}
+function answer(value){if(finished||state[pos].choice!==null)return;const q=QUESTIONS[pos];if(q.type==='fill'&&!normal(String(value))){$("feedback").textContent="Type your answer first.";return}const st=state[pos];st.choice=value;st.correct=q.type==='fill'?q.accepted.includes(normal(value)):value===q.a;if(q.type==='fill')st.text=value;chime(st.correct?'correct':'wrong');if(st.correct)particles(24);render();animateScore()}
+function next(){if(finished||state[pos].choice===null)return;if(pos===QUESTIONS.length-1){finish();return}const prev=QUESTIONS[pos].round;pos++;render();if(QUESTIONS[pos].round!==prev)toastRound(QUESTIONS[pos].round)}
 function back(){if(pos>0){pos--;render()}}
-const MODEL="Last Sunday, Tom and his family made some sandwiches at home. Then they went to a park and had a picnic beside the lake. After lunch, they watched the ducks swimming on the water. Everyone enjoyed the lovely afternoon.";
 async function finish(){
- if(finished||pos!==15||wordCount(story)<35||!reviewed)return;finished=true;completedAt=new Date().toISOString();const thisAttempt=attemptId,score=points(),durationSeconds=Math.max(0,Math.round((Date.now()-startedAt)/1000));
- const payload={studentName:player,gameTitle:document.title,score,total:15,percentage:Math.round(score/15*100),durationSeconds,completedAt,attemptId,gameUrl:location.href};
- safeSave('picnicAttempt:'+attemptId,{...payload,story,writingStatus:'Teacher review'});
- setScreen("resultScreen");$("playerResult").textContent=player;$("finalPoints").textContent=score;$("finalTotal").textContent=15;$("resultMessage").textContent=payload.percentage+"% · Grammar score. Story completed: "+wordCount(story)+" words · Teacher review.";
- $("writingResult").innerHTML='<h2>Your picnic story</h2><p class="story-copy" id="submittedStory"></p><p class="hint">Saved on this device. Download your story and results to share with your teacher.</p><details id="modelStory"><summary>See one possible model story</summary><p class="story-copy"></p><p class="hint">Different stories are possible. Check that yours connects all three pictures.</p></details>';
- $("submittedStory").textContent=story;$("modelStory").querySelector("p").textContent=MODEL;chime('finish');particles(100);
+ if(finished||state.some(s=>s.choice===null))return;finished=true;completedAt=new Date().toISOString();const thisAttempt=attemptId,score=points(),durationSeconds=Math.max(0,Math.round((Date.now()-startedAt)/1000));
+ const payload={studentName:player,gameTitle:document.title,score,total:QUESTIONS.length,percentage:Math.round(score/QUESTIONS.length*100),durationSeconds,completedAt,attemptId,gameUrl:location.href};
+ safeSave('picnicAttempt:'+attemptId,payload);
+ setScreen("resultScreen");$("playerResult").textContent=player;$("finalPoints").textContent=score;$("finalTotal").textContent=QUESTIONS.length;$("resultMessage").textContent=payload.percentage+"% · Grammar + picture-story score. Great effort!";
+ $("storyResult").innerHTML='<h2>The picnic story</h2><p id="storySummary"></p>';
+ $("storySummary").textContent=QUESTIONS.filter(q=>q.round===3).map(q=>q.choices[q.a]).join(" ");chime('finish');particles(100);
  if(/\/_templates?\//.test(location.pathname)){$("recordStatus").textContent="Template preview — score not sent.";return}
- $("recordStatus").textContent="Sending grammar score to your teacher…";
+ $("recordStatus").textContent="Sending score to your teacher…";
  try{if(!window.TeacherRecords)throw Error('unavailable');const result=await TeacherRecords.submit(payload);if(attemptId!==thisAttempt||!finished)return;$("recordStatus").textContent=result.sent?"✅ Score sent to your teacher.":"⚠️ Score saved on this device. Could not send right now."}catch(_){if(attemptId===thisAttempt&&finished)$("recordStatus").textContent="⚠️ Score saved on this device. Could not send right now."}
 }
-function downloadResults(){const text=player+" — Picnic & Comparison Quest\nGrammar: "+points()+"/15 ("+Math.round(points()/15*100)+"%)\nCompleted: "+completedAt+"\nAttempt: "+attemptId+"\nWriting: teacher review · "+wordCount(story)+" words\n\n"+story;const url=URL.createObjectURL(new Blob([text],{type:'text/plain;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='picnic-story-'+attemptId+'.txt';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
 function toggleSound(){soundOn=!soundOn;$("soundBtn").textContent=soundOn?"🔊 Sound On":"🔇 Sound Off";$("soundBtn").setAttribute('aria-pressed',String(soundOn))}
-$("startBtn").onclick=start;$("nameInput").onkeydown=e=>{if(e.key==='Enter')start()};$("nextBtn").onclick=next;$("backBtn").onclick=back;$("restartBtn").onclick=restart;$("playAgainBtn").onclick=restart;$("soundBtn").onclick=toggleSound;$("downloadBtn").onclick=downloadResults;
+$("startBtn").onclick=start;$("nameInput").onkeydown=e=>{if(e.key==='Enter')start()};$("nextBtn").onclick=next;$("backBtn").onclick=back;$("restartBtn").onclick=restart;$("playAgainBtn").onclick=restart;$("soundBtn").onclick=toggleSound;
 </script></body></html>
