@@ -112,5 +112,11 @@
     "description": "18 questions: 5 short/long adjective questions, 10 comparative/superlative questions and 3 clear illustrated multiple-choice picnic story questions. No writing task. No timer.",
     "level": "A2",
     "path": "./picnic-comparison-quest/"
+  },
+  {
+    "title": "Present Simple & S/ES Quest",
+    "description": "30 questions: 10 present simple choices, 8 tap-to-build sentences and 12 ending-sound challenges (/s/, /z/, /ɪz/). No timer.",
+    "level": "A1–A2",
+    "path": "./present-simple-sounds/"
   }
 ]
