@@ -134,9 +134,9 @@
     <section class="frame" id="startScreen">
       <div class="start">
         <div class="stars">⭐ ✨ ⭐</div>
-        <div class="kicker">Five worlds · One grammar quest · A1–A2</div>
+        <div class="kicker">Four worlds · One grammar quest · A1–A2</div>
         <h1>Grammar<br>World Quest</h1>
-        <p>40 questions · 5 rounds · No timer<br>Some &amp; any · Comparisons · Past simple<br>Numbers · Prepositions of place</p>
+        <p>35 questions · 4 rounds · No timer<br>Some &amp; any · Comparisons · Past simple<br>Cardinal &amp; ordinal numbers</p>
         <label for="nameInput">Student name</label><br><input id="nameInput" maxlength="80" autocomplete="name" placeholder="Enter your name" required><p id="nameError" role="alert"></p>
         <br>
         <button class="btn" id="startBtn">Start Challenge</button>
@@ -145,14 +145,14 @@
 
     <section class="frame hidden" id="gameScreen">
       <div class="top">
-        <div class="pill" id="roundPill">Round 1 / 5</div>
-        <div class="pill">⭐ <span id="score">0</span> / <span id="total">40</span> points</div>
-        <div class="pill" id="questionPill">Question 1 / 40</div>
+        <div class="pill" id="roundPill">Round 1 / 4</div>
+        <div class="pill">⭐ <span id="score">0</span> / <span id="total">35</span> points</div>
+        <div class="pill" id="questionPill">Question 1 / 35</div>
       </div>
       <div class="progress"><div id="bar"></div></div>
 
       <div class="stage">
-        <div class="kicker" id="kicker">Grammar quest · 1 of 40</div>
+        <div class="kicker" id="kicker">Grammar quest · 1 of 35</div>
         <h1 id="title">Choose the best answer</h1>
         <div class="instruction" id="instruction">Pick the sentence that sounds natural.</div>
 
@@ -174,7 +174,7 @@
       <div class="result-area">
         <div class="result-stars">🌟 🎉 🌟</div>
         <h1>Great Job, <span id="playerResult"></span>!</h1>
-        <div class="result-score"><span id="finalPoints">0</span>/<span id="finalTotal">40</span></div>
+        <div class="result-score"><span id="finalPoints">0</span>/<span id="finalTotal">35</span></div>
         <p class="result-sub" id="resultMessage"></p>
         <p class="result-sub" id="recordStatus"></p>
         <button class="btn" id="playAgainBtn">↻ Play Again</button>
@@ -709,76 +709,6 @@ const QUESTIONS=[
     ],
     "a": 2,
     "ex": "Use the cardinal number thirteen to say how many. Thirteenth gives a position."
-  },
-  {
-    "round": 5,
-    "kicker": "Where is it?",
-    "title": "Prepositions of place",
-    "instruction": "Choose the best answer.",
-    "q": "The toys are inside a box. The book is resting on the table’s surface.\nThe toys are _____ the box. The book is _____ the table.",
-    "choices": [
-      "in / on",
-      "on / in",
-      "under / behind"
-    ],
-    "a": 0,
-    "ex": "In means inside. On means touching a surface from above."
-  },
-  {
-    "round": 5,
-    "kicker": "Where is it?",
-    "title": "Prepositions of place",
-    "instruction": "Choose the best answer.",
-    "q": "The cat is directly beneath the table. A picture is higher up the wall than the clock.\nThe cat is _____ the table. The clock is _____ the picture.",
-    "choices": [
-      "on / in",
-      "under / below",
-      "between / on"
-    ],
-    "a": 1,
-    "ex": "Under means directly beneath. Below means at a lower level; the objects need not touch."
-  },
-  {
-    "round": 5,
-    "kicker": "Where is it?",
-    "title": "Prepositions of place",
-    "instruction": "Choose the best answer.",
-    "q": "The café has the bank immediately to its left and the library immediately to its right.\nThe café is _____ the bank and _____ the bank and the library.",
-    "choices": [
-      "behind / under",
-      "between / next to",
-      "next to / between"
-    ],
-    "a": 2,
-    "ex": "Next to means immediately beside. Between places one thing in the middle of two others."
-  },
-  {
-    "round": 5,
-    "kicker": "Where is it?",
-    "title": "Prepositions of place",
-    "instruction": "Choose the best answer.",
-    "q": "You are waiting outside a cinema, facing its entrance. Your friend stands directly ahead of you, closer to the entrance. Your friend is _____ you.",
-    "choices": [
-      "in front of",
-      "behind",
-      "under"
-    ],
-    "a": 0,
-    "ex": "In front of means ahead of you in the direction you are facing."
-  },
-  {
-    "round": 5,
-    "kicker": "Where is it?",
-    "title": "Prepositions of place",
-    "instruction": "Choose the best answer.",
-    "q": "You are waiting outside a cinema, facing its entrance. Your brother joins the queue directly at your back. Your brother is _____ you.",
-    "choices": [
-      "below",
-      "behind",
-      "in front of"
-    ],
-    "a": 1,
-    "ex": "Behind means at the back of someone or something."
   }
 ];
 
