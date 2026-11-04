@@ -118,5 +118,11 @@
     "description": "30 questions: 10 present simple choices, 8 tap-to-build sentences and 12 ending-sound challenges (/s/, /z/, /ɪz/). No timer.",
     "level": "A1–A2",
     "path": "./present-simple-sounds/"
+  },
+  {
+    "title": "Grammar World Quest",
+    "description": "40 questions across 5 rounds: there is/are with some/any (6), comparisons (10), past simple (14), cardinal/ordinal numbers (5) and prepositions (5). Choices and tap-to-build sentences. No timer.",
+    "level": "A1–A2",
+    "path": "./grammar-world-quest/"
   }
 ]

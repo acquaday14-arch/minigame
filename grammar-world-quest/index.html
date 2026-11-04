@@ -1,0 +1,997 @@
+<!doctype html>
+<html lang="en" data-template-effects-version="2">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Grammar World Quest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --purple:#5b36d6;--purple2:#7a57eb;--ink:#20285c;--pink:#ef5aa7;
+      --yellow:#ffd76a;--mint:#6be0b2;--sky:#74c7ff;--soft:#f8f6ff;--line:#d9cff8;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;min-height:100vh;padding:18px;
+      font-family:"Fredoka",ui-rounded,"Trebuchet MS",Arial,sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at 9% 12%,#ffe2f0 0 7%,transparent 7.5%),
+        radial-gradient(circle at 90% 14%,#dff5ff 0 8%,transparent 8.5%),
+        linear-gradient(180deg,#f8fbff,#f4efff);
+    }
+    button,input{font:inherit}
+    .app{width:min(1060px,98vw);margin:1vh auto}
+    .frame{
+      background:#fff;border:4px solid #4b32bf;border-radius:32px;overflow:hidden;
+      box-shadow:0 14px 0 #ded5ff,0 24px 44px rgba(63,47,147,.14)
+    }
+    .top{
+      background:linear-gradient(135deg,var(--purple),#6541dc);
+      padding:18px 28px;color:#fff;display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:center
+    }
+    .pill{border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.12);padding:9px 15px;border-radius:999px;font-weight:700}
+    .top .pill:last-child{justify-self:end}
+    .progress{height:10px;background:#dacdfd}
+    .progress>div{height:100%;width:25%;background:linear-gradient(90deg,#ffd75f,#ffae73);transition:.25s}
+    .stage{padding:28px 34px 24px;min-height:650px;position:relative}
+    .kicker{text-align:center;color:var(--pink);font-size:14px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+    h1{text-align:center;font-size:clamp(38px,6vw,62px);margin:8px 0 8px;color:#432cb5;line-height:.98}
+    .instruction{text-align:center;font-size:20px;font-weight:600;margin-bottom:24px}
+    .card{
+      width:min(780px,100%);margin:0 auto;border:2px solid var(--line);border-radius:24px;padding:24px;
+      background:linear-gradient(180deg,#fff,#fcfbff)
+    }
+    .question{white-space:pre-line;font-size:clamp(24px,4vw,36px);font-weight:700;text-align:center;margin:6px 0 22px}
+    .answers{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .answer{
+      border:3px solid #ded3fa;background:#fbf9ff;border-radius:18px;padding:15px 18px;color:var(--ink);
+      font-weight:700;font-size:22px;cursor:pointer;transition:.14s
+    }
+    .answer:hover{transform:translateY(-2px);border-color:#aa8df3}
+    .answer.good{border-color:#65d5a8;background:#ebfff6;color:#17734e;animation:pop .28s ease}
+    .answer.bad{border-color:#ff98a4;background:#fff0f2;color:#a63a47;animation:shake .28s ease}
+    .feedback{min-height:42px;text-align:center;margin:18px 0 4px;font-size:19px;font-weight:700}
+    .controls{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:14px;margin-top:28px}
+    .btn{border:2px solid #dbd2f8;border-radius:15px;background:#fff;color:#4734a9;padding:12px 18px;font-weight:700;cursor:pointer}
+    .controls .next{justify-self:end;background:linear-gradient(135deg,#ffd37c,#ffbd84);border:0;color:#76563b}
+    .center{text-align:center}
+    .hidden{display:none!important}
+    .start{padding:60px 32px;text-align:center}
+    .start p{font-size:19px;color:#667085}
+    .start input{width:min(560px,100%);padding:15px 17px;border:2px solid #d8cff4;border-radius:16px;font-size:18px}
+    .start .btn{margin-top:12px;background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;border:0}
+    .stars{font-size:26px;letter-spacing:5px}
+    .confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:20}
+    .confetti i{position:absolute;width:10px;height:16px;border-radius:3px;animation:fall 900ms linear forwards}
+    @keyframes pop{50%{transform:scale(1.035)}}
+    @keyframes shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+    @keyframes fall{from{transform:translateY(-10vh) rotate(0)}to{transform:translateY(110vh) rotate(500deg);opacity:.7}}
+    @media(max-width:700px){.top{grid-template-columns:1fr 1fr}.top>div:nth-child(2){grid-column:1/-1;grid-row:2;text-align:center}.stage{padding:22px 16px}.answers{grid-template-columns:1fr}.controls{grid-template-columns:1fr 1fr}.controls .restart{display:none}}
+  
+    /* Template FX v2 — reduced-motion aware and dependency-free */
+    .fx-enter{animation:fx-enter .38s cubic-bezier(.2,.8,.2,1) both}
+    .answer{transition:transform .17s ease,border-color .2s ease,box-shadow .2s ease,background .2s ease}
+    .answer:active,.btn:active{transform:scale(.97)}
+    .answer:focus-visible,.btn:focus-visible{outline:4px solid #f7bb56;outline-offset:3px}
+    .answer.good{box-shadow:0 0 0 4px rgba(81,213,157,.13)}
+    .answer.bad{box-shadow:0 0 0 4px rgba(255,118,144,.13)}
+    .answer:disabled{cursor:default}
+    .pill.score-pulse,.score-pulse{animation:fx-pulse .35s ease}
+    .feedback.success{color:#10845c;animation:fx-pop .4s ease both}
+    .feedback.error{color:#b44453;animation:fx-shake .32s ease both}
+    .mid-actions{display:flex;gap:8px;align-items:center;justify-content:center}
+    .mid-actions .btn{white-space:nowrap}
+    .btn:disabled{opacity:.4;cursor:not-allowed;filter:grayscale(.25)}
+    .next.ready{animation:fx-glow 1.8s ease-in-out infinite}
+    .fx-particles{position:fixed;inset:0;z-index:100;pointer-events:none;overflow:hidden}
+    .fx-particles span{position:absolute;top:-24px;width:10px;height:16px;border-radius:3px;animation:fx-rain 1.15s cubic-bezier(.2,.7,.5,1) forwards}
+    .fx-round-toast{position:fixed;inset:0;z-index:90;pointer-events:none;display:flex;justify-content:center;align-items:center;background:rgba(45,29,122,.11)}
+    .fx-round-toast.hidden{display:none!important}
+    .fx-round-pill{max-width:90vw;
+      text-align:center;border:4px solid #fff;border-radius:28px;
+      background:linear-gradient(135deg,#5b36d6,#8b6cf0);color:white;
+      padding:24px 36px;box-shadow:0 20px 60px rgba(54,38,152,.25);
+      font-size:clamp(25px,4vw,42px);font-weight:700;animation:fx-toast .7s ease both
+    }
+    .fx-round-pill small{display:block;font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:#ffdf85;margin-bottom:4px}
+    .result-area{text-align:center;padding:56px 24px}
+    .result-area h1{font-size:clamp(40px,6vw,64px);margin:10px 0;color:#432cb5}
+    .result-area .result-score{font-size:clamp(60px,10vw,100px);color:#5b36d6;font-weight:700;line-height:1.12}
+    .result-area .result-sub{font-size:21px;margin:8px 0 28px}
+    .result-area .btn{background:#6040d7;color:#fff;border:0;padding:15px 30px;font-size:18px}
+    .result-area .result-stars{font-size:38px;letter-spacing:8px;animation:fx-float 2s ease-in-out infinite}
+    .picture{animation:fx-picture-in .55s cubic-bezier(.2,.8,.2,1) both;transition:transform .25s ease,box-shadow .25s ease}
+    .picture:hover{transform:translateY(-3px) rotate(-1deg);box-shadow:0 17px 34px rgba(82,58,173,.21)}
+    .picture img{width:100%;height:100%;object-fit:cover;display:block}
+    @keyframes fx-enter{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes fx-pop{0%{transform:scale(.83);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+    @keyframes fx-pulse{50%{transform:scale(1.09)}}
+    @keyframes fx-shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+    @keyframes fx-glow{50%{box-shadow:0 0 0 6px rgba(255,205,100,.22)}}
+    @keyframes fx-rain{0%{transform:translateY(-10vh) rotate(0deg);opacity:1}100%{transform:translateY(112vh) rotate(620deg);opacity:0}}
+    @keyframes fx-toast{0%{transform:scale(.7) translateY(25px);opacity:0}40%{transform:scale(1.05);opacity:1}100%{transform:scale(1);opacity:1}}
+    @keyframes fx-float{50%{transform:translateY(-9px)}}
+    @keyframes fx-picture-in{from{opacity:0;transform:scale(.91) rotate(-2deg)}to{opacity:1;transform:scale(1) rotate(0)}}
+    @media(max-width:700px){
+      .controls{grid-template-columns:1fr 1fr}
+      .controls .mid-actions{grid-column:1/-1;grid-row:2;justify-content:center}
+      .controls .restart{display:inline-flex}
+      .result-area{padding:42px 16px}
+      .mid-actions .btn{font-size:14px;padding:10px 12px}
+    }
+    @media(prefers-reduced-motion:reduce){
+      *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+    }
+
+    .order-mode{display:flex;flex-direction:column;gap:18px}#sentenceTray{min-height:80px;padding:14px;border:2px dashed #ac93ed;border-radius:16px;background:#f5f0ff;display:flex;flex-wrap:wrap;gap:8px;align-items:center}#wordBank{display:flex;gap:9px;flex-wrap:wrap;justify-content:center}#wordBank .answer{padding:12px 16px}.feedback{line-height:1.5}.btn,.answer{min-height:48px}.start label{font-size:20px}.stage{min-height:620px}.top .pill{font-size:18px}@media(max-width:500px){body{padding:8px}.app{width:100%}.top{padding:16px 12px;gap:8px}.top .pill{font-size:14px;padding:9px}.card{padding:18px 12px}h1{font-size:38px}.controls{gap:9px}.start{padding:38px 18px}.feedback{font-size:18px}.btn{padding:12px}}
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="frame" id="startScreen">
+      <div class="start">
+        <div class="stars">⭐ ✨ ⭐</div>
+        <div class="kicker">Five worlds · One grammar quest · A1–A2</div>
+        <h1>Grammar<br>World Quest</h1>
+        <p>40 questions · 5 rounds · No timer<br>Some &amp; any · Comparisons · Past simple<br>Numbers · Prepositions of place</p>
+        <label for="nameInput">Student name</label><br><input id="nameInput" maxlength="80" autocomplete="name" placeholder="Enter your name" required><p id="nameError" role="alert"></p>
+        <br>
+        <button class="btn" id="startBtn">Start Challenge</button>
+      </div>
+    </section>
+
+    <section class="frame hidden" id="gameScreen">
+      <div class="top">
+        <div class="pill" id="roundPill">Round 1 / 5</div>
+        <div class="pill">⭐ <span id="score">0</span> / <span id="total">40</span> points</div>
+        <div class="pill" id="questionPill">Question 1 / 40</div>
+      </div>
+      <div class="progress"><div id="bar"></div></div>
+
+      <div class="stage">
+        <div class="kicker" id="kicker">Grammar quest · 1 of 40</div>
+        <h1 id="title">Choose the best answer</h1>
+        <div class="instruction" id="instruction">Pick the sentence that sounds natural.</div>
+
+        <div class="card">
+          <div class="question" id="question"></div>
+          <div class="answers" id="answers"></div>
+          <div class="feedback" id="feedback"></div>
+        </div>
+
+        <div class="controls">
+          <button class="btn" id="backBtn">← Back</button>
+          <div class="mid-actions"><button class="btn" id="soundBtn" aria-pressed="true">🔊 Sound On</button><button class="btn restart" id="restartBtn">↻ Restart</button></div>
+          <button class="btn next" id="nextBtn">Next →</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="frame hidden" id="resultScreen">
+      <div class="result-area">
+        <div class="result-stars">🌟 🎉 🌟</div>
+        <h1>Great Job, <span id="playerResult"></span>!</h1>
+        <div class="result-score"><span id="finalPoints">0</span>/<span id="finalTotal">40</span></div>
+        <p class="result-sub" id="resultMessage"></p>
+        <p class="result-sub" id="recordStatus"></p>
+        <button class="btn" id="playAgainBtn">↻ Play Again</button>
+      </div>
+    </section>
+  <div class="fx-particles" id="fxParticles" aria-hidden="true"></div>
+    <div class="fx-round-toast hidden" id="roundToast" aria-hidden="true"><div class="fx-round-pill"><small>LEVEL UP ✨</small><span id="roundToastText"></span></div></div>
+  </main>
+
+<script src="/minigame/shared/teacher-records-config.js"></script>
+<script src="/minigame/shared/teacher-records.js"></script>
+<script>
+
+const QUESTIONS=[
+  {
+    "round": 1,
+    "kicker": "There is / There are",
+    "title": "Some & any",
+    "instruction": "Choose the best answer.",
+    "q": "_____ some milk in the fridge.",
+    "choices": [
+      "There are",
+      "There is",
+      "There isn’t"
+    ],
+    "a": 1,
+    "ex": "Milk is uncountable, so use There is. Use some in this positive sentence."
+  },
+  {
+    "round": 1,
+    "kicker": "There is / There are",
+    "title": "Some & any",
+    "instruction": "Choose the best answer.",
+    "q": "_____ any eggs in the fridge. We need to buy some.",
+    "choices": [
+      "There isn’t",
+      "There are",
+      "There aren’t"
+    ],
+    "a": 2,
+    "ex": "Eggs is plural. Use There aren’t any in a negative sentence."
+  },
+  {
+    "round": 1,
+    "kicker": "There is / There are",
+    "title": "Some & any",
+    "instruction": "Choose the best answer.",
+    "q": "_____ any water in your bottle?",
+    "choices": [
+      "Is there",
+      "Are there",
+      "There is"
+    ],
+    "a": 0,
+    "ex": "Water is uncountable: Is there any water?"
+  },
+  {
+    "round": 1,
+    "kicker": "There is / There are",
+    "title": "Some & any",
+    "instruction": "Choose the best answer.",
+    "q": "There are _____ apples in the basket. Help yourself!",
+    "choices": [
+      "any",
+      "some",
+      "a"
+    ],
+    "a": 1,
+    "ex": "Use some with plural nouns in a positive statement."
+  },
+  {
+    "round": 1,
+    "kicker": "There is / There are",
+    "title": "Some & any",
+    "instruction": "Choose the best answer.",
+    "q": "There _____ any cheese on my pizza.",
+    "choices": [
+      "aren’t",
+      "are",
+      "isn’t"
+    ],
+    "a": 2,
+    "ex": "Cheese is uncountable: There isn’t any cheese."
+  },
+  {
+    "round": 1,
+    "kicker": "There is / There are",
+    "title": "Some & any",
+    "instruction": "Tap the words in order. Tap a chosen word to undo it.",
+    "q": "Build a correct sentence.",
+    "type": "order",
+    "words": [
+      "Are",
+      "there",
+      "any",
+      "books",
+      "on",
+      "the",
+      "desk",
+      "?"
+    ],
+    "ex": "Use Are there any + plural noun in this question."
+  },
+  {
+    "round": 2,
+    "kicker": "Compare & choose",
+    "title": "Comparatives & superlatives",
+    "instruction": "Choose the best answer.",
+    "q": "Ben is 150 cm tall. Leo is 160 cm tall. Leo is _____ Ben.",
+    "choices": [
+      "taller than",
+      "the tallest",
+      "more tall than"
+    ],
+    "a": 0,
+    "ex": "Tall → taller. Use than to compare two people."
+  },
+  {
+    "round": 2,
+    "kicker": "Compare & choose",
+    "title": "Comparatives & superlatives",
+    "instruction": "Choose the best answer.",
+    "q": "A bike costs $100. A car costs $8,000. The car is _____ the bike.",
+    "choices": [
+      "expensiver than",
+      "more expensive than",
+      "the most expensive"
+    ],
+    "a": 1,
+    "ex": "Use more + long adjective + than: more expensive than."
+  },
+  {
+    "round": 2,
+    "kicker": "Compare & choose",
+    "title": "Comparatives & superlatives",
+    "instruction": "Choose the best answer.",
+    "q": "Of all four runners, Amy finishes first. She is _____ runner.",
+    "choices": [
+      "faster",
+      "the faster",
+      "the fastest"
+    ],
+    "a": 2,
+    "ex": "Use the + superlative to compare one person with the whole group."
+  },
+  {
+    "round": 2,
+    "kicker": "Compare & choose",
+    "title": "Comparatives & superlatives",
+    "instruction": "Choose the best answer.",
+    "q": "This box weighs 2 kg. That box weighs 5 kg. That box is _____.",
+    "choices": [
+      "heavier",
+      "heavyer",
+      "the heaviest"
+    ],
+    "a": 0,
+    "ex": "Change consonant + y to -ier: heavy → heavier."
+  },
+  {
+    "round": 2,
+    "kicker": "Compare & choose",
+    "title": "Comparatives & superlatives",
+    "instruction": "Tap the words in order. Tap a chosen word to undo it.",
+    "q": "Build a correct sentence.",
+    "type": "order",
+    "words": [
+      "This",
+      "is",
+      "the",
+      "most",
+      "beautiful",
+      "garden",
+      "."
+    ],
+    "ex": "Use the most + long adjective to form the superlative."
+  },
+  {
+    "round": 2,
+    "kicker": "Compare & choose",
+    "title": "Comparatives & superlatives",
+    "instruction": "Choose the best answer.",
+    "q": "I got 9/10 today and 6/10 yesterday. Today’s result is _____ yesterday’s.",
+    "choices": [
+      "gooder than",
+      "better than",
+      "the best"
+    ],
+    "a": 1,
+    "ex": "Good has the irregular comparative better."
+  },
+  {
+    "round": 2,
+    "kicker": "Compare & choose",
+    "title": "Comparatives & superlatives",
+    "instruction": "Choose the best answer.",
+    "q": "The red bag costs $10, the blue bag $15, and the green bag $20. The red bag is _____.",
+    "choices": [
+      "cheaper",
+      "the cheaper",
+      "the cheapest"
+    ],
+    "a": 2,
+    "ex": "The lowest price among three bags is the cheapest."
+  },
+  {
+    "round": 2,
+    "kicker": "Compare & choose",
+    "title": "Comparatives & superlatives",
+    "instruction": "Choose the best answer.",
+    "q": "The roads are _____ today than yesterday: there are many more accidents.",
+    "choices": [
+      "worse",
+      "worst",
+      "badder"
+    ],
+    "a": 0,
+    "ex": "Bad has the irregular comparative worse."
+  },
+  {
+    "round": 2,
+    "kicker": "Compare & choose",
+    "title": "Comparatives & superlatives",
+    "instruction": "Tap the words in order. Tap a chosen word to undo it.",
+    "q": "Build a correct sentence.",
+    "type": "order",
+    "words": [
+      "Tom",
+      "is",
+      "the",
+      "youngest",
+      "student",
+      "in",
+      "our",
+      "class",
+      "."
+    ],
+    "ex": "Young → youngest. Use the before a superlative adjective."
+  },
+  {
+    "round": 2,
+    "kicker": "Compare & choose",
+    "title": "Comparatives & superlatives",
+    "instruction": "Choose the best answer.",
+    "q": "Which sentence is correct?",
+    "choices": [
+      "My room is biger than yours.",
+      "My room is bigger than yours.",
+      "My room is the bigger than yours."
+    ],
+    "a": 1,
+    "ex": "Double the final consonant: big → bigger. Use than for the comparison."
+  },
+  {
+    "round": 3,
+    "kicker": "Back in time",
+    "title": "Past Simple",
+    "instruction": "Choose the best answer.",
+    "q": "Yesterday, I _____ at home all day.",
+    "choices": [
+      "am",
+      "were",
+      "was"
+    ],
+    "a": 2,
+    "ex": "Use was with I in the past."
+  },
+  {
+    "round": 3,
+    "kicker": "Back in time",
+    "title": "Past Simple",
+    "instruction": "Choose the best answer.",
+    "q": "They _____ at school last Monday.",
+    "choices": [
+      "were",
+      "was",
+      "are"
+    ],
+    "a": 0,
+    "ex": "Use were with they in the past."
+  },
+  {
+    "round": 3,
+    "kicker": "Back in time",
+    "title": "Past Simple",
+    "instruction": "Choose the best answer.",
+    "q": "We _____ football yesterday afternoon.",
+    "choices": [
+      "play",
+      "played",
+      "playing"
+    ],
+    "a": 1,
+    "ex": "For a completed past action, play → played."
+  },
+  {
+    "round": 3,
+    "kicker": "Back in time",
+    "title": "Past Simple",
+    "instruction": "Choose the best answer.",
+    "q": "She _____ to the supermarket last night.",
+    "choices": [
+      "go",
+      "goed",
+      "went"
+    ],
+    "a": 2,
+    "ex": "Go is irregular: go → went."
+  },
+  {
+    "round": 3,
+    "kicker": "Back in time",
+    "title": "Past Simple",
+    "instruction": "Choose the best answer.",
+    "q": "I _____ my grandparents last weekend.",
+    "choices": [
+      "visited",
+      "visit",
+      "visits"
+    ],
+    "a": 0,
+    "ex": "Visit is regular: visit → visited."
+  },
+  {
+    "round": 3,
+    "kicker": "Back in time",
+    "title": "Past Simple",
+    "instruction": "Choose the best answer.",
+    "q": "He didn’t _____ breakfast this morning.",
+    "choices": [
+      "ate",
+      "eat",
+      "eats"
+    ],
+    "a": 1,
+    "ex": "After didn’t, use the base verb eat."
+  },
+  {
+    "round": 3,
+    "kicker": "Back in time",
+    "title": "Past Simple",
+    "instruction": "Choose the best answer.",
+    "q": "_____ you watch the film yesterday?",
+    "choices": [
+      "Do",
+      "Were",
+      "Did"
+    ],
+    "a": 2,
+    "ex": "Use Did + subject + base verb for past simple questions."
+  },
+  {
+    "round": 3,
+    "kicker": "Back in time",
+    "title": "Past Simple",
+    "instruction": "Choose the best answer.",
+    "q": "Did Mai finish her homework? — Yes, _____.",
+    "choices": [
+      "she did",
+      "she does",
+      "she was"
+    ],
+    "a": 0,
+    "ex": "Use the same auxiliary in the short answer: Yes, she did."
+  },
+  {
+    "round": 3,
+    "kicker": "Back in time",
+    "title": "Past Simple",
+    "instruction": "Choose the best answer.",
+    "q": "We _____ a funny film last night.",
+    "choices": [
+      "see",
+      "saw",
+      "seen"
+    ],
+    "a": 1,
+    "ex": "See is irregular: see → saw."
+  },
+  {
+    "round": 3,
+    "kicker": "Back in time",
+    "title": "Past Simple",
+    "instruction": "Choose the best answer.",
+    "q": "Which sentence is correct?",
+    "choices": [
+      "She didn’t went to school yesterday.",
+      "She doesn’t went to school yesterday.",
+      "She didn’t go to school yesterday."
+    ],
+    "a": 2,
+    "ex": "Use didn’t + base verb: didn’t go."
+  },
+  {
+    "round": 3,
+    "kicker": "Back in time",
+    "title": "Past Simple",
+    "instruction": "Tap the words in order. Tap a chosen word to undo it.",
+    "q": "Build a correct sentence.",
+    "type": "order",
+    "words": [
+      "Where",
+      "did",
+      "you",
+      "go",
+      "yesterday",
+      "?"
+    ],
+    "ex": "Use question word + did + subject + base verb."
+  },
+  {
+    "round": 3,
+    "kicker": "Back in time",
+    "title": "Past Simple",
+    "instruction": "Tap the words in order. Tap a chosen word to undo it.",
+    "q": "Build a correct sentence.",
+    "type": "order",
+    "words": [
+      "They",
+      "were",
+      "not",
+      "tired",
+      "after",
+      "the",
+      "trip",
+      "."
+    ],
+    "ex": "Use were not with they for a negative sentence in the past."
+  },
+  {
+    "round": 3,
+    "kicker": "Back in time",
+    "title": "Past Simple",
+    "instruction": "Tap the words in order. Tap a chosen word to undo it.",
+    "q": "Build a correct sentence.",
+    "type": "order",
+    "words": [
+      "She",
+      "bought",
+      "a",
+      "new",
+      "dress",
+      "yesterday",
+      "."
+    ],
+    "ex": "Buy is irregular: buy → bought."
+  },
+  {
+    "round": 3,
+    "kicker": "Back in time",
+    "title": "Past Simple",
+    "instruction": "Tap the words in order. Tap a chosen word to undo it.",
+    "q": "Build a correct sentence.",
+    "type": "order",
+    "words": [
+      "Did",
+      "he",
+      "clean",
+      "his",
+      "room",
+      "yesterday",
+      "?"
+    ],
+    "ex": "After Did, use the base verb clean."
+  },
+  {
+    "round": 4,
+    "kicker": "Number power",
+    "title": "Cardinal & ordinal numbers",
+    "instruction": "Choose the best answer.",
+    "q": "How do you write 40 in words?",
+    "choices": [
+      "fourty",
+      "forty",
+      "fourteen"
+    ],
+    "a": 1,
+    "ex": "40 is spelled forty, without u."
+  },
+  {
+    "round": 4,
+    "kicker": "Number power",
+    "title": "Cardinal & ordinal numbers",
+    "instruction": "Choose the best answer.",
+    "q": "Which word means 12th?",
+    "choices": [
+      "twentieth",
+      "twelveth",
+      "twelfth"
+    ],
+    "a": 2,
+    "ex": "The ordinal form of twelve is twelfth."
+  },
+  {
+    "round": 4,
+    "kicker": "Number power",
+    "title": "Cardinal & ordinal numbers",
+    "instruction": "Choose the best answer.",
+    "q": "Which pair is correct: 20 → 20th?",
+    "choices": [
+      "twenty → twentieth",
+      "twenty → twentyth",
+      "twelve → twelfth"
+    ],
+    "a": 0,
+    "ex": "Twenty → twentieth: change y to ie and add th."
+  },
+  {
+    "round": 4,
+    "kicker": "Number power",
+    "title": "Cardinal & ordinal numbers",
+    "instruction": "Choose the best answer.",
+    "q": "Which word means 21st?",
+    "choices": [
+      "twenty-oneth",
+      "twenty-first",
+      "twenty-one"
+    ],
+    "a": 1,
+    "ex": "In a compound ordinal, change the last word: twenty-one → twenty-first."
+  },
+  {
+    "round": 4,
+    "kicker": "Number power",
+    "title": "Cardinal & ordinal numbers",
+    "instruction": "Choose the best answer.",
+    "q": "There are _____ students in my class. (13)",
+    "choices": [
+      "third",
+      "thirteenth",
+      "thirteen"
+    ],
+    "a": 2,
+    "ex": "Use the cardinal number thirteen to say how many. Thirteenth gives a position."
+  },
+  {
+    "round": 5,
+    "kicker": "Where is it?",
+    "title": "Prepositions of place",
+    "instruction": "Choose the best answer.",
+    "q": "The toys are inside a box. The book is resting on the table’s surface.\nThe toys are _____ the box. The book is _____ the table.",
+    "choices": [
+      "in / on",
+      "on / in",
+      "under / behind"
+    ],
+    "a": 0,
+    "ex": "In means inside. On means touching a surface from above."
+  },
+  {
+    "round": 5,
+    "kicker": "Where is it?",
+    "title": "Prepositions of place",
+    "instruction": "Choose the best answer.",
+    "q": "The cat is directly beneath the table. A picture is higher up the wall than the clock.\nThe cat is _____ the table. The clock is _____ the picture.",
+    "choices": [
+      "on / in",
+      "under / below",
+      "between / on"
+    ],
+    "a": 1,
+    "ex": "Under means directly beneath. Below means at a lower level; the objects need not touch."
+  },
+  {
+    "round": 5,
+    "kicker": "Where is it?",
+    "title": "Prepositions of place",
+    "instruction": "Choose the best answer.",
+    "q": "The café has the bank immediately to its left and the library immediately to its right.\nThe café is _____ the bank and _____ the bank and the library.",
+    "choices": [
+      "behind / under",
+      "between / next to",
+      "next to / between"
+    ],
+    "a": 2,
+    "ex": "Next to means immediately beside. Between places one thing in the middle of two others."
+  },
+  {
+    "round": 5,
+    "kicker": "Where is it?",
+    "title": "Prepositions of place",
+    "instruction": "Choose the best answer.",
+    "q": "You are waiting outside a cinema, facing its entrance. Your friend stands directly ahead of you, closer to the entrance. Your friend is _____ you.",
+    "choices": [
+      "in front of",
+      "behind",
+      "under"
+    ],
+    "a": 0,
+    "ex": "In front of means ahead of you in the direction you are facing."
+  },
+  {
+    "round": 5,
+    "kicker": "Where is it?",
+    "title": "Prepositions of place",
+    "instruction": "Choose the best answer.",
+    "q": "You are waiting outside a cinema, facing its entrance. Your brother joins the queue directly at your back. Your brother is _____ you.",
+    "choices": [
+      "below",
+      "behind",
+      "in front of"
+    ],
+    "a": 1,
+    "ex": "Behind means at the back of someone or something."
+  }
+];
+
+
+const MODE = "present";
+const $ = id => document.getElementById(id);
+const state = QUESTIONS.map(() => ({choice:null}));
+let pos = 0;
+let player = "";
+let soundOn = true;
+let audioCtx = null;
+let roundTimer = null;
+let startedAt = null;
+let attemptId="", finished=false;
+const orders={};
+function newAttempt(){attemptId=window.crypto && crypto.randomUUID ? crypto.randomUUID() : Date.now()+"-"+Math.random();finished=false;Object.keys(orders).forEach(k=>delete orders[k]);}
+function shuffled(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+const totalRounds = Math.max(...QUESTIONS.map(q=>q.round));
+$("total").textContent = QUESTIONS.length;
+const roundElement = () => $(MODE === "present" ? "roundPill" : "round");
+const counterElement = () => $(MODE === "present" ? "questionPill" : "counter");
+
+function points() {
+  return state.reduce((n,s,idx)=>n+(s.choice === (QUESTIONS[idx].type==="order"?0:QUESTIONS[idx].a) ? 1 : 0),0);
+}
+function chime(kind) {
+  if (!soundOn) return;
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    if (!audioCtx) audioCtx = new AC();
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    const melodies = {
+      correct:[[659,0,.11],[880,.11,.15],[1046,.23,.18]],
+      wrong:[[330,0,.13],[220,.11,.19]],
+      round:[[523,0,.1],[659,.11,.1],[784,.23,.19]],
+      finish:[[523,0,.14],[659,.15,.14],[784,.31,.15],[1046,.49,.28]]
+    };
+    const now = audioCtx.currentTime;
+    (melodies[kind] || melodies.correct).forEach(([hz,delay,len])=>{
+      const osc=audioCtx.createOscillator(),gain=audioCtx.createGain();
+      osc.type=kind==="wrong"?"triangle":"sine";
+      osc.frequency.setValueAtTime(hz,now+delay);
+      gain.gain.setValueAtTime(.0001,now+delay);
+      gain.gain.exponentialRampToValueAtTime(.095,now+delay+.018);
+      gain.gain.exponentialRampToValueAtTime(.0001,now+delay+len);
+      osc.connect(gain);gain.connect(audioCtx.destination);
+      osc.start(now+delay);osc.stop(now+delay+len+.01);
+    });
+  } catch (_) {}
+}
+function particles(count) {
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const box=$("fxParticles"), colors=["#ffc85b","#f65caf","#6de0b1","#77caff","#9e76f2","#ff9d78"];
+  for(let n=0;n<count;n++){
+    const p=document.createElement("span");
+    p.style.left=(Math.random()*100)+"%";
+    p.style.background=colors[n%colors.length];
+    p.style.animationDelay=(Math.random()*.27)+"s";
+    p.style.animationDuration=(.95+Math.random()*.7)+"s";
+    box.appendChild(p);
+    p.addEventListener("animationend",()=>p.remove(),{once:true});
+  }
+}
+function animateScore() {
+  const el=$("score");
+  el.textContent=points();
+  el.classList.remove("score-pulse");
+  void el.offsetWidth;
+  el.classList.add("score-pulse");
+}
+function toastRound(round){
+  if(roundTimer)clearTimeout(roundTimer);
+  $("roundToastText").textContent="Round "+round+" / "+totalRounds+" · "+QUESTIONS.find(q=>q.round===round).title;
+  $("roundToast").classList.remove("hidden");
+  chime("round");
+  roundTimer=setTimeout(()=>$("roundToast").classList.add("hidden"),900);
+}
+function setScreen(id){
+  ["startScreen","gameScreen","resultScreen"].forEach(x=>$(x).classList.toggle("hidden",x!==id));
+}
+function start(){
+  const name=$("nameInput").value.trim();
+  if(!name){$("nameError").textContent="Please enter your name first.";$("nameInput").focus();return;}
+  $("nameError").textContent="";
+  newAttempt();
+  player=name;
+  startedAt=Date.now();
+  pos=0;
+  state.forEach(s=>s.choice=null);
+  setScreen("gameScreen");
+  render();
+  toastRound(QUESTIONS[0].round);
+}
+function render(){
+  const q=QUESTIONS[pos], st=state[pos];
+  roundElement().textContent="Round "+q.round+" / "+totalRounds+(MODE==="picture"?" · Picture questions":"");
+  counterElement().textContent="Question "+(pos+1)+" / "+QUESTIONS.length;
+  $("bar").style.width=(state.filter(s=>s.choice!==null).length/QUESTIONS.length*100)+"%";
+  $("score").textContent=points();
+  $("kicker").textContent=(q.kicker||"Picture questions")+" · "+(pos+1)+" of "+QUESTIONS.length;
+  if(MODE==="present"){
+    $("title").textContent=q.title;
+    $("instruction").textContent=q.instruction;
+    $("question").textContent=q.q;
+  }else{
+    $("prompt").textContent=q.prompt;
+    const photo=$("picture");
+    photo.innerHTML="";
+    if(q.image){
+      const img=document.createElement("img");img.src=q.image;img.alt=q.alt||q.picture||"Question picture";
+      photo.appendChild(img);
+    }else{photo.innerHTML=placeholder(q.picture||"Picture prompt");}
+    photo.style.animation="none";
+    void photo.offsetWidth;
+    photo.style.animation="";
+  }
+  const answerBox=$("answers");
+  answerBox.classList.remove("order-mode");
+  answerBox.innerHTML="";
+  if(q.type === "order") renderOrder(q,st,answerBox);
+  else q.choices.forEach((label,n)=>{
+    const b=document.createElement("button");
+    b.type="button";b.className="answer";b.textContent=label;
+    if(st.choice!==null){
+      b.disabled=true;
+      if(n===q.a)b.classList.add("good");
+      if(n===st.choice && n!==q.a)b.classList.add("bad");
+    }else{b.onclick=()=>answer(n);}
+    answerBox.appendChild(b);
+  });
+  const feedback=$("feedback");
+  feedback.textContent=st.choice===null ? "" : (st.choice===(q.type==="order"?0:q.a) ? "Excellent! Correct answer! ⭐" : "Incorrect. Let’s learn from it. 💡");
+  if(st.choice!==null) feedback.textContent+=" "+(q.type==="order" ? "Answer: "+q.words.join(" ").replace(/ ([.?])/g,"$1")+" " : "")+q.ex;
+  feedback.className="feedback"+(st.choice===null?"":st.choice===(q.type==="order"?0:q.a)?" success":" error");
+  feedback.setAttribute("aria-live","polite");
+  $("nextBtn").disabled=st.choice===null;
+  $("nextBtn").classList.toggle("ready",st.choice!==null);
+  $("nextBtn").textContent=pos===QUESTIONS.length-1?"See Results →":"Next →";
+  $("backBtn").disabled=pos===0;
+  const scene=$("gameScreen").querySelector(MODE==="present"?".stage":".content");
+  scene.classList.remove("fx-enter");
+  void scene.offsetWidth;
+  scene.classList.add("fx-enter");
+}
+function answer(choice){
+  if(state[pos].choice!==null)return;
+  state[pos].choice=choice;
+  const correct=choice===(QUESTIONS[pos].type==="order"?0:QUESTIONS[pos].a);
+  chime(correct?"correct":"wrong");
+  if(correct)particles(24);
+  render();
+  animateScore();
+}
+function next(){
+  if(state[pos].choice===null)return;
+  if(pos===QUESTIONS.length-1){finish();return;}
+  const prevRound=QUESTIONS[pos].round;
+  pos++;
+  render();
+  if(QUESTIONS[pos].round!==prevRound)toastRound(QUESTIONS[pos].round);
+}
+function back(){if(pos>0){pos--;render();}}
+function restart(){
+  newAttempt();
+  startedAt=Date.now();
+  pos=0;state.forEach(s=>s.choice=null);setScreen("gameScreen");render();toastRound(QUESTIONS[0].round);
+}
+async function finish(){
+  if(finished)return;
+  finished=true;
+  const thisAttempt=attemptId;
+  setScreen("resultScreen");
+  const score=points(),pct=Math.round(score/QUESTIONS.length*100);
+  $("playerResult").textContent=player;
+  $("finalPoints").textContent=score;$("finalTotal").textContent=QUESTIONS.length;
+  $("resultMessage").textContent=pct+"% · "+(pct>=85?"Amazing! You're a grammar superstar!":pct>=60?"Great effort! Keep practising!":"Every try helps. Practise and play again!");
+  chime("finish");particles(100);
+  const payload={studentName:player,gameTitle:document.title,score,total:QUESTIONS.length,percentage:pct,durationSeconds:Math.max(0,Math.round((Date.now()-startedAt)/1000)),completedAt:new Date().toISOString(),attemptId:thisAttempt,gameUrl:location.href};
+  if(/\/_templates?\//.test(location.pathname)){$("recordStatus").textContent="Preview — score not sent.";return;}
+  try{localStorage.setItem("grammarWorldQuestResult:"+thisAttempt,JSON.stringify(payload));}catch(_){}
+  $("recordStatus").textContent="Submitting score to your teacher…";
+  try{
+    if(!window.TeacherRecords)throw Error("unavailable");
+    const result=await TeacherRecords.submit(payload);
+    if(thisAttempt!==attemptId)return;
+    $("recordStatus").textContent=result.sent?"✅ Score submitted to your teacher.":"⚠️ Score saved on this device. Unable to send right now.";
+  }catch(_){if(thisAttempt===attemptId)$("recordStatus").textContent="⚠️ Score saved on this device. Unable to send right now.";}
+}
+function renderOrder(q,st,box){
+  box.classList.add("order-mode");
+  if(!orders[pos])orders[pos]={bank:shuffled(q.words.map((text,id)=>({text,id}))),picked:[]};
+  const data=orders[pos],locked=st.choice!==null;
+  const tray=document.createElement("div");tray.id="sentenceTray";tray.setAttribute("aria-label","Your sentence");
+  if(!data.picked.length)tray.textContent="Your sentence appears here…";
+  data.picked.forEach(id=>{const b=document.createElement("button");b.className="btn";b.textContent=q.words[id];b.disabled=locked;b.onclick=()=>{data.picked.splice(data.picked.indexOf(id),1);render();};tray.appendChild(b);});box.appendChild(tray);
+  const bank=document.createElement("div");bank.id="wordBank";
+  data.bank.forEach(({text,id})=>{const b=document.createElement("button");b.className="answer";b.textContent=text;b.disabled=locked||data.picked.includes(id);b.onclick=()=>{data.picked.push(id);render();};bank.appendChild(b);});box.appendChild(bank);
+  const check=document.createElement("button");check.id="checkOrder";check.className="btn";check.textContent="Check sentence ✓";check.disabled=locked||data.picked.length!==q.words.length;check.onclick=()=>answer(data.picked.map(id=>q.words[id]).join(" ")===q.words.join(" ")?0:1);box.appendChild(check);
+}
+function toggleSound(){
+  soundOn=!soundOn;
+  $("soundBtn").textContent=soundOn?"🔊 Sound On":"🔇 Sound Off";
+  $("soundBtn").setAttribute("aria-pressed",String(soundOn));
+}
+$("startBtn").addEventListener("click",start);
+$("nameInput").addEventListener("keydown",e=>{if(e.key==="Enter")start();});
+$("nextBtn").addEventListener("click",next);
+$("backBtn").addEventListener("click",back);
+$("restartBtn").addEventListener("click",restart);
+$("playAgainBtn").addEventListener("click",restart);
+$("soundBtn").addEventListener("click",toggleSound);
+
+</script>
+</body>
+</html>
