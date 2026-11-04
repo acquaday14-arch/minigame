@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en" data-template-effects-version="2">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fred’s Weekend Picture Quest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--purple:#5b36d6;--dark:#242b62;--pink:#e64a98;--soft:#f7f5ff;--line:#d9cff8;--yellow:#ffd57a}
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;background:linear-gradient(180deg,#f3f7ff,#f7f1ff);padding:12px;font-family:"Fredoka",ui-rounded,"Trebuchet MS",Arial,sans-serif;color:var(--dark)}
+    button,input{font:inherit}
+    .shell{width:min(1060px,100%);margin:1vh auto;background:white;border:4px solid #4330ad;border-radius:34px;overflow:hidden;box-shadow:0 14px 0 #ded6ff}
+    .hud{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;padding:18px 28px;background:linear-gradient(135deg,#5132c8,#6948df);color:white}
+    .pill{border:1px solid rgba(255,255,255,.45);background:rgba(255,255,255,.12);border-radius:999px;padding:9px 15px;font-weight:700}
+    .hud .pill:nth-child(2){justify-self:center}.hud .pill:last-child{justify-self:end}
+    .track{height:9px;background:#dcd1ff}.bar{height:100%;width:33%;background:#ffd267;transition:.25s}
+    .content{padding:22px 30px 20px;min-height:700px}
+    .kicker{text-align:center;color:var(--pink);font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+    h1{text-align:center;color:#432cb5;font-size:clamp(40px,6vw,60px);line-height:1;margin:8px 0}
+    .instruction{text-align:center;font-size:20px;font-weight:600;margin-bottom:14px}
+    .image-wrap{display:grid;place-items:center;margin:10px 0 18px}
+    .picture{
+      width:min(310px,80vw);aspect-ratio:1/1;border:4px solid #a98bf5;border-radius:28px;overflow:hidden;
+      box-shadow:0 10px 22px rgba(82,58,173,.16);background:linear-gradient(135deg,#ffedf5,#e7f5ff);position:relative
+    }
+    .picture svg{width:100%;height:100%;display:block}
+    .prompt{text-align:center;font-size:clamp(25px,4vw,35px);font-weight:700;margin:12px 0}
+    .answers{width:min(780px,100%);margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .answer{border:3px solid #ded4f9;background:#fbfaff;border-radius:18px;padding:14px;color:var(--dark);font-weight:700;font-size:18px;cursor:pointer}
+    .answer:hover{border-color:#ab95ed}
+    .answer.good{border-color:#63d7a6;background:#eafff5;color:#176a49;animation:pop .28s}
+    .answer.bad{border-color:#ff9fab;background:#fff0f2;color:#a33745;animation:shake .28s}
+    .feedback{text-align:center;min-height:36px;margin:15px 0;font-size:19px;font-weight:700}
+    .controls{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;margin-top:25px}
+    .btn{border:2px solid #dbd3f5;background:#fff;border-radius:15px;padding:11px 18px;font-weight:700;color:#4733a6;cursor:pointer}
+    .next{justify-self:end;background:linear-gradient(135deg,#ffd88b,#ffc586);border:0;color:#785d41}
+    .hidden{display:none!important}
+    .start{text-align:center;padding:65px 30px}.start p{font-size:19px;color:#687086}.start input{width:min(540px,100%);padding:15px 17px;border:2px solid #d8cff4;border-radius:16px}
+    .start .btn{margin-top:12px;background:linear-gradient(135deg,#5532cf,#7754e9);border:0;color:#fff}
+    @keyframes pop{50%{transform:scale(1.035)}}@keyframes shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+    @media(max-width:700px){.hud{grid-template-columns:1fr 1fr}.hud .pill:nth-child(2){grid-column:1/-1;grid-row:2}.content{padding:20px 14px}.answers{grid-template-columns:1fr}.controls{grid-template-columns:1fr 1fr}.controls .restart{display:none}}
+  
+    /* Template FX v2 — reduced-motion aware and dependency-free */
+    .fx-enter{animation:fx-enter .38s cubic-bezier(.2,.8,.2,1) both}
+    .answer{transition:transform .17s ease,border-color .2s ease,box-shadow .2s ease,background .2s ease}
+    .answer:active,.btn:active{transform:scale(.97)}
+    .answer:focus-visible,.btn:focus-visible{outline:4px solid #f7bb56;outline-offset:3px}
+    .answer.good{box-shadow:0 0 0 4px rgba(81,213,157,.13)}
+    .answer.bad{box-shadow:0 0 0 4px rgba(255,118,144,.13)}
+    .answer:disabled{cursor:default}
+    .pill.score-pulse,.score-pulse{animation:fx-pulse .35s ease}
+    .feedback.success{color:#10845c;animation:fx-pop .4s ease both}
+    .feedback.error{color:#b44453;animation:fx-shake .32s ease both}
+    .mid-actions{display:flex;gap:8px;align-items:center;justify-content:center}
+    .mid-actions .btn{white-space:nowrap}
+    .btn:disabled{opacity:.4;cursor:not-allowed;filter:grayscale(.25)}
+    .next.ready{animation:fx-glow 1.8s ease-in-out infinite}
+    .fx-particles{position:fixed;inset:0;z-index:100;pointer-events:none;overflow:hidden}
+    .fx-particles span{position:absolute;top:-24px;width:10px;height:16px;border-radius:3px;animation:fx-rain 1.15s cubic-bezier(.2,.7,.5,1) forwards}
+    .fx-round-toast{position:fixed;inset:0;z-index:90;pointer-events:none;display:flex;justify-content:center;align-items:center;background:rgba(45,29,122,.11)}
+    .fx-round-toast.hidden{display:none!important}
+    .fx-round-pill{
+      text-align:center;border:4px solid #fff;border-radius:28px;
+      background:linear-gradient(135deg,#5b36d6,#8b6cf0);color:white;
+      padding:24px 36px;box-shadow:0 20px 60px rgba(54,38,152,.25);
+      font-size:clamp(25px,4vw,42px);font-weight:700;animation:fx-toast .7s ease both
+    }
+    .fx-round-pill small{display:block;font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:#ffdf85;margin-bottom:4px}
+    .result-area{text-align:center;padding:56px 24px}
+    .result-area h1{font-size:clamp(40px,6vw,64px);margin:10px 0;color:#432cb5}
+    .result-area .result-score{font-size:clamp(60px,10vw,100px);color:#5b36d6;font-weight:700;line-height:1.12}
+    .result-area .result-sub{font-size:21px;margin:8px 0 28px}
+    .result-area .btn{background:#6040d7;color:#fff;border:0;padding:15px 30px;font-size:18px}
+    .result-area .result-stars{font-size:38px;letter-spacing:8px;animation:fx-float 2s ease-in-out infinite}
+    .picture{animation:fx-picture-in .55s cubic-bezier(.2,.8,.2,1) both;transition:transform .25s ease,box-shadow .25s ease}
+    .picture:hover{transform:translateY(-3px) rotate(-1deg);box-shadow:0 17px 34px rgba(82,58,173,.21)}
+    .picture img{width:100%;height:100%;object-fit:cover;display:block}
+    @keyframes fx-enter{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes fx-pop{0%{transform:scale(.83);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+    @keyframes fx-pulse{50%{transform:scale(1.09)}}
+    @keyframes fx-shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+    @keyframes fx-glow{50%{box-shadow:0 0 0 6px rgba(255,205,100,.22)}}
+    @keyframes fx-rain{0%{transform:translateY(-10vh) rotate(0deg);opacity:1}100%{transform:translateY(112vh) rotate(620deg);opacity:0}}
+    @keyframes fx-toast{0%{transform:scale(.7) translateY(25px);opacity:0}40%{transform:scale(1.05);opacity:1}100%{transform:scale(1);opacity:1}}
+    @keyframes fx-float{50%{transform:translateY(-9px)}}
+    @keyframes fx-picture-in{from{opacity:0;transform:scale(.91) rotate(-2deg)}to{opacity:1;transform:scale(1) rotate(0)}}
+    @media(max-width:700px){
+      .controls{grid-template-columns:1fr 1fr}
+      .controls .mid-actions{grid-column:1/-1;grid-row:2;justify-content:center}
+      .controls .restart{display:inline-flex}
+      .result-area{padding:42px 16px}
+      .mid-actions .btn{font-size:14px;padding:10px 12px}
+    }
+    @media(prefers-reduced-motion:reduce){
+      *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+    }
+
+  
+.content{min-height:530px}.instruction{line-height:1.5}.picture{width:min(330px,100%);aspect-ratio:auto;box-shadow:0 8px 16px #d9d0ef}.picture img{height:auto;max-height:330px;object-fit:contain;background:#fff}.picture.wide{width:min(730px,100%)}.picture.wide img{max-height:270px}.picture:hover{transform:none}.prompt{white-space:pre-line;line-height:1.45;font-size:clamp(23px,3.6vw,32px)}.answer{min-height:60px;font-size:22px}.btn{min-height:48px}h1{font-size:clamp(34px,5vw,52px);line-height:1.08}.story{max-width:850px;margin:18px auto;padding:22px;border:2px solid #ded3fa;border-radius:20px;background:#fcfbff;font-family:'Trebuchet MS',Arial,sans-serif;font-size:21px;line-height:1.7}.story h2{margin:0 0 14px;color:#5230b8}.story p{margin:0 0 12px}.story img{display:block;max-width:100%;height:auto}.story mark{background:#fff0bb;border-radius:6px;padding:2px 5px}.story mark.current{outline:3px solid #8866d9}summary{cursor:pointer;font-weight:bold;color:#5132c8}details{margin:15px 0}.word-zone,.built-zone{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;padding:12px}.built-zone{border:2px dashed #b7a1f0;border-radius:18px;min-height:80px;background:#f4f0ff}.word-zone .btn,.built-zone .btn{font-size:22px;background:#fff}.order-actions{grid-column:1/-1;display:flex;justify-content:center;gap:12px}.check{background:#5b36d6;color:#fff}.review{text-align:left;max-width:850px;margin:24px auto;font:19px/1.5 'Trebuchet MS',Arial,sans-serif}.review article{padding:12px;border-bottom:1px solid #ddd;white-space:pre-line}.review p{margin:8px 0}.start label{display:block;margin:12px}.start input{font-size:22px}.feedback{line-height:1.6;max-width:850px;margin:20px auto}button:focus-visible,input:focus-visible,summary:focus-visible{outline:4px solid #e9b52c;outline-offset:3px}.hud{padding:18px;gap:8px}.pill{font-size:16px;padding:10px}.track .bar{width:0%}@media(max-width:700px){.hud{padding:12px}.pill{font-size:14px}.story{font-size:19px;padding:15px}.controls{gap:8px}.controls .btn{padding:11px}.start{padding:38px 18px}.word-zone .btn,.built-zone .btn{font-size:20px;padding:10px 12px}.content{padding:20px 14px}.image-wrap{width:100%}}
+</style>
+</head>
+<body>
+  <main class="shell" id="startScreen">
+    <section class="start">
+      <div class="kicker">Vocabulary · Conversation · Reading</div>
+      <h1>Fred’s Weekend<br>Picture Quest</h1>
+      <p>30 questions · 4 rounds · No timer<br>Explore picture words, help Mary and Jack, read Fred’s story and tap to build sentences.</p>
+      <label for="nameInput">Your name</label><br><input id="nameInput" placeholder="Enter your name" maxlength="80" autocomplete="name">
+      <br><button class="btn" id="startBtn">Start Quest</button>
+    </section>
+  </main>
+
+  <main class="shell hidden" id="gameScreen">
+    <div class="hud">
+      <div class="pill" id="round">Round 1 / 2 · Picture questions</div>
+      <div class="pill">⭐ <span id="score">0</span> / <span id="total">3</span> points</div>
+      <div class="pill" id="counter">Question 1 / 3</div>
+    </div>
+    <div class="track"><div class="bar" id="bar"></div></div>
+    <section class="content">
+      <div class="kicker" id="kicker">Picture questions · 1 of 3</div>
+      <h1 id="title">Picture questions</h1>
+      <div class="instruction" id="instruction"></div>
+
+      <div class="image-wrap">
+        <div class="picture" id="picture"></div>
+      </div>
+
+      <section id="story" class="story hidden"><h2>Fred’s weekend</h2><p>My name is Fred. I like computers, comic books and football.</p><p>At the weekend, I like to play sport. I also like to do things with my family and friends. Yesterday, my sister and I <mark>(1) _____</mark> to the park and played with Dan, our <mark>(2) _____</mark>. At the park, there were other children that we knew. We played games with them, too.</p><p>Today, my friend Jim and I <mark>(3) _____</mark> our bikes down by the beach. We went for a swim and then came home to <mark>(4) _____</mark> something because we were hungry. My mother made us some lunch. We had a burger and some chips. It was very nice, but my favourite food is chicken and potatoes.</p><p>Tomorrow is Monday, so I must do my <mark>(5) _____</mark> tonight. Yes, I work and I play at the weekend!</p><details><summary>Open the picture word bank</summary><img src="assets/story-word-bank.webp" alt="Worksheet word bank: football, burger, walked, eat, homework, dog, rode, jumped and milk" width="911" height="738"></details></section><div class="prompt" id="prompt"></div>
+      <div class="answers" id="answers"></div>
+      <div class="feedback" id="feedback" role="status" aria-live="polite"></div>
+
+      <div class="controls">
+        <button class="btn" id="backBtn">← Back</button>
+        <div class="mid-actions"><button class="btn" id="soundBtn" aria-pressed="true">🔊 Sound On</button><button class="btn restart" id="restartBtn">↻ Restart</button></div>
+        <button class="btn next" id="nextBtn">Next →</button>
+      </div>
+    </section>
+  </main>
+
+<main class="shell hidden" id="resultScreen">
+      <div class="result-area">
+        <div class="result-stars">🌟 🎉 🌟</div>
+        <h1>Quest Complete, <span id="playerResult"></span>!</h1>
+        <div class="result-score"><span id="finalPoints">0</span>/<span id="finalTotal">3</span></div>
+        <p class="result-sub" id="resultMessage"></p>
+        <p class="result-sub" id="recordStatus" role="status"></p><details class="review"><summary>Review my answers</summary><div id="review"></div></details>
+        <button class="btn" id="playAgainBtn">↻ Play Again</button>
+      </div>
+    </main>
+<div class="fx-particles" id="fxParticles" aria-hidden="true"></div>
+    <div class="fx-round-toast hidden" id="roundToast" aria-hidden="true"><div class="fx-round-pill"><small>LEVEL UP ✨</small><span id="roundToastText"></span></div></div>
+<script src="/minigame/shared/teacher-records-config.js"></script>
+<script src="/minigame/shared/teacher-records.js"></script>
+<script>
+
+const QUESTIONS=[{"round": 1, "type": "choice", "prompt": "Which word matches the picture?", "choices": ["a pineapple", "a parrot", "a watermelon", "tea"], "a": 0, "why": "The picture shows a pineapple.", "image": "assets/pineapple.webp", "alt": "Worksheet vocabulary picture"}, {"round": 1, "type": "choice", "prompt": "Which word matches the picture?", "choices": ["a neck", "a stomach", "a moustache", "a dog"], "a": 1, "why": "The picture shows a stomach.", "image": "assets/stomach.webp", "alt": "Worksheet vocabulary picture"}, {"round": 1, "type": "choice", "prompt": "Which word matches the picture?", "choices": ["a parrot", "a pineapple", "a dog", "a neck"], "a": 2, "why": "The picture shows a dog.", "image": "assets/dog.webp", "alt": "Worksheet vocabulary picture"}, {"round": 1, "type": "choice", "prompt": "Which word matches the picture?", "choices": ["milk", "watermelon", "a stomach", "tea"], "a": 3, "why": "The picture shows tea.", "image": "assets/tea.webp", "alt": "Worksheet vocabulary picture"}, {"round": 1, "type": "choice", "prompt": "Which word matches the picture?", "choices": ["a moustache", "a neck", "a parrot", "a stomach"], "a": 0, "why": "The picture shows a moustache.", "image": "assets/moustache.webp", "alt": "Worksheet vocabulary picture"}, {"round": 1, "type": "choice", "prompt": "Which word matches the picture?", "choices": ["a stomach", "a neck", "a moustache", "a dog"], "a": 1, "why": "The picture shows a neck.", "image": "assets/neck.webp", "alt": "Worksheet vocabulary picture"}, {"round": 1, "type": "choice", "prompt": "Which word matches the picture?", "choices": ["tea", "a pineapple", "watermelon", "milk"], "a": 2, "why": "The picture shows watermelon.", "image": "assets/watermelon.webp", "alt": "Worksheet vocabulary picture"}, {"round": 1, "type": "choice", "prompt": "Which word matches the picture?", "choices": ["a dog", "a neck", "a pineapple", "a parrot"], "a": 3, "why": "The picture shows a parrot.", "image": "assets/parrot.webp", "alt": "Worksheet vocabulary picture"}, {"round": 1, "type": "choice", "prompt": "This is a part of your body above your legs. Food goes here.", "choices": ["a neck", "a stomach", "a moustache", "a dog"], "a": 1, "why": "Food goes into your stomach."}, {"round": 1, "type": "choice", "prompt": "You drink this in a cup. It is hot and brown.", "choices": ["watermelon", "a pineapple", "tea", "a neck"], "a": 2, "why": "The worksheet describes tea: a hot drink served in a cup."}, {"round": 1, "type": "choice", "prompt": "This animal can fly and it often lives in the jungle.", "choices": ["a parrot", "a dog", "a pineapple", "a stomach"], "a": 0, "why": "A parrot is a bird. It can fly and often lives in the jungle."}, {"round": 1, "type": "choice", "prompt": "This hair is on your face. It is above your mouth and under your nose.", "choices": ["a neck", "a stomach", "tea", "a moustache"], "a": 3, "why": "A moustache grows above the mouth and under the nose."}, {"round": 1, "type": "choice", "prompt": "People have this between their head and their shoulders.", "choices": ["a stomach", "a neck", "a moustache", "a parrot"], "a": 1, "why": "Your neck joins your head to your shoulders."}, {"round": 2, "type": "choice", "prompt": "Mary: Why are you going to the shop?\nJack: …", "choices": ["I like eggs.", "There are some eggs.", "I want to buy some eggs."], "a": 2, "why": "Why asks for a reason: Jack wants to buy eggs.", "image": "assets/mary-jack.webp", "alt": "Mary and Jack talking on the telephone"}, {"round": 2, "type": "choice", "prompt": "Mary: Do you like eggs?\nJack: …", "choices": ["Yes, I do.", "No, it isn’t.", "Yes, I like it."], "a": 0, "why": "Do you like…? → Yes, I do. Eggs is plural, so “it” does not fit.", "image": "assets/mary-jack.webp", "alt": "Mary and Jack talking on the telephone"}, {"round": 2, "type": "choice", "prompt": "Mary: What are the eggs for?\nJack: …", "choices": ["I’d like a cake.", "To make a cake.", "No, I can make a cake."], "a": 1, "why": "For asks about purpose: the eggs are to make a cake.", "image": "assets/mary-jack.webp", "alt": "Mary and Jack talking on the telephone"}, {"round": 2, "type": "choice", "prompt": "Mary: I must come and help you.\nJack: …", "choices": ["Yes, I like it.", "No, I can’t.", "Yes, I’d like that."], "a": 2, "why": "“I’d like that” warmly accepts Mary’s offer to help.", "image": "assets/mary-jack.webp", "alt": "Mary and Jack talking on the telephone"}, {"round": 2, "type": "choice", "prompt": "Mary: When can I come?\nJack: …", "choices": ["You came last week.", "You can come this afternoon.", "You can’t come with me."], "a": 1, "why": "When asks for a time: this afternoon.", "image": "assets/mary-jack.webp", "alt": "Mary and Jack talking on the telephone"}, {"round": 2, "type": "choice", "prompt": "Mary: OK. See you then.\nJack: …", "choices": ["Thanks. Bye.", "Yes, I do.", "That’s all right."], "a": 0, "why": "“Thanks. Bye.” is a natural way to end this conversation.", "image": "assets/mary-jack.webp", "alt": "Mary and Jack talking on the telephone"}, {"round": 3, "type": "choice", "prompt": "Story blank 1: Yesterday, my sister and I _____ to the park.", "choices": ["jumped", "walked", "eat", "rode"], "a": 1, "why": "Walked fits “to the park” and the past-time word yesterday.", "story": true}, {"round": 3, "type": "choice", "prompt": "Story blank 2: We played with Dan, our _____.", "choices": ["homework", "burger", "dog", "milk"], "a": 2, "why": "Dan is the name of their dog.", "story": true}, {"round": 3, "type": "choice", "prompt": "Story blank 3: Today, my friend Jim and I _____ our bikes down by the beach.", "choices": ["rode", "walked", "jumped", "eat"], "a": 0, "why": "The later sentence “We went for a swim” shows these actions are finished. Ride a bike → rode our bikes.", "story": true}, {"round": 3, "type": "choice", "prompt": "Story blank 4: We came home to _____ something because we were hungry.", "choices": ["jumped", "homework", "walked", "eat"], "a": 3, "why": "After to, use the base verb: to eat. They were hungry.", "story": true}, {"round": 3, "type": "choice", "prompt": "Story blank 5: Tomorrow is Monday, so I must do my _____ tonight.", "choices": ["milk", "homework", "dog", "burger"], "a": 1, "why": "The expression is “do my homework”.", "story": true}, {"round": 3, "type": "choice", "prompt": "Choose the best name for the whole story.", "choices": ["Fred’s friends", "Fred’s weekend", "Fred’s favourite food"], "a": 1, "why": "The story covers Fred’s weekend activities with family and friends, food and homework.", "story": true}, {"round": 4, "type": "order", "prompt": "Put Jack’s reply in order.", "words": ["I", "want", "to", "buy", "some", "eggs."], "answer": "I want to buy some eggs.", "why": "Sentence: I want to buy some eggs."}, {"round": 4, "type": "order", "prompt": "Ask Mary’s question.", "words": ["What", "are", "the", "eggs", "for?"], "answer": "What are the eggs for?", "why": "Sentence: What are the eggs for?"}, {"round": 4, "type": "order", "prompt": "Accept Mary’s offer of help.", "words": ["Yes,", "I’d", "like", "that."], "answer": "Yes, I’d like that.", "why": "Sentence: Yes, I’d like that."}, {"round": 4, "type": "order", "prompt": "Say when Mary can come.", "words": ["You", "can", "come", "this", "afternoon."], "answer": "You can come this afternoon.", "why": "Sentence: You can come this afternoon."}, {"round": 4, "type": "order", "prompt": "Tell Fred’s story.", "words": ["We", "went", "for", "a", "swim."], "answer": "We went for a swim.", "why": "Sentence: We went for a swim."}];
+const ROUNDS=['Picture words & clues','Mary & Jack','Fred’s weekend','Sentence builders'];
+const $=id=>document.getElementById(id);
+let state=[],pos=0,player='',soundOn=true,audioCtx=null,roundTimer=null,startedAt=0,attemptId='',finished=false;
+const totalRounds=4;
+const norm=s=>s.toLowerCase().replace(/[’‘]/g,"'").replace(/[.!?,]/g,'').replace(/\s+/g,' ').trim();
+function points(){return state.reduce((n,s)=>n+(s.correct===true?1:0),0)}
+function chime(kind) {
+  if (!soundOn) return;
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    if (!audioCtx) audioCtx = new AC();
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    const melodies = {
+      correct:[[659,0,.11],[880,.11,.15],[1046,.23,.18]],
+      wrong:[[330,0,.13],[220,.11,.19]],
+      round:[[523,0,.1],[659,.11,.1],[784,.23,.19]],
+      finish:[[523,0,.14],[659,.15,.14],[784,.31,.15],[1046,.49,.28]]
+    };
+    const now = audioCtx.currentTime;
+    (melodies[kind] || melodies.correct).forEach(([hz,delay,len])=>{
+      const osc=audioCtx.createOscillator(),gain=audioCtx.createGain();
+      osc.type=kind==="wrong"?"triangle":"sine";
+      osc.frequency.setValueAtTime(hz,now+delay);
+      gain.gain.setValueAtTime(.0001,now+delay);
+      gain.gain.exponentialRampToValueAtTime(.095,now+delay+.018);
+      gain.gain.exponentialRampToValueAtTime(.0001,now+delay+len);
+      osc.connect(gain);gain.connect(audioCtx.destination);
+      osc.start(now+delay);osc.stop(now+delay+len+.01);
+    });
+  } catch (_) {}
+}
+function particles(count) {
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const box=$("fxParticles"), colors=["#ffc85b","#f65caf","#6de0b1","#77caff","#9e76f2","#ff9d78"];
+  for(let n=0;n<count;n++){
+    const p=document.createElement("span");
+    p.style.left=(Math.random()*100)+"%";
+    p.style.background=colors[n%colors.length];
+    p.style.animationDelay=(Math.random()*.27)+"s";
+    p.style.animationDuration=(.95+Math.random()*.7)+"s";
+    box.appendChild(p);
+    p.addEventListener("animationend",()=>p.remove(),{once:true});
+  }
+}
+function animateScore() {
+  const el=$("score");
+  el.textContent=points();
+  el.classList.remove("score-pulse");
+  void el.offsetWidth;
+  el.classList.add("score-pulse");
+}
+function toastRound(round){
+  if(roundTimer)clearTimeout(roundTimer);
+  $("roundToastText").textContent="Round "+round+" / "+totalRounds;
+  $("roundToast").classList.remove("hidden");
+  chime("round");
+  roundTimer=setTimeout(()=>$("roundToast").classList.add("hidden"),900);
+}
+function setScreen(id){
+  ["startScreen","gameScreen","resultScreen"].forEach(x=>$(x).classList.toggle("hidden",x!==id));
+}
+
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function start(){const n=$('nameInput').value.trim();if(!n){$('nameInput').setCustomValidity('Please enter your name first.');$('nameInput').reportValidity();return}player=n;restart()}
+function restart(){attemptId=crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);finished=false;startedAt=Date.now();pos=0;state=QUESTIONS.map(q=>({choice:null,correct:null,built:[],bank:q.words?shuffle(q.words.map((_,i)=>i)):[]}));setScreen('gameScreen');render();toastRound(1)}
+function render(){const q=QUESTIONS[pos],s=state[pos];$('round').textContent='Round '+q.round+' / 4';$('counter').textContent='Question '+(pos+1)+' / '+QUESTIONS.length;$('total').textContent=QUESTIONS.length;$('score').textContent=points();$('bar').style.width=state.filter(s=>s.correct!==null).length/QUESTIONS.length*100+'%';$('kicker').textContent='Your weekend adventure';$('title').textContent=ROUNDS[q.round-1];$('instruction').textContent=q.type==='order'?'Tap words to build a sentence. Tap a selected word to remove it.':q.story?'Read the story. Choose the best answer.':q.round===2?'Choose Jack’s best reply to Mary.':'Look or read, then choose the correct word.';
+$('prompt').textContent=q.prompt;const picture=$('picture');picture.replaceChildren();picture.parentElement.classList.toggle('hidden',!q.image);picture.classList.toggle('wide',q.round===2);if(q.image){const im=document.createElement('img');im.src=q.image;im.alt=q.alt;picture.append(im)}
+$('story').classList.toggle('hidden',!q.story);$('story').querySelectorAll('mark').forEach((m,i)=>m.classList.toggle('current',q.story&&pos-19===i));
+const box=$('answers');box.replaceChildren();
+if(q.type==='choice'){q.choices.forEach((label,i)=>{const b=document.createElement('button');b.className='answer';b.textContent=label;b.disabled=s.correct!==null;if(s.correct!==null){if(i===q.a)b.classList.add('good');if(i===s.choice&&!s.correct)b.classList.add('bad')}b.onclick=()=>commit({choice:i,correct:i===q.a});box.append(b)})}
+else {const built=document.createElement('div');built.className='built-zone';built.setAttribute('aria-label','Your sentence');if(!s.built.length)built.textContent='Your sentence appears here';s.built.forEach((id,n)=>{const b=document.createElement('button');b.className='btn';b.textContent=q.words[id];b.disabled=s.correct!==null;b.onclick=()=>{s.built.splice(n,1);render()};built.append(b)});box.append(built);const bank=document.createElement('div');bank.className='word-zone';bank.setAttribute('aria-label','Word bank');s.bank.forEach(id=>{const b=document.createElement('button');b.className='btn';b.textContent=q.words[id];b.dataset.wordId=id;b.disabled=s.correct!==null||s.built.includes(id);b.onclick=()=>{s.built.push(id);render()};bank.append(b)});box.append(bank);const actions=document.createElement('div');actions.className='order-actions';const clear=document.createElement('button');clear.className='btn';clear.textContent='Clear';clear.disabled=s.correct!==null;clear.onclick=()=>{s.built=[];render()};const check=document.createElement('button');check.id='checkBtn';check.className='btn check';check.textContent='Check sentence ✓';check.disabled=s.correct!==null;check.onclick=()=>{if(s.built.length!==q.words.length){$('feedback').textContent='Use every word before checking.';return}const text=s.built.map(id=>q.words[id]).join(' ');commit({correct:norm(text)===norm(q.answer)})};actions.append(clear,check);box.append(actions)}
+const f=$('feedback');f.className='feedback'+(s.correct===null?'':s.correct?' success':' error');f.textContent=s.correct===null?'':(s.correct?'Correct! ⭐ ':'Incorrect. Correct answer: '+solution(q)+'. ')+q.why;
+$('backBtn').disabled=pos===0;$('nextBtn').disabled=s.correct===null;$('nextBtn').textContent=pos===QUESTIONS.length-1?'Finish →':'Next →';$('nextBtn').classList.toggle('ready',s.correct!==null);const scene=$('gameScreen').querySelector('.content');scene.classList.remove('fx-enter');void scene.offsetWidth;scene.classList.add('fx-enter');}
+function solution(q){return q.type==='choice'?q.choices[q.a]:q.answer}
+function commit(result){if(finished||state[pos].correct!==null)return;Object.assign(state[pos],result);chime(result.correct?'correct':'wrong');if(result.correct)particles(20);render();animateScore()}
+function next(){if(finished||state[pos].correct===null)return;if(pos===QUESTIONS.length-1){finish();return}const prev=QUESTIONS[pos].round;pos++;render();if(QUESTIONS[pos].round!==prev)toastRound(QUESTIONS[pos].round);$('title').scrollIntoView({block:'start',behavior:'instant'})}
+function back(){if(!finished&&pos>0){pos--;render()}}
+async function finish(){if(finished||state.some(s=>s.correct===null))return;finished=true;const id=attemptId,score=points(),percentage=Math.round(score/QUESTIONS.length*100);setScreen('resultScreen');$('playerResult').textContent=player;$('finalPoints').textContent=score;$('finalTotal').textContent=QUESTIONS.length;$('resultMessage').textContent=percentage+'% · '+(percentage>=80?'You’re a weekend superstar!':'Great effort! Review your answers and try again.');chime('finish');particles(100);
+$('review').replaceChildren();QUESTIONS.forEach((q,i)=>{const s=state[i],a=document.createElement('article');const h=document.createElement('strong');h.textContent=(s.correct?'✅ ':'❌ ')+(i+1)+'. '+q.prompt;const p=document.createElement('p');p.textContent='Your answer: '+(q.type==='choice'?q.choices[s.choice]:s.built.map(id=>q.words[id]).join(' '))+'\nCorrect answer: '+solution(q)+'\n'+q.why;a.append(h,p);$('review').append(a)});
+const payload={studentName:player,gameTitle:document.title,score,total:QUESTIONS.length,percentage,durationSeconds:Math.round((Date.now()-startedAt)/1000),completedAt:new Date().toISOString(),attemptId:id,gameUrl:location.href};
+try{const k='fredWeekendAttemptBackup',rows=JSON.parse(localStorage.getItem(k)||'[]');if(!rows.some(r=>r.attemptId===id)){rows.unshift(payload);localStorage.setItem(k,JSON.stringify(rows.slice(0,50)))}}catch(_){}
+if(/\/_templates?\//.test(location.pathname)){$('recordStatus').textContent='Template preview — score not sent.';return}
+$('recordStatus').textContent='Sending score to your teacher…';try{const result=window.TeacherRecords?await TeacherRecords.submit(payload):{sent:false};if(attemptId===id)$('recordStatus').textContent=result.sent?'✅ Score sent to your teacher.':'⚠️ Result saved on this device. Could not send the score right now.'}catch(_){if(attemptId===id)$('recordStatus').textContent='⚠️ Result saved on this device. Could not send the score right now.'}}
+function toggleSound(){soundOn=!soundOn;$('soundBtn').textContent=soundOn?'🔊 Sound On':'🔇 Sound Off';$('soundBtn').setAttribute('aria-pressed',String(soundOn))}
+$('startBtn').onclick=start;$('nameInput').oninput=()=>$('nameInput').setCustomValidity('');$('nameInput').onkeydown=e=>{if(e.key==='Enter')start()};$('backBtn').onclick=back;$('nextBtn').onclick=next;$('restartBtn').onclick=restart;$('playAgainBtn').onclick=restart;$('soundBtn').onclick=toggleSound;
+
+</script>
+</body>
+</html>
