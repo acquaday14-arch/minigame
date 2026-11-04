@@ -130,5 +130,11 @@
     "description": "30 questions: 8 picture words, 5 vocabulary clues, 6 Mary–Jack replies, 6 Fred’s weekend reading questions and 5 tap-to-build sentences. No timer.",
     "level": "A1–A2 · Movers",
     "path": "./fred-weekend-quest/"
+  },
+  {
+    "title": "People & Style Quest",
+    "description": "38 vocabulary questions: people, roles, construction site, clothes, footwear, bags and jewellery. Multiple choice and typed blanks only. No timer.",
+    "level": "A2",
+    "path": "./people-style-quest/"
   }
 ]
