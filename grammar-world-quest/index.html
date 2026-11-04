@@ -126,7 +126,7 @@
       *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
     }
 
-    .order-mode{display:flex;flex-direction:column;gap:18px}#sentenceTray{min-height:80px;padding:14px;border:2px dashed #ac93ed;border-radius:16px;background:#f5f0ff;display:flex;flex-wrap:wrap;gap:8px;align-items:center}#wordBank{display:flex;gap:9px;flex-wrap:wrap;justify-content:center}#wordBank .answer{padding:12px 16px}.feedback{line-height:1.5}.btn,.answer{min-height:48px}.start label{font-size:20px}.stage{min-height:620px}.top .pill{font-size:18px}@media(max-width:500px){body{padding:8px}.app{width:100%}.top{padding:16px 12px;gap:8px}.top .pill{font-size:14px;padding:9px}.card{padding:18px 12px}h1{font-size:38px}.controls{gap:9px}.start{padding:38px 18px}.feedback{font-size:18px}.btn{padding:12px}}
+    .order-mode{display:flex;flex-direction:column;gap:18px}#sentenceTray{min-height:80px;padding:14px;border:2px dashed #ac93ed;border-radius:16px;background:#f5f0ff;display:flex;flex-wrap:wrap;gap:8px;align-items:center}#wordBank{display:flex;gap:9px;flex-wrap:wrap;justify-content:center}#wordBank .answer{padding:12px 16px}#wordBank .answer.used{opacity:.28;filter:grayscale(1);border-style:dashed;box-shadow:none;transform:none}.feedback{line-height:1.5}.btn,.answer{min-height:48px}.start label{font-size:20px}.stage{min-height:620px}.top .pill{font-size:18px}@media(max-width:500px){body{padding:8px}.app{width:100%}.top{padding:16px 12px;gap:8px}.top .pill{font-size:14px;padding:9px}.card{padding:18px 12px}h1{font-size:38px}.controls{gap:9px}.start{padding:38px 18px}.feedback{font-size:18px}.btn{padding:12px}}
   </style>
 </head>
 <body>
@@ -976,7 +976,7 @@ function renderOrder(q,st,box){
   if(!data.picked.length)tray.textContent="Your sentence appears here…";
   data.picked.forEach(id=>{const b=document.createElement("button");b.className="btn";b.textContent=q.words[id];b.disabled=locked;b.onclick=()=>{data.picked.splice(data.picked.indexOf(id),1);render();};tray.appendChild(b);});box.appendChild(tray);
   const bank=document.createElement("div");bank.id="wordBank";
-  data.bank.forEach(({text,id})=>{const b=document.createElement("button");b.className="answer";b.textContent=text;b.disabled=locked||data.picked.includes(id);b.onclick=()=>{data.picked.push(id);render();};bank.appendChild(b);});box.appendChild(bank);
+  data.bank.forEach(({text,id})=>{const b=document.createElement("button");b.className="answer";b.textContent=text;b.classList.toggle("used",data.picked.includes(id));b.disabled=locked||data.picked.includes(id);b.onclick=()=>{data.picked.push(id);render();};bank.appendChild(b);});box.appendChild(bank);
   const check=document.createElement("button");check.id="checkOrder";check.className="btn";check.textContent="Check sentence ✓";check.disabled=locked||data.picked.length!==q.words.length;check.onclick=()=>answer(data.picked.map(id=>q.words[id]).join(" ")===q.words.join(" ")?0:1);box.appendChild(check);
 }
 function toggleSound(){
