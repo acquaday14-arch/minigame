@@ -148,5 +148,11 @@
     "description": "30 questions in 3 rounds: 10 there is/are, 10 comparatives and superlatives, and 10 past simple. Includes 21 choices and 9 tap-to-build sentences. No timer.",
     "level": "A1–A2 · Movers",
     "path": "./movers-grammar-adventure/"
+  },
+  {
+    "title": "Park & Play Picture Quest",
+    "description": "22 picture-based choices: 6 park differences, 8 story questions with Mum, Daisy and Fred, and 4 odd-one-out sets with reasons. Clear story illustrations. No writing. No timer.",
+    "level": "A1–A2 · Movers",
+    "path": "./park-play-picture-quest/"
   }
 ]
