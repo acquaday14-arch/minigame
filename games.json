@@ -136,5 +136,11 @@
     "description": "38 vocabulary questions: people, roles, construction site, clothes, footwear, bags and jewellery. Multiple choice and typed blanks only. No timer.",
     "level": "A2",
     "path": "./people-style-quest/"
+  },
+  {
+    "title": "English Explorer Quest",
+    "description": "40 questions in 5 rounds: present simple, s/es pronunciation, comparisons, self-introduction and travel. Choices, typed blanks and tap-to-build sentences. No timer.",
+    "level": "A1–A2",
+    "path": "./english-explorer-quest/"
   }
 ]
