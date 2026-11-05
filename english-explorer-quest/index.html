@@ -136,9 +136,9 @@
     <section class="frame" id="startScreen">
       <div class="start">
         <div class="stars">⭐ ✨ ⭐</div>
-        <div class="kicker">Five topics · B1 challenge</div>
+        <div class="kicker">A2 · Gentle step towards B1</div>
         <h1>English<br>Explorer Quest</h1>
-        <p>40 B1 questions · 5 rounds · No timer<br>Present simple · S/ES sounds · Comparisons<br>Self-introduction · Travel</p>
+        <p>40 questions · A2 to early B1 · No timer<br>Present simple · S/ES sounds · Comparisons<br>Self-introduction · Travel</p>
         <label for="nameInput">Student name</label><br><input id="nameInput" maxlength="80" autocomplete="name" placeholder="Enter your name"><p id="nameError" role="alert"></p>
         <br>
         <button class="btn" id="startBtn">Start Challenge</button>
@@ -194,601 +194,548 @@ const QUESTIONS=[
   {
     "round": 1,
     "type": "mc",
-    "q": "The conference programme says the opening talk _____ at nine tomorrow morning.",
+    "q": "My brother _____ football every Saturday.",
     "choices": [
-      "is starting usually",
-      "start",
-      "starts",
-      "has start"
+      "play",
+      "plays",
+      "playing"
     ],
-    "a": 2,
-    "target": "starts",
-    "ex": "Use the present simple for scheduled events, even when the time reference is in the future."
+    "a": 1,
+    "target": "plays",
+    "ex": "Use the third-person singular form with he: plays."
   },
   {
     "round": 1,
     "type": "mc",
-    "q": "Each of the volunteers _____ responsible for welcoming visitors.",
+    "q": "_____ your parents work near here?",
     "choices": [
-      "are",
-      "is",
-      "be",
-      "have been"
+      "Does",
+      "Are",
+      "Do"
     ],
-    "a": 1,
-    "target": "is",
-    "ex": "Each is singular, so the verb is is, even though volunteers is plural."
+    "a": 2,
+    "target": "Do",
+    "ex": "Use Do + they/your parents + base verb in a question."
   },
   {
     "round": 1,
     "type": "fill",
-    "q": "We’ll send you a confirmation email as soon as the manager _____. (approve)",
-    "target": "approves",
+    "q": "She _____ English after dinner. (study)",
+    "target": "studies",
     "accepted": [
-      "approves"
+      "studies"
     ],
     "a": 0,
-    "ex": "Use the present simple after as soon as to refer to a future event. The singular subject takes approves."
+    "ex": "Change consonant + y to -ies: study → studies."
   },
   {
     "round": 1,
     "type": "mc",
-    "q": "Which sentence correctly describes a regular responsibility?",
+    "q": "Which sentence is correct?",
     "choices": [
-      "She is dealing with customer complaints every Mondays.",
-      "She deal with customer complaints whenever they arise.",
-      "She does deals with customer complaints when they arise.",
-      "She deals with customer complaints whenever they arise."
+      "He doesn’t like coffee.",
+      "He doesn’t likes coffee.",
+      "He don’t like coffee."
     ],
-    "a": 3,
-    "target": "She deals with customer complaints whenever they arise.",
-    "ex": "Use deals for she and arise for they. Whenever introduces a recurring situation."
+    "a": 0,
+    "target": "He doesn’t like coffee.",
+    "ex": "After doesn’t, use the base verb like."
   },
   {
     "round": 1,
     "type": "order",
-    "q": "Build a natural sentence using all the words.",
+    "q": "Build a correct sentence.",
     "words": [
-      "How",
-      "often",
+      "Where",
       "does",
       "your",
-      "department",
-      "review",
-      "customer",
-      "feedback",
+      "sister",
+      "work",
       "?"
     ],
-    "target": "How often does your department review customer feedback?",
+    "target": "Where does your sister work?",
     "a": 0,
-    "ex": "Use How often + does + subject + base verb for a question about frequency."
+    "ex": "Use question word + does + subject + base verb."
   },
   {
     "round": 1,
     "type": "fill",
-    "q": "The quality of these services _____ on the staff’s training. (depend)",
-    "target": "depends",
+    "q": "Tom _____ his homework every evening. (do)",
+    "target": "does",
     "accepted": [
-      "depends"
+      "does"
     ],
     "a": 0,
-    "ex": "The subject is quality, not services. Use depends on."
+    "ex": "The he/she/it form of do is does."
   },
   {
     "round": 1,
     "type": "mc",
-    "q": "“Does your brother work abroad?” — “No, he _____, but he _____ overseas twice a year.”",
+    "q": "“Does your colleague check the bookings every morning?” — “Yes, _____.”",
     "choices": [
-      "doesn’t / travels",
-      "isn’t / travels",
-      "doesn’t / travel",
-      "don’t / travels"
+      "she do",
+      "she does",
+      "she is"
     ],
-    "a": 0,
-    "target": "doesn’t / travels",
-    "ex": "Use doesn’t in the short answer and travels in the affirmative clause."
+    "a": 1,
+    "target": "she does",
+    "ex": "Use does in a short answer to a question beginning with Does."
   },
   {
     "round": 1,
     "type": "order",
-    "q": "Build a natural sentence using all the words.",
+    "q": "Build a correct sentence.",
     "words": [
-      "Our",
-      "manager",
-      "rarely",
-      "takes",
-      "a",
-      "day",
-      "off",
-      "during",
-      "busy",
-      "periods",
+      "We",
+      "usually",
+      "have",
+      "breakfast",
+      "at",
+      "home",
       "."
     ],
-    "target": "Our manager rarely takes a day off during busy periods.",
+    "target": "We usually have breakfast at home.",
     "a": 0,
-    "ex": "Rarely usually goes before the main verb. Takes agrees with our manager.",
-    "alternatives": [
-      "During busy periods our manager rarely takes a day off ."
-    ]
+    "ex": "Use the base verb with we. Usually goes before the main verb."
   },
   {
     "round": 2,
     "type": "mc",
-    "q": "Which word has a different -s/-es ending from the other three?",
+    "q": "works",
     "choices": [
-      "manages",
-      "arranges",
-      "encourages",
-      "develops"
-    ],
-    "a": 3,
-    "target": "develops",
-    "ex": "Develops ends in /s/ after /p/. The other three end in /ɪz/ after /dʒ/.",
-    "listen": "manages, arranges, encourages, develops"
-  },
-  {
-    "round": 2,
-    "type": "mc",
-    "q": "Which word has a different -s/-es ending?",
-    "choices": [
-      "journeys",
-      "books",
-      "tickets",
-      "maps"
+      "/s/",
+      "/z/",
+      "/ɪz/"
     ],
     "a": 0,
-    "target": "journeys",
-    "ex": "Journeys ends in /z/ after a vowel sound. Books, tickets and maps end in /s/.",
-    "listen": "journeys, books, tickets, maps"
+    "target": "/s/",
+    "ex": "Work ends in voiceless /k/, so the ending is /s/.",
+    "listen": "works"
   },
   {
     "round": 2,
     "type": "mc",
-    "q": "Which word has a different -s/-es ending?",
+    "q": "plays",
     "choices": [
-      "chooses",
-      "fixes",
-      "checks",
-      "misses"
-    ],
-    "a": 2,
-    "target": "checks",
-    "ex": "Checks ends in /s/ after /k/. Chooses, fixes and misses end in /ɪz/.",
-    "listen": "chooses, fixes, checks, misses"
-  },
-  {
-    "round": 2,
-    "type": "mc",
-    "q": "Which word has a different -s/-es ending?",
-    "choices": [
-      "travels",
-      "changes",
-      "arrives",
-      "leaves"
+      "/s/",
+      "/z/",
+      "/ɪz/"
     ],
     "a": 1,
-    "target": "changes",
-    "ex": "Changes ends in /ɪz/ after /dʒ/. The other three end in /z/.",
-    "listen": "travels, changes, arrives, leaves"
+    "target": "/z/",
+    "ex": "Play ends in a vowel sound, so the ending is /z/.",
+    "listen": "plays"
   },
   {
     "round": 2,
     "type": "mc",
-    "q": "Which pair BOTH have the final ending /z/?",
+    "q": "watches",
     "choices": [
-      "checks – boards",
-      "reaches – visits",
-      "books – maps",
-      "guides – reserves"
-    ],
-    "a": 3,
-    "target": "guides – reserves",
-    "ex": "Guides ends in /z/ after /d/; reserves ends in /z/ after /v/.",
-    "listen": "checks, boards, reaches, visits, books, maps, guides, reserves"
-  },
-  {
-    "round": 2,
-    "type": "mc",
-    "q": "Choose the ending sounds in this order: packs → bags → watches.",
-    "choices": [
-      "/s/ → /z/ → /ɪz/",
-      "/z/ → /s/ → /ɪz/",
-      "/s/ → /ɪz/ → /z/",
-      "/ɪz/ → /z/ → /s/"
-    ],
-    "a": 0,
-    "target": "/s/ → /z/ → /ɪz/",
-    "ex": "Pack ends in /k/, bag in /g/, and watch in /tʃ/: /s/, /z/, /ɪz/.",
-    "listen": "packs, bags, watches"
-  },
-  {
-    "round": 2,
-    "type": "mc",
-    "q": "Choose the ending sounds in this order: goes → laughs → judges.",
-    "choices": [
-      "/ɪz/ → /s/ → /z/",
-      "/z/ → /z/ → /ɪz/",
-      "/z/ → /s/ → /ɪz/",
-      "/s/ → /z/ → /ɪz/"
+      "/s/",
+      "/z/",
+      "/ɪz/"
     ],
     "a": 2,
-    "target": "/z/ → /s/ → /ɪz/",
-    "ex": "Go ends in a vowel, laugh ends in /f/, and judge ends in /dʒ/. Follow the sounds, not the final written letters.",
-    "listen": "goes, laughs, judges"
+    "target": "/ɪz/",
+    "ex": "Watch ends in /tʃ/, so the ending adds a syllable: /ɪz/.",
+    "listen": "watches"
   },
   {
     "round": 2,
     "type": "mc",
-    "q": "In which word does the -s/-es ending add an extra syllable?",
+    "q": "helps",
     "choices": [
-      "climbs",
-      "catches",
-      "stops",
-      "enjoys"
+      "/s/",
+      "/z/",
+      "/ɪz/"
+    ],
+    "a": 0,
+    "target": "/s/",
+    "ex": "Help ends in voiceless /p/, so the ending is /s/.",
+    "listen": "helps"
+  },
+  {
+    "round": 2,
+    "type": "mc",
+    "q": "lives",
+    "choices": [
+      "/s/",
+      "/z/",
+      "/ɪz/"
     ],
     "a": 1,
-    "target": "catches",
-    "ex": "Catches has an extra /ɪz/ syllable after /tʃ/. The other endings are /z/, /s/ and /z/.",
-    "listen": "climbs, catches, stops, enjoys"
+    "target": "/z/",
+    "ex": "Live ends in voiced /v/, so the ending is /z/.",
+    "listen": "lives"
+  },
+  {
+    "round": 2,
+    "type": "mc",
+    "q": "washes",
+    "choices": [
+      "/s/",
+      "/z/",
+      "/ɪz/"
+    ],
+    "a": 2,
+    "target": "/ɪz/",
+    "ex": "Wash ends in /ʃ/, so the ending is /ɪz/.",
+    "listen": "washes"
+  },
+  {
+    "round": 2,
+    "type": "mc",
+    "q": "Which word has a different ending sound?",
+    "choices": [
+      "helps",
+      "laughs",
+      "plays"
+    ],
+    "a": 2,
+    "target": "plays",
+    "ex": "Helps and laughs end in /s/. Plays ends in /z/.",
+    "listen": "helps, laughs, plays"
+  },
+  {
+    "round": 2,
+    "type": "mc",
+    "q": "Which word has a different ending sound?",
+    "choices": [
+      "goes",
+      "lives",
+      "watches"
+    ],
+    "a": 2,
+    "target": "watches",
+    "ex": "Goes and lives end in /z/. Watches ends in /ɪz/.",
+    "listen": "goes, lives, watches"
   },
   {
     "round": 3,
     "type": "mc",
-    "q": "Both hotels cost $80 a night, but breakfast is included only at Hotel A. Hotel A offers _____ value for money.",
+    "q": "Ben is 150 cm tall. Leo is 160 cm tall. Leo is _____ Ben.",
     "choices": [
-      "the best",
-      "more better",
-      "as good",
-      "better"
+      "tallest",
+      "more tall than",
+      "taller than"
     ],
-    "a": 3,
-    "target": "better",
-    "ex": "Better is the comparative of good. You are comparing the value offered by two hotels."
+    "a": 2,
+    "target": "taller than",
+    "ex": "Tall → taller. Use than to compare two people."
   },
   {
     "round": 3,
     "type": "fill",
-    "q": "The new route takes 30 minutes; the old one takes 50. The new route is much _____ than the old one. (fast)",
-    "target": "faster",
+    "q": "This bag weighs 5 kg. That bag weighs 2 kg. This bag is _____ than that one. (heavy)",
+    "target": "heavier",
     "accepted": [
-      "faster"
+      "heavier"
     ],
     "a": 0,
-    "ex": "Much can strengthen a comparative: much faster. Do not use much with the base form here."
+    "ex": "Change consonant + y to -ier: heavy → heavier."
   },
   {
     "round": 3,
     "type": "mc",
-    "q": "The train costs $30 and the bus costs $15. Which sentence is accurate?",
+    "q": "Hotel A has a score of 9/10. Hotel B has a score of 7/10. Hotel A has _____ reviews.",
     "choices": [
-      "The bus is twice as expensive as the train.",
-      "The train is twice as expensive as the bus.",
-      "The train is as expensive twice as the bus.",
-      "The train is two times expensiver than the bus."
+      "better",
+      "the best",
+      "gooder"
     ],
-    "a": 1,
-    "target": "The train is twice as expensive as the bus.",
-    "ex": "Use twice as + adjective + as. Thirty dollars is twice fifteen dollars."
+    "a": 0,
+    "target": "better",
+    "ex": "Good → better → the best. Use better to compare these two hotels."
   },
   {
     "round": 3,
     "type": "order",
-    "q": "Build a natural sentence using all the words.",
+    "q": "Build a correct sentence.",
+    "words": [
+      "This",
+      "hotel",
+      "is",
+      "cheaper",
+      "than",
+      "that",
+      "hotel",
+      "."
+    ],
+    "target": "This hotel is cheaper than that hotel.",
+    "a": 0,
+    "ex": "Use comparative + than to compare two hotels."
+  },
+  {
+    "round": 3,
+    "type": "mc",
+    "q": "A car costs $9,000. A bike costs $200. The car is _____ the bike.",
+    "choices": [
+      "expensiver than",
+      "more expensive than",
+      "the most expensive"
+    ],
+    "a": 1,
+    "target": "more expensive than",
+    "ex": "Use more + long adjective + than."
+  },
+  {
+    "round": 3,
+    "type": "fill",
+    "q": "The red box is bigger than every other box here. It is the _____ box. (big)",
+    "target": "biggest",
+    "accepted": [
+      "biggest"
+    ],
+    "a": 0,
+    "ex": "Double the final consonant: big → biggest."
+  },
+  {
+    "round": 3,
+    "type": "mc",
+    "q": "Which sentence is correct?",
+    "choices": [
+      "She is most young in her family.",
+      "She is younger in her family.",
+      "She is the youngest in her family."
+    ],
+    "a": 2,
+    "target": "She is the youngest in her family.",
+    "ex": "Use the youngest when comparing one person with the whole family."
+  },
+  {
+    "round": 3,
+    "type": "order",
+    "q": "Build a correct sentence.",
     "words": [
       "This",
       "is",
-      "one",
-      "of",
       "the",
       "most",
-      "convenient",
-      "places",
-      "to",
-      "stay",
+      "beautiful",
+      "beach",
       "."
     ],
-    "target": "This is one of the most convenient places to stay.",
+    "target": "This is the most beautiful beach.",
     "a": 0,
-    "ex": "After one of the most, use a plural noun: places."
-  },
-  {
-    "round": 3,
-    "type": "mc",
-    "q": "“The museum was interesting, but the walking tour was even _____.”",
-    "choices": [
-      "more interesting",
-      "most interesting",
-      "much interesting",
-      "the more interesting"
-    ],
-    "a": 0,
-    "target": "more interesting",
-    "ex": "Even can strengthen a comparative. Use more interesting when comparing the two activities."
-  },
-  {
-    "round": 3,
-    "type": "fill",
-    "q": "There were fewer delays this year. This was the _____ journey we have ever had. (stressful; use the least degree)",
-    "target": "least stressful",
-    "accepted": [
-      "least stressful"
-    ],
-    "a": 0,
-    "ex": "The least + adjective expresses the lowest degree of a quality."
-  },
-  {
-    "round": 3,
-    "type": "mc",
-    "q": "Only five people joined the morning tour; twenty joined the afternoon tour. Which sentence has the same meaning?",
-    "choices": [
-      "The morning tour was as crowded as the afternoon tour.",
-      "The afternoon tour was less crowded than the morning tour.",
-      "The morning tour was not as crowded as the afternoon tour.",
-      "The morning tour was the most crowded of the two."
-    ],
-    "a": 2,
-    "target": "The morning tour was not as crowded as the afternoon tour.",
-    "ex": "Not as crowded as means less crowded than. The morning group was smaller."
-  },
-  {
-    "round": 3,
-    "type": "order",
-    "q": "Build a natural sentence using all the words.",
-    "words": [
-      "The",
-      "earlier",
-      "you",
-      "book",
-      ",",
-      "the",
-      "cheaper",
-      "your",
-      "ticket",
-      "becomes",
-      "."
-    ],
-    "target": "The earlier you book, the cheaper your ticket becomes.",
-    "a": 0,
-    "ex": "Use the + comparative in both clauses to show that two changes are connected."
+    "ex": "Use the most + long adjective for the superlative."
   },
   {
     "round": 4,
     "type": "mc",
-    "q": "At a professional networking event, someone asks you to introduce yourself. Which opening fits best?",
+    "q": "You meet someone in a new class. Which introduction gives your name and something you do?",
     "choices": [
-      "My name is Alex. What’s your salary?",
-      "I’m Alex, and my company is the best company.",
-      "Hello, I’m Alex. I’m twenty-nine. That’s everything.",
-      "Hi, I’m Alex. I work in operations, mainly supporting project teams."
-    ],
-    "a": 3,
-    "target": "Hi, I’m Alex. I work in operations, mainly supporting project teams.",
-    "ex": "A professional introduction gives your name, role and relevant responsibilities without intrusive questions."
-  },
-  {
-    "round": 4,
-    "type": "mc",
-    "q": "“Could you tell us a little about your background?” Choose the most relevant reply.",
-    "choices": [
-      "I studied business management and now work in customer service.",
-      "My office is on the third floor, near the lift.",
-      "I’m doing well, thanks. How about you?",
-      "I’d prefer a window seat if one is available."
-    ],
-    "a": 0,
-    "target": "I studied business management and now work in customer service.",
-    "ex": "Background refers to relevant education, experience or personal history."
-  },
-  {
-    "round": 4,
-    "type": "fill",
-    "q": "Complete the introduction: “I’m responsible _____ coordinating meetings and supporting the team.”",
-    "target": "for",
-    "accepted": [
-      "for"
-    ],
-    "a": 0,
-    "ex": "Use responsible for + noun or -ing form."
-  },
-  {
-    "round": 4,
-    "type": "order",
-    "q": "Build a natural sentence using all the words.",
-    "words": [
-      "Although",
-      "I",
-      "lack",
-      "experience",
-      ",",
-      "I",
-      "am",
-      "eager",
-      "to",
-      "learn",
-      "."
-    ],
-    "target": "Although I lack experience, I am eager to learn.",
-    "a": 0,
-    "ex": "Although introduces a contrast between limited experience and a positive attitude.",
-    "alternatives": [
-      "I am eager to learn although I lack experience ."
-    ]
-  },
-  {
-    "round": 4,
-    "type": "mc",
-    "q": "You have just started a role and want to explain your experience accurately. Which sentence fits?",
-    "choices": [
-      "I work here since two weeks.",
-      "I’ve only recently joined the team, so I’m still learning the procedures.",
-      "I’m knowing all the procedures already because I’m new.",
-      "I used to join the team next month."
+      "I’m from Vietnam. How old is the teacher?",
+      "I’m Lan, and I work in a hotel.",
+      "The hotel is near the station."
     ],
     "a": 1,
-    "target": "I’ve only recently joined the team, so I’m still learning the procedures.",
-    "ex": "Recently joined and still learning communicate that you are new without overstating your experience."
+    "target": "I’m Lan, and I work in a hotel.",
+    "ex": "Give your name and a simple detail about your work or studies."
   },
   {
     "round": 4,
     "type": "mc",
-    "q": "After introducing your role to a new colleague, which follow-up best invites a conversation?",
+    "q": "“Where are you from?” — “_____”",
     "choices": [
-      "Why haven’t you told me everything about your job?",
-      "Tell me your personal details before we continue.",
-      "What kind of projects are you currently working on?",
-      "How much money do you earn every month?"
+      "I’m from Vietnam.",
+      "I’m a teacher.",
+      "I’m fine, thanks."
     ],
-    "a": 2,
-    "target": "What kind of projects are you currently working on?",
-    "ex": "An open question about relevant work encourages a professional conversation."
+    "a": 0,
+    "target": "I’m from Vietnam.",
+    "ex": "I’m from + place tells someone where you come from."
+  },
+  {
+    "round": 4,
+    "type": "fill",
+    "q": "“How old are you?” — “I’m twenty years _____.”",
+    "target": "old",
+    "accepted": [
+      "old"
+    ],
+    "a": 0,
+    "ex": "The pattern is I’m + number + years old."
   },
   {
     "round": 4,
     "type": "order",
-    "q": "Build a natural sentence using all the words.",
+    "q": "Build a correct sentence.",
     "words": [
       "I",
       "am",
-      "particularly",
-      "interested",
-      "in",
-      "developing",
+      "a",
+      "student",
+      "at",
+      "this",
+      "school",
+      "."
+    ],
+    "target": "I am a student at this school.",
+    "a": 0,
+    "ex": "Use a before a singular job or role: a student."
+  },
+  {
+    "round": 4,
+    "type": "mc",
+    "q": "“What do you do?” — “_____”",
+    "choices": [
+      "I’m on holiday this week.",
+      "I’m from Hanoi.",
+      "I’m a receptionist at a hotel."
+    ],
+    "a": 2,
+    "target": "I’m a receptionist at a hotel.",
+    "ex": "What do you do? usually asks about your job."
+  },
+  {
+    "round": 4,
+    "type": "mc",
+    "q": "“Nice to meet you.” — “_____”",
+    "choices": [
+      "I’m thirteen.",
+      "Nice to meet you, too.",
+      "I live near school."
+    ],
+    "a": 1,
+    "target": "Nice to meet you, too.",
+    "ex": "Nice to meet you, too is a natural response when meeting someone."
+  },
+  {
+    "round": 4,
+    "type": "order",
+    "q": "Build a correct sentence.",
+    "words": [
+      "In",
       "my",
-      "communication",
-      "skills",
+      "free",
+      "time",
+      ",",
+      "I",
+      "enjoy",
+      "reading",
       "."
     ],
-    "target": "I am particularly interested in developing my communication skills.",
+    "target": "In my free time , I enjoy reading.",
     "a": 0,
-    "ex": "Use interested in + -ing form, and develop skills to describe a learning goal."
+    "ex": "Enjoy is followed by an -ing form: enjoy reading."
   },
   {
     "round": 4,
     "type": "mc",
-    "q": "You want to explain why you are learning English. Which answer develops the idea most clearly?",
+    "q": "“Why are you learning English?” — “_____”",
     "choices": [
-      "I’m learning English so that I can communicate more confidently with international clients.",
-      "English is an international language. My name is Ben.",
-      "I learn English because communicate confident with clients.",
-      "I’m learning English although I want international communication."
+      "Because I want to talk to people when I travel.",
+      "Because I’m twenty years old.",
+      "Because my name is Nam."
     ],
     "a": 0,
-    "target": "I’m learning English so that I can communicate more confidently with international clients.",
-    "ex": "So that introduces a purpose. Use communicate confidently, with an adverb."
+    "target": "Because I want to talk to people when I travel.",
+    "ex": "Give a reason that explains your goal."
   },
   {
     "round": 5,
     "type": "mc",
-    "q": "Your flight has been cancelled and you need to travel today. What is the most useful request?",
+    "q": "Where do you usually go to catch a plane?",
     "choices": [
-      "Can I check in for yesterday’s flight instead?",
-      "Could I exchange my passport for a boarding pass?",
-      "Would you mind cancelling all the flights today?",
-      "Could you put me on the next available flight?"
+      "A pharmacy",
+      "An airport",
+      "A museum"
     ],
-    "a": 3,
-    "target": "Could you put me on the next available flight?",
-    "ex": "Ask to be rebooked on an available flight when your original flight is cancelled."
+    "a": 1,
+    "target": "An airport",
+    "ex": "Planes depart from and arrive at airports."
   },
   {
     "round": 5,
     "type": "fill",
-    "q": "The airline says my bag exceeds the weight limit. I may have to pay an excess _____ fee. (use the word for bags and cases)",
-    "target": "baggage",
+    "q": "At the airport, show your _____ to prove your identity when travelling internationally. (p…)",
+    "target": "passport",
     "accepted": [
-      "baggage",
-      "luggage"
+      "passport"
     ],
     "a": 0,
-    "ex": "Excess baggage is luggage over the airline’s allowance. Excess luggage is also used."
+    "ex": "A passport is an official identity document used for international travel."
   },
   {
     "round": 5,
     "type": "mc",
-    "q": "A hotel offers free cancellation until 48 hours before arrival. You cancel 24 hours before arrival. What can you conclude?",
+    "q": "At a hotel, the receptionist asks, “Do you have a reservation?” Choose the best answer.",
     "choices": [
-      "You definitely receive a full refund.",
-      "A cancellation charge may apply.",
-      "The hotel must offer you a free upgrade.",
-      "Your booking automatically moves to the following week."
+      "Yes, I can swim.",
+      "Yes, it’s sunny.",
+      "Yes, it’s under the name Tran."
     ],
-    "a": 1,
-    "target": "A cancellation charge may apply.",
-    "ex": "You cancelled after the free-cancellation deadline. A fee may apply, depending on the booking terms."
+    "a": 2,
+    "target": "Yes, it’s under the name Tran.",
+    "ex": "You can give the name used to make the booking."
   },
   {
     "round": 5,
     "type": "order",
-    "q": "Build a natural sentence using all the words.",
+    "q": "Build a correct sentence.",
     "words": [
-      "Could",
-      "you",
-      "tell",
-      "me",
-      "where",
-      "the",
-      "nearest",
-      "station",
+      "How",
+      "much",
       "is",
+      "a",
+      "ticket",
+      "to",
+      "London",
       "?"
     ],
-    "target": "Could you tell me where the nearest station is?",
+    "target": "How much is a ticket to London?",
     "a": 0,
-    "ex": "After Could you tell me, use statement word order: where the nearest station is."
+    "ex": "How much is…? asks about the price of one ticket."
   },
   {
     "round": 5,
     "type": "mc",
-    "q": "Your room is noisy and you would like a quieter one. Which request is most polite and clear?",
+    "q": "You are lost in town. Which question politely asks for help?",
     "choices": [
-      "Give me a better room because this hotel is terrible.",
-      "I demand the most expensive room immediately.",
-      "Would it be possible to move to a room away from the street?",
-      "Why do you always put everybody in noisy rooms?"
+      "Excuse me, how do I get to the station?",
+      "Where do you work?",
+      "What time do you usually eat?"
     ],
-    "a": 2,
-    "target": "Would it be possible to move to a room away from the street?",
-    "ex": "Would it be possible to…? makes a polite request and explains the change you need."
+    "a": 0,
+    "target": "Excuse me, how do I get to the station?",
+    "ex": "Excuse me, how do I get to…? is a polite way to ask for directions."
   },
   {
     "round": 5,
     "type": "fill",
-    "q": "Passengers flying from Hanoi to Paris via Doha have a three-hour _____ between flights. (a word beginning with l)",
-    "target": "layover",
+    "q": "My clothes are packed in a large wheeled _____ for the trip. (s…)",
+    "target": "suitcase",
     "accepted": [
-      "layover"
+      "suitcase"
     ],
     "a": 0,
-    "ex": "A layover is a waiting period between connecting flights."
+    "ex": "A suitcase is luggage used to carry clothes and other belongings."
   },
   {
     "round": 5,
     "type": "mc",
-    "q": "Your train leaves in 20 minutes. A taxi takes 10 minutes; a bus takes 35 minutes. Which suggestion best fits the situation?",
+    "q": "You arrive at the hotel to get your room key. You want to _____.",
     "choices": [
-      "We’d better take a taxi, or we may miss the train.",
-      "Let’s take the bus; it is guaranteed to arrive on time.",
-      "We should wait 30 minutes before leaving.",
-      "There’s no need to leave until after the train departs."
+      "take off",
+      "check in",
+      "get off"
     ],
-    "a": 0,
-    "target": "We’d better take a taxi, or we may miss the train.",
-    "ex": "Had better expresses strong advice. The taxi can arrive before departure; the bus cannot."
+    "a": 1,
+    "target": "check in",
+    "ex": "Check in means register your arrival at a hotel or airport."
   },
   {
     "round": 5,
     "type": "mc",
-    "q": "“I’m afraid your room won’t be ready until 3 p.m.” Which reply solves a practical problem?",
+    "q": "“Is this your first visit to Vietnam?” — “_____”",
     "choices": [
-      "That means I have already checked out.",
-      "Would you like me to clean every room?",
-      "Why does the airport close at three?",
-      "That’s fine. Could you store my luggage until then?"
+      "It costs twenty dollars.",
+      "The station is on the left.",
+      "Yes, it is. I’m excited to be here."
     ],
-    "a": 3,
-    "target": "That’s fine. Could you store my luggage until then?",
-    "ex": "Asking the hotel to store your luggage gives you a practical option while you wait."
+    "a": 2,
+    "target": "Yes, it is. I’m excited to be here.",
+    "ex": "Yes, it is answers Is this…? and the next sentence fits the travel situation."
   }
 ];
 
