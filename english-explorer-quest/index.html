@@ -139,7 +139,7 @@
         <div class="stars">⭐ ✨ ⭐</div>
         <div class="kicker">Workplace edition · A2–early B1</div>
         <h1>English<br>Explorer Quest</h1>
-        <p>40 questions · A2–early B1 · No timer<br>Meet colleagues · Make requests · Solve problems<br>Business travel · Compare options &amp; practise sounds</p>
+        <p>35 questions · A2–early B1 · No timer<br>10 Present Simple · 10 S/ES sounds<br>15 Workplace conversations · All multiple choice</p>
         <label for="nameInput">Student name</label><br><input id="nameInput" maxlength="80" autocomplete="name" placeholder="Enter your name"><p id="nameError" role="alert"></p>
         <br>
         <button class="btn" id="startBtn">Start Challenge</button>
@@ -148,14 +148,14 @@
 
     <section class="frame hidden" id="gameScreen">
       <div class="top">
-        <div class="pill" id="roundPill">Round 1 / 5</div>
-        <div class="pill">⭐ <span id="score">0</span> / <span id="total">40</span> points</div>
-        <div class="pill" id="questionPill">Question 1 / 40</div>
+        <div class="pill" id="roundPill">Round 1 / 3</div>
+        <div class="pill">⭐ <span id="score">0</span> / <span id="total">35</span> points</div>
+        <div class="pill" id="questionPill">Question 1 / 35</div>
       </div>
       <div class="progress"><div id="bar"></div></div>
 
       <div class="stage">
-        <div class="kicker" id="kicker">English challenge · 1 of 40</div>
+        <div class="kicker" id="kicker">English challenge · 1 of 35</div>
         <h1 id="title">Choose the best answer</h1>
         <div class="instruction" id="instruction">Pick the sentence that sounds natural.</div>
 
@@ -177,7 +177,7 @@
       <div class="result-area">
         <div class="result-stars">🌟 🎉 🌟</div>
         <h1>Great Job, <span id="playerResult"></span>!</h1>
-        <div class="result-score"><span id="finalPoints">0</span>/<span id="finalTotal">40</span></div>
+        <div class="result-score"><span id="finalPoints">0</span>/<span id="finalTotal">35</span></div>
         <p class="result-sub" id="resultMessage"></p>
         <p class="result-sub" id="recordStatus"></p>
         <button class="btn" id="playAgainBtn">↻ Play Again</button>
@@ -195,490 +195,137 @@ const QUESTIONS=[
   {
     "round": 1,
     "type": "mc",
-    "q": "New colleague: “Hi, I’m Maya. I’ve just joined the sales team.”\nYou: “_____”",
+    "q": "I usually _____ my emails before the morning meeting.",
     "choices": [
-      "How much does your team earn?",
-      "Nice to meet you. I’m Linh from operations.",
-      "I’d like to change my booking."
+      "check",
+      "checks",
+      "checking"
     ],
-    "a": 1,
-    "target": "Nice to meet you. I’m Linh from operations.",
-    "ex": "Give a friendly greeting, your name and your team when meeting a new colleague."
+    "a": 0,
+    "target": "check",
+    "ex": "Use the base verb with I: I check."
   },
   {
     "round": 1,
     "type": "mc",
-    "q": "Colleague: “Which department do you work in?”\nYou: “_____”",
+    "q": "My colleague _____ the bus to work every day.",
     "choices": [
-      "My office closes at six.",
-      "I’m attending a meeting today.",
-      "I work in customer service."
+      "take",
+      "takes",
+      "taking"
     ],
-    "a": 2,
-    "target": "I work in customer service.",
-    "ex": "Answer a question about your department with the team or department name."
+    "a": 1,
+    "target": "takes",
+    "ex": "Add -s with he or she: my colleague takes."
   },
   {
     "round": 1,
     "type": "mc",
-    "q": "Colleague: “What does your role involve?”\nYou: “_____”",
+    "q": "_____ you normally have lunch at the office?",
     "choices": [
-      "I help customers and deal with their questions.",
-      "Our office is near the station.",
-      "I usually take the bus to work."
+      "Does",
+      "Are",
+      "Do"
     ],
-    "a": 0,
-    "target": "I help customers and deal with their questions.",
-    "ex": "Describe your main responsibilities when someone asks what your role involves."
-  },
-  {
-    "round": 1,
-    "type": "fill",
-    "q": "Colleague: “What are you responsible for?”\nYou: “I’m responsible _____ arranging meetings and booking rooms.”",
-    "target": "for",
-    "accepted": [
-      "for"
-    ],
-    "a": 0,
-    "ex": "Use responsible for + noun or -ing form."
+    "a": 2,
+    "target": "Do",
+    "ex": "Use Do + you + base verb to ask about a habit."
   },
   {
     "round": 1,
     "type": "mc",
-    "q": "Visitor: “I have a meeting with Ms Tran at ten.”\nReceptionist: “_____”",
+    "q": "Our manager _____ work late on Fridays. He leaves at five.",
     "choices": [
-      "Would you like to book a flight?",
-      "Please take a seat. I’ll let her know you’re here.",
-      "The report is due next Friday."
+      "doesn’t",
+      "don’t",
+      "isn’t"
     ],
-    "a": 1,
-    "target": "Please take a seat. I’ll let her know you’re here.",
-    "ex": "Welcome the visitor, offer a seat and tell the person they are meeting."
+    "a": 0,
+    "target": "doesn’t",
+    "ex": "Use doesn’t + base verb with a singular subject."
   },
   {
     "round": 1,
     "type": "mc",
-    "q": "New colleague: “Who should I contact about my computer?”\nYou: “_____”",
+    "q": "What time _____ the first train leave every morning?",
     "choices": [
-      "You can contact the IT team.",
-      "You should arrive before nine.",
-      "You can leave your suitcase here."
+      "do",
+      "does",
+      "is"
     ],
-    "a": 0,
-    "target": "You can contact the IT team.",
-    "ex": "Direct the colleague to the team that handles computer problems."
-  },
-  {
-    "round": 1,
-    "type": "order",
-    "q": "You meet a colleague for the first time. Build a friendly introduction.",
-    "words": [
-      "Nice",
-      "to",
-      "meet",
-      "you",
-      ".",
-      "I",
-      "work",
-      "in",
-      "finance",
-      "."
-    ],
-    "target": "Nice to meet you. I work in finance.",
-    "a": 0,
-    "ex": "A short workplace introduction can include a greeting and your department."
+    "a": 1,
+    "target": "does",
+    "ex": "Use does + singular subject + base verb in a question."
   },
   {
     "round": 1,
     "type": "mc",
-    "q": "Colleague: “What do you enjoy most about your job?”\nYou: “_____”",
+    "q": "She _____ her tasks before she starts work.",
     "choices": [
-      "My job title is office assistant.",
-      "I start at eight thirty.",
-      "I enjoy working with people and solving problems."
+      "plan",
+      "planning",
+      "plans"
     ],
     "a": 2,
-    "target": "I enjoy working with people and solving problems.",
-    "ex": "Say what you enjoy and give a little detail."
+    "target": "plans",
+    "ex": "With she, use plans."
   },
   {
-    "round": 2,
+    "round": 1,
     "type": "mc",
-    "q": "Colleague: “Could you help me carry these boxes?”\nYou are available. You say: “_____”",
+    "q": "Which sentence correctly describes a habit?",
     "choices": [
-      "Sure. Where would you like me to put them?",
-      "The meeting starts at two.",
-      "I’d like a window seat, please."
+      "He usually drinks coffee after lunch.",
+      "He drinks usually coffee after lunch.",
+      "He usually drink coffee after lunch."
     ],
     "a": 0,
-    "target": "Sure. Where would you like me to put them?",
-    "ex": "Agree to help and ask a useful follow-up question."
+    "target": "He usually drinks coffee after lunch.",
+    "ex": "Usually normally goes before the main verb. He takes drinks."
   },
   {
-    "round": 2,
-    "type": "fill",
-    "q": "You need a report for a meeting today. Complete your request.\n“Could you _____ me the latest report by two?” (send)",
-    "target": "send",
-    "accepted": [
-      "send"
-    ],
-    "a": 0,
-    "ex": "Use Could you + base verb to make a polite request."
-  },
-  {
-    "round": 2,
+    "round": 1,
     "type": "mc",
-    "q": "Manager: “Are you free for a short meeting at three?”\nYou have another meeting then. You say: “_____”",
+    "q": "Our shop _____ at nine every morning and closes at six.",
     "choices": [
-      "Yes, I finished it yesterday.",
-      "I’m busy at three. Would four o’clock work?",
-      "The printer is next to the door."
+      "open",
+      "opens",
+      "opening"
     ],
     "a": 1,
-    "target": "I’m busy at three. Would four o’clock work?",
-    "ex": "Explain the conflict politely and suggest another time."
+    "target": "opens",
+    "ex": "Use the present simple for a regular opening time: the shop opens."
+  },
+  {
+    "round": 1,
+    "type": "mc",
+    "q": "How often _____ your team have a weekly planning meeting?",
+    "choices": [
+      "do",
+      "is",
+      "does"
+    ],
+    "a": 2,
+    "target": "does",
+    "ex": "Your team is a singular unit here: does your team have…?"
+  },
+  {
+    "round": 1,
+    "type": "mc",
+    "q": "“Do you exercise before work?” — “Yes, _____.”",
+    "choices": [
+      "I do",
+      "I am",
+      "I does"
+    ],
+    "a": 0,
+    "target": "I do",
+    "ex": "Use do in the short answer to a question beginning with Do."
   },
   {
     "round": 2,
     "type": "mc",
-    "q": "Colleague: “Let’s meet at 9:30 in Room B.”\nYou want to confirm the details. You say: “_____”",
-    "choices": [
-      "Do you work in Room B every day?",
-      "I’d like to book a room for tomorrow.",
-      "So, that’s 9:30 in Room B. Is that right?"
-    ],
-    "a": 2,
-    "target": "So, that’s 9:30 in Room B. Is that right?",
-    "ex": "Repeat the time and place to check that you understood correctly."
-  },
-  {
-    "round": 2,
-    "type": "order",
-    "q": "You need a colleague to speak more slowly. Build a polite request.",
-    "words": [
-      "Could",
-      "you",
-      "speak",
-      "a",
-      "little",
-      "more",
-      "slowly",
-      ",",
-      "please",
-      "?"
-    ],
-    "target": "Could you speak a little more slowly , please?",
-    "a": 0,
-    "ex": "Could you…please? is a polite request."
-  },
-  {
-    "round": 2,
-    "type": "fill",
-    "q": "You must change tomorrow’s meeting to Friday.\n“Could we _____ tomorrow’s meeting to Friday?” (a verb beginning with r)",
-    "target": "reschedule",
-    "accepted": [
-      "reschedule"
-    ],
-    "a": 0,
-    "ex": "Reschedule means arrange an event for a different time or date."
-  },
-  {
-    "round": 2,
-    "type": "mc",
-    "q": "Colleague: “Can you show me how to use this system?”\nYou are finishing an urgent task. You say: “_____”",
-    "choices": [
-      "The system is on the second floor.",
-      "I can help in ten minutes, once I finish this.",
-      "I don’t have a meeting tomorrow."
-    ],
-    "a": 1,
-    "target": "I can help in ten minutes, once I finish this.",
-    "ex": "Offer a clear time when you can help."
-  },
-  {
-    "round": 2,
-    "type": "mc",
-    "q": "Manager: “Please complete this form before you leave.”\nYou want to check the deadline. You say: “_____”",
-    "choices": [
-      "Do you need it by five today?",
-      "Which department are you in?",
-      "Have you enjoyed your holiday?"
-    ],
-    "a": 0,
-    "target": "Do you need it by five today?",
-    "ex": "Ask a specific question to confirm when the work is needed."
-  },
-  {
-    "round": 3,
-    "type": "mc",
-    "q": "Colleague: “The printer isn’t working.”\nYou: “_____”",
-    "choices": [
-      "The train leaves at six.",
-      "I’ve booked the meeting room.",
-      "Let’s check the paper tray first."
-    ],
-    "a": 2,
-    "target": "Let’s check the paper tray first.",
-    "ex": "Suggest a simple first step to solve the problem."
-  },
-  {
-    "round": 3,
-    "type": "mc",
-    "q": "Customer: “I haven’t received my order yet.”\nYou: “_____”",
-    "choices": [
-      "I’m sorry about the delay. Could I have your order number?",
-      "I’m not sure where your meeting is.",
-      "Would you like to introduce your team?"
-    ],
-    "a": 0,
-    "target": "I’m sorry about the delay. Could I have your order number?",
-    "ex": "Acknowledge the problem and ask for the information needed to investigate."
-  },
-  {
-    "round": 3,
-    "type": "fill",
-    "q": "You missed part of an instruction.\n“Sorry, could you _____ the last part?” (say it again; r…)",
-    "target": "repeat",
-    "accepted": [
-      "repeat"
-    ],
-    "a": 0,
-    "ex": "Repeat means say something again."
-  },
-  {
-    "round": 3,
-    "type": "mc",
-    "q": "Manager: “How is the report going?”\nYou have finished most of it. You say: “_____”",
-    "choices": [
-      "The meeting room is available.",
-      "It’s nearly ready. I just need to check the figures.",
-      "Could I have a return ticket?"
-    ],
-    "a": 1,
-    "target": "It’s nearly ready. I just need to check the figures.",
-    "ex": "Give a brief progress update and explain what is left to do."
-  },
-  {
-    "round": 3,
-    "type": "mc",
-    "q": "You notice an incorrect total in a report you sent. What should you say?",
-    "choices": [
-      "Please ignore every email from me.",
-      "The customer’s order will arrive tomorrow.",
-      "I’ve noticed an error. I’ll send you a corrected copy."
-    ],
-    "a": 2,
-    "target": "I’ve noticed an error. I’ll send you a corrected copy.",
-    "ex": "Take responsibility and explain how you will correct the mistake."
-  },
-  {
-    "round": 3,
-    "type": "order",
-    "q": "Your colleague needs a file. Build a clear promise.",
-    "words": [
-      "I",
-      "will",
-      "email",
-      "you",
-      "the",
-      "updated",
-      "file",
-      "this",
-      "afternoon",
-      "."
-    ],
-    "target": "I will email you the updated file this afternoon.",
-    "a": 0,
-    "ex": "Use will to make a promise and add a clear time."
-  },
-  {
-    "round": 3,
-    "type": "mc",
-    "q": "Colleague: “I need help with two urgent tasks.”\nYou need to know the priority. You say: “_____”",
-    "choices": [
-      "Which task should we deal with first?",
-      "Which airport are you travelling from?",
-      "What do you enjoy about weekends?"
-    ],
-    "a": 0,
-    "target": "Which task should we deal with first?",
-    "ex": "Ask which task needs attention first when deciding priorities."
-  },
-  {
-    "round": 3,
-    "type": "mc",
-    "q": "A colleague gives an instruction, but you are not sure what they mean. You say: “_____”",
-    "choices": [
-      "Yes, I definitely understand everything.",
-      "Do you mean I should update both files?",
-      "It’s the cheapest ticket available."
-    ],
-    "a": 1,
-    "target": "Do you mean I should update both files?",
-    "ex": "Check your understanding by asking a specific clarification question."
-  },
-  {
-    "round": 4,
-    "type": "mc",
-    "q": "Colleague: “Why are you travelling to Da Nang next week?”\nYou: “_____”",
-    "choices": [
-      "I’m staying near the airport.",
-      "My flight takes about an hour.",
-      "I’m visiting a client at their new office."
-    ],
-    "a": 2,
-    "target": "I’m visiting a client at their new office.",
-    "ex": "Explain the business purpose of your trip."
-  },
-  {
-    "round": 4,
-    "type": "fill",
-    "q": "You call a hotel before a business trip.\n“I’d like to _____ a room for two nights.” (b…)",
-    "target": "book",
-    "accepted": [
-      "book"
-    ],
-    "a": 0,
-    "ex": "Book a room means arrange a hotel stay in advance."
-  },
-  {
-    "round": 4,
-    "type": "mc",
-    "q": "Receptionist: “Do you have a reservation?”\nYou: “_____”",
-    "choices": [
-      "Yes, it’s under the name Tran.",
-      "Yes, I work in finance.",
-      "Yes, I’d like to send a report."
-    ],
-    "a": 0,
-    "target": "Yes, it’s under the name Tran.",
-    "ex": "Give the name used for your booking."
-  },
-  {
-    "round": 4,
-    "type": "order",
-    "q": "You need travel directions. Build a polite question.",
-    "words": [
-      "Could",
-      "you",
-      "tell",
-      "me",
-      "how",
-      "to",
-      "get",
-      "to",
-      "the",
-      "office",
-      "?"
-    ],
-    "target": "Could you tell me how to get to the office?",
-    "a": 0,
-    "ex": "Could you tell me how to get to…? is a polite way to ask for directions."
-  },
-  {
-    "round": 4,
-    "type": "mc",
-    "q": "Colleague: “Your flight arrives at nine. Shall I book a taxi for ten?”\nYou agree. You say: “_____”",
-    "choices": [
-      "Could you send the meeting notes?",
-      "Yes, that should give me enough time.",
-      "I’m afraid the printer is broken."
-    ],
-    "a": 1,
-    "target": "Yes, that should give me enough time.",
-    "ex": "Confirm a plan and explain briefly why the timing works."
-  },
-  {
-    "round": 4,
-    "type": "fill",
-    "q": "After a client lunch, you need proof of payment for your company.\n“Could I have a _____, please?” (r…)",
-    "target": "receipt",
-    "accepted": [
-      "receipt"
-    ],
-    "a": 0,
-    "ex": "A receipt shows that you have paid for goods or services."
-  },
-  {
-    "round": 4,
-    "type": "mc",
-    "q": "Your train is delayed, so you will arrive late for a client meeting. What should you say?",
-    "choices": [
-      "I’ve already checked in to the hotel.",
-      "Could you explain how the printer works?",
-      "My train is delayed. I expect to arrive at 10:30."
-    ],
-    "a": 2,
-    "target": "My train is delayed. I expect to arrive at 10:30.",
-    "ex": "Inform the other person promptly and give an expected arrival time."
-  },
-  {
-    "round": 4,
-    "type": "mc",
-    "q": "Hotel receptionist: “How can I help you?”\nYour room’s Wi-Fi does not work. You say: “_____”",
-    "choices": [
-      "The Wi-Fi in my room isn’t working. Could you check it?",
-      "Could you move the meeting to Friday?",
-      "I’m responsible for arranging deliveries."
-    ],
-    "a": 0,
-    "target": "The Wi-Fi in my room isn’t working. Could you check it?",
-    "ex": "Describe the problem clearly and ask for help."
-  },
-  {
-    "round": 5,
-    "type": "mc",
-    "q": "Colleague: “The train is $30 and takes two hours. The bus is $15 and takes four hours. Which costs less?”\nYou: “_____”",
-    "choices": [
-      "The train is cheaper.",
-      "The bus is cheaper.",
-      "They cost the same."
-    ],
-    "a": 1,
-    "target": "The bus is cheaper.",
-    "ex": "Cheaper means costing less. The bus costs $15, compared with $30 for the train."
-  },
-  {
-    "round": 5,
-    "type": "fill",
-    "q": "Colleague: “My bag weighs 5 kg; yours weighs 2 kg.”\nYou: “Your bag is _____ than mine.” (heavy)",
-    "target": "heavier",
-    "accepted": [
-      "heavier"
-    ],
-    "a": 0,
-    "ex": "Change consonant + y to -ier: heavy → heavier."
-  },
-  {
-    "round": 5,
-    "type": "mc",
-    "q": "Colleague: “Room A holds 20 people; Room B holds 40. We expect 30 guests.”\nYou: “_____”",
-    "choices": [
-      "Room A is bigger than Room B.",
-      "Both rooms are too small.",
-      "Room B is bigger and has enough space."
-    ],
-    "a": 2,
-    "target": "Room B is bigger and has enough space.",
-    "ex": "Use bigger to compare two rooms. Room B has space for all 30 guests."
-  },
-  {
-    "round": 5,
-    "type": "mc",
-    "q": "Colleague: “Of these three suppliers, A costs $100, B costs $80, and C costs $90.”\nYou: “Supplier B is _____.”",
-    "choices": [
-      "the cheapest",
-      "cheaper than all",
-      "the most cheapest"
-    ],
-    "a": 0,
-    "target": "the cheapest",
-    "ex": "Use the cheapest for the lowest price in a group of three or more."
-  },
-  {
-    "round": 5,
-    "type": "mc",
-    "q": "Say this workplace word aloud: “checks”.\nWhat is the sound of the final -s?",
+    "q": "Say “checks”. What is the sound of the final -s?",
     "choices": [
       "/z/",
       "/s/",
@@ -690,12 +337,54 @@ const QUESTIONS=[
     "listen": "checks"
   },
   {
-    "round": 5,
+    "round": 2,
     "type": "mc",
-    "q": "Say this workplace word aloud: “calls”.\nWhat is the sound of the final -s?",
+    "q": "Say “travels”. What is the sound of the final -s?",
     "choices": [
       "/s/",
       "/ɪz/",
+      "/z/"
+    ],
+    "a": 2,
+    "target": "/z/",
+    "ex": "Travel ends in voiced /l/, so the ending is /z/.",
+    "listen": "travels"
+  },
+  {
+    "round": 2,
+    "type": "mc",
+    "q": "Say “watches”. What is the sound of the -es ending?",
+    "choices": [
+      "/ɪz/",
+      "/z/",
+      "/s/"
+    ],
+    "a": 0,
+    "target": "/ɪz/",
+    "ex": "Watch ends in /tʃ/, so the ending adds a syllable: /ɪz/.",
+    "listen": "watches"
+  },
+  {
+    "round": 2,
+    "type": "mc",
+    "q": "Say “starts”. What is the sound of the final -s?",
+    "choices": [
+      "/z/",
+      "/s/",
+      "/ɪz/"
+    ],
+    "a": 1,
+    "target": "/s/",
+    "ex": "Start ends in voiceless /t/, so the ending is /s/.",
+    "listen": "starts"
+  },
+  {
+    "round": 2,
+    "type": "mc",
+    "q": "Say “calls”. What is the sound of the final -s?",
+    "choices": [
+      "/ɪz/",
+      "/s/",
       "/z/"
     ],
     "a": 2,
@@ -704,9 +393,9 @@ const QUESTIONS=[
     "listen": "calls"
   },
   {
-    "round": 5,
+    "round": 2,
     "type": "mc",
-    "q": "Say this workplace word aloud: “manages”.\nWhat is the sound of the final -s/-es?",
+    "q": "Say “manages”. What is the sound of the -s ending?",
     "choices": [
       "/ɪz/",
       "/s/",
@@ -718,9 +407,9 @@ const QUESTIONS=[
     "listen": "manages"
   },
   {
-    "round": 5,
+    "round": 2,
     "type": "mc",
-    "q": "Which workplace word has a different final -s/-es sound?",
+    "q": "Which word has a different final -s sound?",
     "choices": [
       "helps",
       "works",
@@ -730,6 +419,243 @@ const QUESTIONS=[
     "target": "arrives",
     "ex": "Helps and works end in /s/. Arrives ends in /z/.",
     "listen": "helps, works, arrives"
+  },
+  {
+    "round": 2,
+    "type": "mc",
+    "q": "Which word has a different -s/-es ending sound?",
+    "choices": [
+      "washes",
+      "visits",
+      "finishes"
+    ],
+    "a": 1,
+    "target": "visits",
+    "ex": "Washes and finishes end in /ɪz/. Visits ends in /s/.",
+    "listen": "washes, visits, finishes"
+  },
+  {
+    "round": 2,
+    "type": "mc",
+    "q": "Choose the ending sounds in this order: packs → bags → watches.",
+    "choices": [
+      "/s/ → /z/ → /ɪz/",
+      "/z/ → /s/ → /ɪz/",
+      "/s/ → /ɪz/ → /z/"
+    ],
+    "a": 0,
+    "target": "/s/ → /z/ → /ɪz/",
+    "ex": "Pack ends in /k/, bag in /g/, and watch in /tʃ/: /s/, /z/, /ɪz/.",
+    "listen": "packs, bags, watches"
+  },
+  {
+    "round": 2,
+    "type": "mc",
+    "q": "Choose the ending sounds in this order: goes → laughs → chooses.",
+    "choices": [
+      "/ɪz/ → /s/ → /z/",
+      "/s/ → /z/ → /ɪz/",
+      "/z/ → /s/ → /ɪz/"
+    ],
+    "a": 2,
+    "target": "/z/ → /s/ → /ɪz/",
+    "ex": "Go ends in a vowel, laugh in /f/, and choose in /z/. The endings are /z/, /s/, /ɪz/.",
+    "listen": "goes, laughs, chooses"
+  },
+  {
+    "round": 3,
+    "type": "mc",
+    "q": "New colleague: “Hi, I’m Maya. I’ve just joined the sales team.”\nYou: “_____”",
+    "choices": [
+      "Nice to meet you. I’m Linh from operations.",
+      "How much does your team earn?",
+      "I’d like to change my booking."
+    ],
+    "a": 0,
+    "target": "Nice to meet you. I’m Linh from operations.",
+    "ex": "Greet a new colleague and introduce your name and team."
+  },
+  {
+    "round": 3,
+    "type": "mc",
+    "q": "Colleague: “What does your role involve?”\nYou: “_____”",
+    "choices": [
+      "Our office is near the station.",
+      "I help customers and answer their questions.",
+      "I usually take the bus to work."
+    ],
+    "a": 1,
+    "target": "I help customers and answer their questions.",
+    "ex": "Explain your main duties when someone asks about your role."
+  },
+  {
+    "round": 3,
+    "type": "mc",
+    "q": "Colleague: “Could you help me carry these boxes?”\nYou are available. You say: “_____”",
+    "choices": [
+      "The meeting starts at two.",
+      "The report is nearly ready.",
+      "Sure. Where would you like me to put them?"
+    ],
+    "a": 2,
+    "target": "Sure. Where would you like me to put them?",
+    "ex": "Agree to help and ask a useful follow-up question."
+  },
+  {
+    "round": 3,
+    "type": "mc",
+    "q": "Manager: “Are you free for a short meeting at three?”\nYou have another meeting then. You say: “_____”",
+    "choices": [
+      "I’m busy at three. Would four o’clock work?",
+      "Yes, I finished it yesterday.",
+      "The printer is next to the door."
+    ],
+    "a": 0,
+    "target": "I’m busy at three. Would four o’clock work?",
+    "ex": "Explain the conflict and suggest another time."
+  },
+  {
+    "round": 3,
+    "type": "mc",
+    "q": "Colleague: “Let’s meet at 9:30 in Room B.”\nYou want to confirm the details. You say: “_____”",
+    "choices": [
+      "Do you work in Room B every day?",
+      "So, that’s 9:30 in Room B. Is that right?",
+      "I’d like to book a room for tomorrow."
+    ],
+    "a": 1,
+    "target": "So, that’s 9:30 in Room B. Is that right?",
+    "ex": "Repeat the time and place to confirm your understanding."
+  },
+  {
+    "round": 3,
+    "type": "mc",
+    "q": "A colleague gives instructions too quickly. You say: “_____”",
+    "choices": [
+      "Could you move the printer upstairs?",
+      "Could you book the room for tomorrow?",
+      "Could you speak a little more slowly, please?"
+    ],
+    "a": 2,
+    "target": "Could you speak a little more slowly, please?",
+    "ex": "Politely ask the speaker to slow down."
+  },
+  {
+    "round": 3,
+    "type": "mc",
+    "q": "Colleague: “The printer isn’t working.”\nYou: “_____”",
+    "choices": [
+      "Let’s check the paper tray first.",
+      "I’ve already booked the meeting room.",
+      "The client arrives at ten."
+    ],
+    "a": 0,
+    "target": "Let’s check the paper tray first.",
+    "ex": "Suggest a practical first step to solve the problem."
+  },
+  {
+    "round": 3,
+    "type": "mc",
+    "q": "Customer: “I haven’t received my order yet.”\nYou: “_____”",
+    "choices": [
+      "Would you like to meet our new colleague?",
+      "I’m sorry about the delay. Could I have your order number?",
+      "The meeting room is on the second floor."
+    ],
+    "a": 1,
+    "target": "I’m sorry about the delay. Could I have your order number?",
+    "ex": "Acknowledge the problem and request the information needed to check it."
+  },
+  {
+    "round": 3,
+    "type": "mc",
+    "q": "Manager: “How is the report going?”\nYou have finished most of it. You say: “_____”",
+    "choices": [
+      "Could I book a return ticket?",
+      "The meeting room is available.",
+      "It’s nearly ready. I just need to check the figures."
+    ],
+    "a": 2,
+    "target": "It’s nearly ready. I just need to check the figures.",
+    "ex": "Give a short progress update and say what is left to do."
+  },
+  {
+    "round": 3,
+    "type": "mc",
+    "q": "You notice an incorrect total in a report you sent. What should you say?",
+    "choices": [
+      "I’ve noticed an error. I’ll send you a corrected copy.",
+      "I’m waiting for the customer’s order number.",
+      "Could you show me where the meeting room is?"
+    ],
+    "a": 0,
+    "target": "I’ve noticed an error. I’ll send you a corrected copy.",
+    "ex": "Explain the mistake and how you will correct it."
+  },
+  {
+    "round": 3,
+    "type": "mc",
+    "q": "Colleague: “I need help with two urgent tasks.”\nYou need to know the priority. You say: “_____”",
+    "choices": [
+      "What time does the office open?",
+      "Which task should we deal with first?",
+      "Which department are you in?"
+    ],
+    "a": 1,
+    "target": "Which task should we deal with first?",
+    "ex": "Ask which task has priority before starting."
+  },
+  {
+    "round": 3,
+    "type": "mc",
+    "q": "Manager: “Please complete this form before you leave.”\nYou want to check the deadline. You say: “_____”",
+    "choices": [
+      "Which department do you work in?",
+      "Would you like a copy of yesterday’s notes?",
+      "Do you need it by five today?"
+    ],
+    "a": 2,
+    "target": "Do you need it by five today?",
+    "ex": "Ask a specific question to confirm the deadline."
+  },
+  {
+    "round": 3,
+    "type": "mc",
+    "q": "Colleague: “Can you show me how to use this system?”\nYou are finishing an urgent task. You say: “_____”",
+    "choices": [
+      "I can help in ten minutes, once I finish this.",
+      "The system was updated last week.",
+      "The team meeting is in Room B."
+    ],
+    "a": 0,
+    "target": "I can help in ten minutes, once I finish this.",
+    "ex": "Offer a clear time when you will be available to help."
+  },
+  {
+    "round": 3,
+    "type": "mc",
+    "q": "Colleague: “The file wasn’t attached to your email.”\nYou: “_____”",
+    "choices": [
+      "The office is closed on Sundays.",
+      "Sorry about that. I’ll send it again now.",
+      "Could you tell me where the station is?"
+    ],
+    "a": 1,
+    "target": "Sorry about that. I’ll send it again now.",
+    "ex": "Acknowledge the missing attachment and offer to send it again."
+  },
+  {
+    "round": 3,
+    "type": "mc",
+    "q": "A colleague’s instruction is unclear. You want to check which files to update. You say: “_____”",
+    "choices": [
+      "I’ve checked in at the hotel.",
+      "It’s the cheapest ticket available.",
+      "Do you mean I should update both files?"
+    ],
+    "a": 2,
+    "target": "Do you mean I should update both files?",
+    "ex": "Ask a focused clarification question instead of guessing."
   }
 ];
 
@@ -744,7 +670,7 @@ let audioCtx = null;
 let roundTimer = null;
 let startedAt = null;
 let attemptId="",finished=false;
-const ROUND_NAMES=["Meet your colleagues","Requests & meetings","Office problem-solving","Business travel","Choices & sounds"];
+const ROUND_NAMES=["Daily routines & schedules","S / ES pronunciation","Workplace conversations"];
 const orders={};
 function shuffled(items){for(let i=items.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[items[i],items[j]]=[items[j],items[i]];}return items;}
 function newAttempt(){attemptId=window.crypto&&crypto.randomUUID?crypto.randomUUID():Date.now()+"-"+Math.random();finished=false;Object.keys(orders).forEach(k=>delete orders[k]);}
@@ -845,7 +771,7 @@ function render(){
   $("score").textContent=points();
   $("kicker").textContent=ROUND_NAMES[q.round-1]+" · "+(pos+1)+" of "+QUESTIONS.length;
   if(MODE==="present"){
-    $("title").textContent=q.type==="fill"?"Fill in the blank":q.type==="order"?"Build the sentence":q.listen?"Workplace sounds":ROUND_NAMES[q.round-1];
+    $("title").textContent=q.type==="fill"?"Fill in the blank":q.type==="order"?"Build the sentence":q.listen?"S / ES Sounds":ROUND_NAMES[q.round-1];
     $("instruction").textContent=q.type==="fill"?"Type the missing word. Use the clue in brackets when provided.":q.type==="order"?"Tap the words in order. Tap a chosen word to undo it.":q.listen?"Compare the ending sounds. Choose the best answer.":"Choose the best answer.";
     $("question").textContent=q.q;
   }else{
@@ -877,7 +803,7 @@ function render(){
   });
   const feedback=$("feedback");
   feedback.textContent=st.choice===null ? "" : (st.choice===q.a ? "Excellent! Correct answer! ⭐" : "Incorrect. Let’s learn from it. 💡");
-  if(st.choice!==null)feedback.textContent+=" Answer: "+q.target+". "+q.ex;
+  if(st.choice!==null)feedback.textContent+=" Answer: "+q.target+(/[.!?]$/.test(q.target)?" ":". ")+q.ex;
   feedback.className="feedback"+(st.choice===null?"":st.choice===q.a?" success":" error");
   feedback.setAttribute("aria-live","polite");
   $("nextBtn").disabled=st.choice===null;
