@@ -160,5 +160,11 @@
     "description": "30 questions covering all 24 requested words: 15 town places, 9 everyday words and 6 tap-to-build sentences. Meaning clues, real-life situations and answer explanations. No timer.",
     "level": "A1–A2",
     "path": "./town-everyday-words/"
+  },
+  {
+    "title": "Three Tenses & Camping Quest",
+    "description": "35 questions: 20 present simple, present continuous and past simple activities; all 10 worksheet word clues; all 5 Ben–Sam camping replies. Choices, tap-to-build sentences and source worksheet images. No timer.",
+    "level": "A1–A2",
+    "path": "./three-tense-camping-quest/"
   }
 ]
