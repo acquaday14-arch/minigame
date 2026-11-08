@@ -172,5 +172,11 @@
     "description": "24 reading choices from all 12 worksheet messages and notices: 12 main-meaning questions and 12 detail challenges. Includes cropped source images, readable text and explanations. No timer.",
     "level": "A2 · Reading Part 1",
     "path": "./notice-detective/"
+  },
+  {
+    "title": "Water & Quantifier Quest",
+    "description": "30 questions: 16 everyday quantifier choices (some, any, a little, a few, a lot of, many, much), all 6 Water facts and myths reading sections, and all 8 worksheet vocabulary meanings. Source images and readable text. No timer.",
+    "level": "A2",
+    "path": "./water-quantifier-quest/"
   }
 ]
