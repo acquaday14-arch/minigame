@@ -1,0 +1,837 @@
+<!doctype html>
+<html lang="en" data-template-effects-version="2">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Notice Detective Reading Quest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --purple:#5b36d6;--purple2:#7a57eb;--ink:#20285c;--pink:#ef5aa7;
+      --yellow:#ffd76a;--mint:#6be0b2;--sky:#74c7ff;--soft:#f8f6ff;--line:#d9cff8;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;min-height:100vh;padding:18px;
+      font-family:"Fredoka",ui-rounded,"Trebuchet MS",Arial,sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at 9% 12%,#ffe2f0 0 7%,transparent 7.5%),
+        radial-gradient(circle at 90% 14%,#dff5ff 0 8%,transparent 8.5%),
+        linear-gradient(180deg,#f8fbff,#f4efff);
+    }
+    button,input{font:inherit}
+    .app{width:min(1060px,98vw);margin:1vh auto}
+    .frame{
+      background:#fff;border:4px solid #4b32bf;border-radius:32px;overflow:hidden;
+      box-shadow:0 14px 0 #ded5ff,0 24px 44px rgba(63,47,147,.14)
+    }
+    .top{
+      background:linear-gradient(135deg,var(--purple),#6541dc);
+      padding:18px 28px;color:#fff;display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:center
+    }
+    .pill{border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.12);padding:9px 15px;border-radius:999px;font-weight:700}
+    .top .pill:last-child{justify-self:end}
+    .progress{height:10px;background:#dacdfd}
+    .progress>div{height:100%;width:25%;background:linear-gradient(90deg,#ffd75f,#ffae73);transition:.25s}
+    .stage{padding:28px 34px 24px;min-height:650px;position:relative}
+    .kicker{text-align:center;color:var(--pink);font-size:14px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+    h1{text-align:center;font-size:clamp(38px,6vw,62px);margin:8px 0 8px;color:#432cb5;line-height:.98}
+    .instruction{text-align:center;font-size:20px;font-weight:600;margin-bottom:24px}
+    .card{
+      width:min(780px,100%);margin:0 auto;border:2px solid var(--line);border-radius:24px;padding:24px;
+      background:linear-gradient(180deg,#fff,#fcfbff)
+    }
+    .question{font-size:clamp(24px,4vw,36px);font-weight:700;text-align:center;margin:6px 0 22px}
+    .answers{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .answer{
+      border:3px solid #ded3fa;background:#fbf9ff;border-radius:18px;padding:15px 18px;color:var(--ink);
+      font-weight:700;font-size:18px;cursor:pointer;transition:.14s
+    }
+    .answer:hover{transform:translateY(-2px);border-color:#aa8df3}
+    .answer.good{border-color:#65d5a8;background:#ebfff6;color:#17734e;animation:pop .28s ease}
+    .answer.bad{border-color:#ff98a4;background:#fff0f2;color:#a63a47;animation:shake .28s ease}
+    .feedback{min-height:42px;text-align:center;margin:18px 0 4px;font-size:19px;font-weight:700}
+    .controls{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:14px;margin-top:28px}
+    .btn{border:2px solid #dbd2f8;border-radius:15px;background:#fff;color:#4734a9;padding:12px 18px;font-weight:700;cursor:pointer}
+    .controls .next{justify-self:end;background:linear-gradient(135deg,#ffd37c,#ffbd84);border:0;color:#76563b}
+    .center{text-align:center}
+    .hidden{display:none!important}
+    .start{padding:60px 32px;text-align:center}
+    .start p{font-size:19px;color:#667085}
+    .start input{width:min(560px,100%);padding:15px 17px;border:2px solid #d8cff4;border-radius:16px;font-size:18px}
+    .start .btn{margin-top:12px;background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;border:0}
+    .stars{font-size:26px;letter-spacing:5px}
+    .confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:20}
+    .confetti i{position:absolute;width:10px;height:16px;border-radius:3px;animation:fall 900ms linear forwards}
+    @keyframes pop{50%{transform:scale(1.035)}}
+    @keyframes shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+    @keyframes fall{from{transform:translateY(-10vh) rotate(0)}to{transform:translateY(110vh) rotate(500deg);opacity:.7}}
+    @media(max-width:700px){.top{grid-template-columns:1fr 1fr}.top>div:nth-child(2){grid-column:1/-1;grid-row:2;text-align:center}.stage{padding:22px 16px}.answers{grid-template-columns:1fr}.controls{grid-template-columns:1fr 1fr}.controls .restart{display:none}}
+  
+    /* Template FX v2 — reduced-motion aware and dependency-free */
+    .fx-enter{animation:fx-enter .38s cubic-bezier(.2,.8,.2,1) both}
+    .answer{transition:transform .17s ease,border-color .2s ease,box-shadow .2s ease,background .2s ease}
+    .answer:active,.btn:active{transform:scale(.97)}
+    .answer:focus-visible,.btn:focus-visible{outline:4px solid #f7bb56;outline-offset:3px}
+    .answer.good{box-shadow:0 0 0 4px rgba(81,213,157,.13)}
+    .answer.bad{box-shadow:0 0 0 4px rgba(255,118,144,.13)}
+    .answer:disabled{cursor:default}
+    .pill.score-pulse,.score-pulse{animation:fx-pulse .35s ease}
+    .feedback.success{color:#10845c;animation:fx-pop .4s ease both}
+    .feedback.error{color:#b44453;animation:fx-shake .32s ease both}
+    .mid-actions{display:flex;gap:8px;align-items:center;justify-content:center}
+    .mid-actions .btn{white-space:nowrap}
+    .btn:disabled{opacity:.4;cursor:not-allowed;filter:grayscale(.25)}
+    .next.ready{animation:fx-glow 1.8s ease-in-out infinite}
+    .fx-particles{position:fixed;inset:0;z-index:100;pointer-events:none;overflow:hidden}
+    .fx-particles span{position:absolute;top:-24px;width:10px;height:16px;border-radius:3px;animation:fx-rain 1.15s cubic-bezier(.2,.7,.5,1) forwards}
+    .fx-round-toast{position:fixed;inset:0;z-index:90;pointer-events:none;display:flex;justify-content:center;align-items:center;background:rgba(45,29,122,.11)}
+    .fx-round-toast.hidden{display:none!important}
+    .fx-round-pill{
+      text-align:center;border:4px solid #fff;border-radius:28px;
+      background:linear-gradient(135deg,#5b36d6,#8b6cf0);color:white;
+      padding:24px 36px;box-shadow:0 20px 60px rgba(54,38,152,.25);
+      font-size:clamp(25px,4vw,42px);font-weight:700;animation:fx-toast .7s ease both
+    }
+    .fx-round-pill small{display:block;font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:#ffdf85;margin-bottom:4px}
+    .result-area{text-align:center;padding:56px 24px}
+    .result-area h1{font-size:clamp(40px,6vw,64px);margin:10px 0;color:#432cb5}
+    .result-area .result-score{font-size:clamp(60px,10vw,100px);color:#5b36d6;font-weight:700;line-height:1.12}
+    .result-area .result-sub{font-size:21px;margin:8px 0 28px}
+    .result-area .btn{background:#6040d7;color:#fff;border:0;padding:15px 30px;font-size:18px}
+    .result-area .result-stars{font-size:38px;letter-spacing:8px;animation:fx-float 2s ease-in-out infinite}
+    .picture{animation:fx-picture-in .55s cubic-bezier(.2,.8,.2,1) both;transition:transform .25s ease,box-shadow .25s ease}
+    .picture:hover{transform:translateY(-3px) rotate(-1deg);box-shadow:0 17px 34px rgba(82,58,173,.21)}
+    .picture img{width:100%;height:100%;object-fit:cover;display:block}
+    @keyframes fx-enter{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes fx-pop{0%{transform:scale(.83);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+    @keyframes fx-pulse{50%{transform:scale(1.09)}}
+    @keyframes fx-shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+    @keyframes fx-glow{50%{box-shadow:0 0 0 6px rgba(255,205,100,.22)}}
+    @keyframes fx-rain{0%{transform:translateY(-10vh) rotate(0deg);opacity:1}100%{transform:translateY(112vh) rotate(620deg);opacity:0}}
+    @keyframes fx-toast{0%{transform:scale(.7) translateY(25px);opacity:0}40%{transform:scale(1.05);opacity:1}100%{transform:scale(1);opacity:1}}
+    @keyframes fx-float{50%{transform:translateY(-9px)}}
+    @keyframes fx-picture-in{from{opacity:0;transform:scale(.91) rotate(-2deg)}to{opacity:1;transform:scale(1) rotate(0)}}
+    @media(max-width:700px){
+      .controls{grid-template-columns:1fr 1fr}
+      .controls .mid-actions{grid-column:1/-1;grid-row:2;justify-content:center}
+      .controls .restart{display:inline-flex}
+      .result-area{padding:42px 16px}
+      .mid-actions .btn{font-size:14px;padding:10px 12px}
+    }
+    @media(prefers-reduced-motion:reduce){
+      *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+    }
+
+    .notice-reading{display:grid;grid-template-columns:minmax(180px,.75fr) minmax(0,1.25fr);gap:22px;align-items:center;border-radius:20px;background:#f0f8ff;padding:18px;margin-bottom:20px}.notice-original{text-align:center}.notice-original img{display:block;max-width:100%;max-height:280px;width:auto;height:auto;margin:auto;border-radius:8px}.source-label{font-size:14px;color:#586080;margin-top:9px}.notice-text{background:#fff;border:2px solid #d9e9fc;border-radius:16px;padding:18px;min-width:0}.notice-meta{font-size:14px;color:#6b5a9b;margin-bottom:7px}.notice-text h2{color:#0875aa;margin:0 0 12px;font-size:25px;line-height:1.15}.notice-text #noticeBody{font-family:"Trebuchet MS",Arial,sans-serif;font-size:21px;line-height:1.45;white-space:pre-line}.card{width:min(920px,100%);padding:20px}.answers{grid-template-columns:1fr;gap:9px}.answer{font-size:21px;text-align:left;padding:13px 17px;line-height:1.25;min-height:50px}.question{font-size:27px;line-height:1.2;margin:10px 0 16px}.stage{padding:20px 24px;min-height:650px}#gameScreen h1{font-size:40px;line-height:1.1}.instruction{margin:10px 0 18px}.feedback{line-height:1.4;font-size:18px;min-height:26px;margin-top:12px}.controls{margin-top:18px}.btn{min-height:46px}.fx-round-pill{max-width:90vw}.start label{font-size:20px}@media(max-width:700px){.notice-reading{grid-template-columns:1fr;gap:12px;padding:12px}.notice-original img{max-height:180px}.notice-text #noticeBody{font-size:20px}.stage{padding:18px 12px}.card{padding:14px}.top{padding:16px 12px;gap:8px}.pill{font-size:14px;padding:9px}body{padding:8px}.app{width:100%}.start{padding:38px 18px}#gameScreen h1{font-size:32px}.answer{font-size:19px}}
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="frame" id="startScreen">
+      <div class="start">
+        <div class="stars">⭐ ✨ ⭐</div>
+        <div class="kicker">Read · Understand · Choose</div>
+        <h1>Notice Detective<br>Reading Quest</h1>
+        <p>12 messages &amp; notices · 24 questions · No timer<br>Read the short text and choose the best answer.</p>
+        <label for="nameInput">Student name</label><br><input id="nameInput" maxlength="80" autocomplete="name" placeholder="Enter your name"><p id="nameError" role="alert"></p>
+        <br>
+        <button class="btn" id="startBtn">Start Challenge</button>
+      </div>
+    </section>
+
+    <section class="frame hidden" id="gameScreen">
+      <div class="top">
+        <div class="pill" id="roundPill">Round 1 / 3</div>
+        <div class="pill">⭐ <span id="score">0</span> / <span id="total">24</span> points</div>
+        <div class="pill" id="questionPill">Question 1 / 24</div>
+      </div>
+      <div class="progress"><div id="bar"></div></div>
+
+      <div class="stage">
+        <div class="kicker" id="kicker">Read carefully · 1 of 24</div>
+        <h1 id="title">Choose the best answer</h1>
+        <div class="instruction" id="instruction">Pick the sentence that sounds natural.</div>
+
+        <div class="card">
+          <div class="notice-reading"><div class="notice-original"><img id="noticeImage" alt=""><div class="source-label" id="noticeSource"></div></div><article class="notice-text"><div class="notice-meta" id="noticeMeta"></div><h2 id="noticeTitle"></h2><div id="noticeBody"></div></article></div><div class="question" id="question"></div>
+          <div class="answers" id="answers"></div>
+          <div class="feedback" id="feedback"></div>
+        </div>
+
+        <div class="controls">
+          <button class="btn" id="backBtn">← Back</button>
+          <div class="mid-actions"><button class="btn" id="soundBtn" aria-pressed="true">🔊 Sound On</button><button class="btn restart" id="restartBtn">↻ Restart</button></div>
+          <button class="btn next" id="nextBtn">Next →</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="frame hidden" id="resultScreen">
+      <div class="result-area">
+        <div class="result-stars">🌟 🎉 🌟</div>
+        <h1>Great Job, <span id="playerResult"></span>!</h1>
+        <div class="result-score"><span id="finalPoints">0</span>/<span id="finalTotal">24</span></div>
+        <p class="result-sub" id="resultMessage"></p>
+        <p class="result-sub" id="recordStatus"></p>
+        <button class="btn" id="playAgainBtn">↻ Play Again</button>
+      </div>
+    </section>
+  <div class="fx-particles" id="fxParticles" aria-hidden="true"></div>
+    <div class="fx-round-toast hidden" id="roundToast" aria-hidden="true"><div class="fx-round-pill"><small>LEVEL UP ✨</small><span id="roundToastText"></span></div></div>
+  </main>
+
+<script src="/minigame/shared/teacher-records-config.js"></script>
+<script src="/minigame/shared/teacher-records.js"></script>
+<script>
+
+const NOTICES=[
+  {
+    "id": "a1",
+    "title": "New Message",
+    "meta": "Message · From John to Peter",
+    "text": "Hello,\nPlease can I borrow your bicycle tomorrow? I need it to go to school. I left my bike at my uncle’s house.\nThanks",
+    "image": "assets/a1.webp"
+  },
+  {
+    "id": "a2",
+    "title": "School Entrance",
+    "meta": "School notice",
+    "text": "All visitors must see the receptionist before going into the school building.\n\nIf the gate is closed, please ring the bell.",
+    "image": "assets/a2.webp"
+  },
+  {
+    "id": "a3",
+    "title": "Phone Message",
+    "meta": "Message · From Andrew to James",
+    "text": "Hi James,\nI’m going to the cinema with my brother this evening to see the new Disney film. Do you want to come with us?\nLet me know.\nAndrew",
+    "image": "assets/a3.webp"
+  },
+  {
+    "id": "a4",
+    "title": "Smart Phones",
+    "meta": "Classroom notice",
+    "text": "Students must turn off their smart phones before going into the classroom. Any noisy phones will be taken by the teacher.",
+    "image": "assets/a4.webp"
+  },
+  {
+    "id": "a5",
+    "title": "Cooking Class",
+    "meta": "Course announcement",
+    "text": "The course starts on Saturday at 11am and will run for four weeks.\n\nAll students of both years are welcome. Cost: £15",
+    "image": "assets/a5.webp"
+  },
+  {
+    "id": "a6",
+    "title": "Coach Trip to the Zoo",
+    "meta": "Trip safety notice",
+    "text": "Please DO NOT touch or give food to the animals. They are very dangerous.\n\nAlways stay with your teacher.",
+    "image": "assets/a6.webp"
+  },
+  {
+    "id": "b1",
+    "title": "New Message",
+    "meta": "Message · From Jane to Shirley",
+    "text": "Hi Shirley,\nWould you like to go to the bookshop with me? We can meet at the bus stop at 11 am.\nJane",
+    "image": "assets/b1.webp"
+  },
+  {
+    "id": "b2",
+    "title": "Running Competition",
+    "meta": "Sports notice",
+    "text": "To enter these races, you must be able to run more than 100 metres.",
+    "image": "assets/b2.webp"
+  },
+  {
+    "id": "b3",
+    "title": "Phone Message",
+    "meta": "Message · From John to Bill",
+    "text": "Hi Bill,\nAre you free to come and help me with the geography homework?\nI can’t find my map!\nJohn",
+    "image": "assets/b3.webp"
+  },
+  {
+    "id": "b4",
+    "title": "Waiting Room",
+    "meta": "Station notice",
+    "text": "The waiting room is only for train passengers.\nPlease keep the door closed when it is cold.",
+    "image": "assets/b4.webp"
+  },
+  {
+    "id": "b5",
+    "title": "Football match tickets",
+    "meta": "School sports notice",
+    "text": "Members of the school team can get free tickets to this Sunday’s match.",
+    "image": "assets/b5.webp"
+  },
+  {
+    "id": "b6",
+    "title": "Mind Your Head",
+    "meta": "Safety sign",
+    "text": "The ceilings in this old building are very low.\n\nVery tall children must be careful.",
+    "image": "assets/b6.webp"
+  }
+];
+const QUESTIONS=[
+  {
+    "round": 1,
+    "notice": 0,
+    "type": "mc",
+    "q": "John needs…",
+    "choices": [
+      "a bicycle for tomorrow.",
+      "to visit his uncle tomorrow.",
+      "Peter to lend him his uncle’s bicycle."
+    ],
+    "a": 0,
+    "target": "a bicycle for tomorrow.",
+    "ex": "John wants to borrow Peter’s bicycle tomorrow so that he can go to school. His own bike is at his uncle’s house.",
+    "source": "Worksheet A · Question 1"
+  },
+  {
+    "round": 1,
+    "notice": 1,
+    "type": "mc",
+    "q": "What does this notice mean?",
+    "choices": [
+      "Visitors can open the gate without ringing the bell.",
+      "Visitors must see the receptionist before entering the building.",
+      "Visitors must close the gate after entering the school."
+    ],
+    "a": 1,
+    "target": "Visitors must see the receptionist before entering the building.",
+    "ex": "The notice says all visitors must see the receptionist first. If the gate is closed, they should ring the bell.",
+    "source": "Worksheet A · Question 2"
+  },
+  {
+    "round": 1,
+    "notice": 2,
+    "type": "mc",
+    "q": "What should James do?",
+    "choices": [
+      "Tell Andrew why he likes the new Disney film.",
+      "Invite Andrew’s brother to the cinema.",
+      "Tell Andrew if he wants to go with them."
+    ],
+    "a": 2,
+    "target": "Tell Andrew if he wants to go with them.",
+    "ex": "Andrew invites James to join him and his brother, then asks James to let him know.",
+    "source": "Worksheet A · Question 3"
+  },
+  {
+    "round": 1,
+    "notice": 3,
+    "type": "mc",
+    "q": "What does the classroom notice mean?",
+    "choices": [
+      "Students must always give their phones to the teacher.",
+      "Students can’t use their phones in the classroom.",
+      "The teacher must turn off the students’ phones."
+    ],
+    "a": 1,
+    "target": "Students can’t use their phones in the classroom.",
+    "ex": "Students must turn their phones off before entering the classroom. Only noisy phones will be taken by the teacher.",
+    "source": "Worksheet A · Question 4"
+  },
+  {
+    "round": 1,
+    "notice": 4,
+    "type": "mc",
+    "q": "Which statement is correct?",
+    "choices": [
+      "The course will last for about a month.",
+      "Only second-year students can go to this class.",
+      "Classes are four times a week."
+    ],
+    "a": 0,
+    "target": "The course will last for about a month.",
+    "ex": "Four weeks is about a month. Students from both years can join; four weeks does not mean four classes each week.",
+    "source": "Worksheet A · Question 5"
+  },
+  {
+    "round": 1,
+    "notice": 5,
+    "type": "mc",
+    "q": "What is the warning about?",
+    "choices": [
+      "It is dangerous for students to eat their own food at the zoo.",
+      "Students will stay at their teacher’s house after the trip.",
+      "Students can be in danger if they touch animals at the zoo."
+    ],
+    "a": 2,
+    "target": "Students can be in danger if they touch animals at the zoo.",
+    "ex": "The notice describes the animals as dangerous and tells students not to touch or feed them.",
+    "source": "Worksheet A · Question 6"
+  },
+  {
+    "round": 2,
+    "notice": 6,
+    "type": "mc",
+    "q": "Jane wants to…",
+    "choices": [
+      "invite Shirley to join her.",
+      "meet Shirley in the evening.",
+      "walk to the bookshop with Shirley."
+    ],
+    "a": 0,
+    "target": "invite Shirley to join her.",
+    "ex": "Jane invites Shirley to the bookshop and suggests meeting at the bus stop at 11 am. How they will travel is not stated.",
+    "source": "Worksheet B · Question 1"
+  },
+  {
+    "round": 2,
+    "notice": 7,
+    "type": "mc",
+    "q": "Which statement has the same meaning as the notice?",
+    "choices": [
+      "Everyone can enter this competition.",
+      "This competition is for people who can run over 100 metres.",
+      "Every race will be no more than 100 metres long."
+    ],
+    "a": 1,
+    "target": "This competition is for people who can run over 100 metres.",
+    "ex": "More than 100 metres means over 100 metres. The notice gives an entry requirement, not the distance of every race.",
+    "source": "Worksheet B · Question 2"
+  },
+  {
+    "round": 2,
+    "notice": 8,
+    "type": "mc",
+    "q": "Why has John sent this message?",
+    "choices": [
+      "Bill can’t find his geography homework.",
+      "John wants to help Bill with his homework.",
+      "John needs help with his schoolwork."
+    ],
+    "a": 2,
+    "target": "John needs help with his schoolwork.",
+    "ex": "John asks Bill to help with geography homework and says he cannot find his map.",
+    "source": "Worksheet B · Question 3"
+  },
+  {
+    "round": 2,
+    "notice": 9,
+    "type": "mc",
+    "q": "What does the waiting-room notice mean?",
+    "choices": [
+      "People who are not travelling by train can’t use the room.",
+      "The door must be kept closed all the time.",
+      "Everyone can enter the room when it is cold."
+    ],
+    "a": 0,
+    "target": "People who are not travelling by train can’t use the room.",
+    "ex": "Only train passengers can use this room. The instruction about the door applies when it is cold.",
+    "source": "Worksheet B · Question 4"
+  },
+  {
+    "round": 2,
+    "notice": 10,
+    "type": "mc",
+    "q": "Where might you see this notice?",
+    "choices": [
+      "In a bank.",
+      "On a laptop screen in an electronics shop.",
+      "At a school gym."
+    ],
+    "a": 2,
+    "target": "At a school gym.",
+    "ex": "The notice is about free match tickets for members of a school team, so a school gym is the best location among these choices.",
+    "source": "Worksheet B · Question 5"
+  },
+  {
+    "round": 2,
+    "notice": 11,
+    "type": "mc",
+    "q": "What does this sign warn you about?",
+    "choices": [
+      "This building is very high.",
+      "It is easy to hit your head if you are tall.",
+      "Only small children need to be careful."
+    ],
+    "a": 1,
+    "target": "It is easy to hit your head if you are tall.",
+    "ex": "Low ceilings can be close to a tall person’s head. Mind your head means be careful not to hit it.",
+    "source": "Worksheet B · Question 6"
+  },
+  {
+    "round": 3,
+    "notice": 0,
+    "type": "mc",
+    "q": "Why can’t John use his own bicycle?",
+    "choices": [
+      "It is at Peter’s school.",
+      "He left it at his uncle’s house.",
+      "He has sold it."
+    ],
+    "a": 1,
+    "target": "He left it at his uncle’s house.",
+    "ex": "John writes: I left my bike at my uncle’s house.",
+    "source": "Detail challenge · A1"
+  },
+  {
+    "round": 3,
+    "notice": 1,
+    "type": "mc",
+    "q": "The school gate is closed. What should a visitor do first?",
+    "choices": [
+      "Wait until the next school day.",
+      "Climb over the gate.",
+      "Ring the bell."
+    ],
+    "a": 2,
+    "target": "Ring the bell.",
+    "ex": "The notice specifically says to ring the bell if the gate is closed.",
+    "source": "Detail challenge · A2"
+  },
+  {
+    "round": 3,
+    "notice": 2,
+    "type": "mc",
+    "q": "Who is already planning to go to the cinema?",
+    "choices": [
+      "Andrew and his brother.",
+      "James and his uncle.",
+      "Andrew and James’s brother."
+    ],
+    "a": 0,
+    "target": "Andrew and his brother.",
+    "ex": "Andrew says he is going with his brother. James has been invited but has not yet replied.",
+    "source": "Detail challenge · A3"
+  },
+  {
+    "round": 3,
+    "notice": 3,
+    "type": "mc",
+    "q": "What will happen if a phone makes noise?",
+    "choices": [
+      "Every student must leave the classroom.",
+      "The teacher will take the noisy phone.",
+      "Students may keep using it."
+    ],
+    "a": 1,
+    "target": "The teacher will take the noisy phone.",
+    "ex": "Any noisy phones will be taken by the teacher.",
+    "source": "Detail challenge · A4"
+  },
+  {
+    "round": 3,
+    "notice": 4,
+    "type": "mc",
+    "q": "Who is welcome to join the cooking class?",
+    "choices": [
+      "Only second-year students.",
+      "Only students who already know how to cook.",
+      "Students from both years."
+    ],
+    "a": 2,
+    "target": "Students from both years.",
+    "ex": "All students of both years are welcome. The notice does not require previous cooking experience.",
+    "source": "Detail challenge · A5"
+  },
+  {
+    "round": 3,
+    "notice": 5,
+    "type": "mc",
+    "q": "During the zoo trip, students should…",
+    "choices": [
+      "stay with their teacher.",
+      "walk around alone.",
+      "give food to the animals."
+    ],
+    "a": 0,
+    "target": "stay with their teacher.",
+    "ex": "The final instruction is Always stay with your teacher.",
+    "source": "Detail challenge · A6"
+  },
+  {
+    "round": 3,
+    "notice": 6,
+    "type": "mc",
+    "q": "Where and when does Jane suggest meeting?",
+    "choices": [
+      "At the bookshop at 11 pm.",
+      "At the bus stop at 11 am.",
+      "At Shirley’s house in the evening."
+    ],
+    "a": 1,
+    "target": "At the bus stop at 11 am.",
+    "ex": "Jane suggests meeting at the bus stop at 11 am.",
+    "source": "Detail challenge · B1"
+  },
+  {
+    "round": 3,
+    "notice": 7,
+    "type": "mc",
+    "q": "Someone can run exactly 100 metres, but no farther. Do they meet the entry requirement?",
+    "choices": [
+      "Yes, exactly 100 metres is enough.",
+      "The notice says they must be able to swim.",
+      "No, they must be able to run more than 100 metres."
+    ],
+    "a": 2,
+    "target": "No, they must be able to run more than 100 metres.",
+    "ex": "More than means a distance greater than 100 metres, not exactly 100 metres.",
+    "source": "Detail challenge · B2"
+  },
+  {
+    "round": 3,
+    "notice": 8,
+    "type": "mc",
+    "q": "What can’t John find?",
+    "choices": [
+      "His map.",
+      "His phone.",
+      "His homework book."
+    ],
+    "a": 0,
+    "target": "His map.",
+    "ex": "John says I can’t find my map!",
+    "source": "Detail challenge · B3"
+  },
+  {
+    "round": 3,
+    "notice": 9,
+    "type": "mc",
+    "q": "According to the notice, when should passengers keep the door closed?",
+    "choices": [
+      "Only when the room is empty.",
+      "When it is cold.",
+      "Only at night."
+    ],
+    "a": 1,
+    "target": "When it is cold.",
+    "ex": "Please keep the door closed when it is cold.",
+    "source": "Detail challenge · B4"
+  },
+  {
+    "round": 3,
+    "notice": 10,
+    "type": "mc",
+    "q": "Who can get free tickets to Sunday’s match?",
+    "choices": [
+      "All visitors to the bank.",
+      "Everyone who owns a laptop.",
+      "Members of the school team."
+    ],
+    "a": 2,
+    "target": "Members of the school team.",
+    "ex": "The offer is for members of the school team.",
+    "source": "Detail challenge · B5"
+  },
+  {
+    "round": 3,
+    "notice": 11,
+    "type": "mc",
+    "q": "Why must very tall children be careful?",
+    "choices": [
+      "The ceilings are low.",
+      "The building has no doors.",
+      "The floor is wet."
+    ],
+    "a": 0,
+    "target": "The ceilings are low.",
+    "ex": "Low ceilings create a risk of hitting your head.",
+    "source": "Detail challenge · B6"
+  }
+];
+
+
+const MODE = "present";
+const $ = id => document.getElementById(id);
+const state = QUESTIONS.map(() => ({choice:null}));
+let pos = 0;
+let player = "";
+let soundOn = true;
+let audioCtx = null;
+let roundTimer = null;
+let startedAt = null;
+let attemptId="",finished=false;
+const ROUND_NAMES=["Main meaning · Set A","Main meaning · Set B","Read for details"];
+function newAttempt(){attemptId=window.crypto&&crypto.randomUUID?crypto.randomUUID():Date.now()+"-"+Math.random();finished=false;}
+
+const totalRounds = Math.max(...QUESTIONS.map(q=>q.round));
+$("total").textContent = QUESTIONS.length;
+const roundElement = () => $(MODE === "present" ? "roundPill" : "round");
+const counterElement = () => $(MODE === "present" ? "questionPill" : "counter");
+
+function points() {
+  return state.reduce((n,s,idx)=>n+(s.choice === QUESTIONS[idx].a ? 1 : 0),0);
+}
+function chime(kind) {
+  if (!soundOn) return;
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    if (!audioCtx) audioCtx = new AC();
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    const melodies = {
+      correct:[[659,0,.11],[880,.11,.15],[1046,.23,.18]],
+      wrong:[[330,0,.13],[220,.11,.19]],
+      round:[[523,0,.1],[659,.11,.1],[784,.23,.19]],
+      finish:[[523,0,.14],[659,.15,.14],[784,.31,.15],[1046,.49,.28]]
+    };
+    const now = audioCtx.currentTime;
+    (melodies[kind] || melodies.correct).forEach(([hz,delay,len])=>{
+      const osc=audioCtx.createOscillator(),gain=audioCtx.createGain();
+      osc.type=kind==="wrong"?"triangle":"sine";
+      osc.frequency.setValueAtTime(hz,now+delay);
+      gain.gain.setValueAtTime(.0001,now+delay);
+      gain.gain.exponentialRampToValueAtTime(.095,now+delay+.018);
+      gain.gain.exponentialRampToValueAtTime(.0001,now+delay+len);
+      osc.connect(gain);gain.connect(audioCtx.destination);
+      osc.start(now+delay);osc.stop(now+delay+len+.01);
+    });
+  } catch (_) {}
+}
+function particles(count) {
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const box=$("fxParticles"), colors=["#ffc85b","#f65caf","#6de0b1","#77caff","#9e76f2","#ff9d78"];
+  for(let n=0;n<count;n++){
+    const p=document.createElement("span");
+    p.style.left=(Math.random()*100)+"%";
+    p.style.background=colors[n%colors.length];
+    p.style.animationDelay=(Math.random()*.27)+"s";
+    p.style.animationDuration=(.95+Math.random()*.7)+"s";
+    box.appendChild(p);
+    p.addEventListener("animationend",()=>p.remove(),{once:true});
+  }
+}
+function animateScore() {
+  const el=$("score");
+  el.textContent=points();
+  el.classList.remove("score-pulse");
+  void el.offsetWidth;
+  el.classList.add("score-pulse");
+}
+function toastRound(round){
+  if(roundTimer)clearTimeout(roundTimer);
+  $("roundToastText").textContent="Round "+round+" / "+totalRounds+" · "+ROUND_NAMES[round-1];
+  $("roundToast").classList.remove("hidden");
+  chime("round");
+  roundTimer=setTimeout(()=>$("roundToast").classList.add("hidden"),900);
+}
+function setScreen(id){
+  ["startScreen","gameScreen","resultScreen"].forEach(x=>$(x).classList.toggle("hidden",x!==id));
+}
+function start(){
+  const name=$("nameInput").value.trim();
+  if(!name){$("nameError").textContent="Please enter your name first.";$("nameInput").focus();return;}
+  $("nameError").textContent="";newAttempt();
+  player=name;
+  startedAt=Date.now();
+  pos=0;
+  state.forEach(s=>s.choice=null);
+  setScreen("gameScreen");
+  render();
+  toastRound(QUESTIONS[0].round);
+}
+function render(){
+  const q=QUESTIONS[pos], st=state[pos];
+  roundElement().textContent="Round "+q.round+" / "+totalRounds+(MODE==="picture"?" · Picture questions":"");
+  counterElement().textContent="Question "+(pos+1)+" / "+QUESTIONS.length;
+  $("bar").style.width=(state.filter(s=>s.choice!==null).length/QUESTIONS.length*100)+"%";
+  $("score").textContent=points();
+  $("kicker").textContent=ROUND_NAMES[q.round-1]+" · "+(pos+1)+" of "+QUESTIONS.length;
+  if(MODE==="present"){
+    $("title").textContent=q.round===3?"Look closely!":"What does it mean?";
+    $("instruction").textContent="Read the message or notice. Choose one answer.";
+    $("question").textContent=q.q;
+    const n=NOTICES[q.notice];
+    $("noticeImage").src=n.image;$("noticeImage").alt="Original worksheet: "+n.title+". Readable text is shown alongside.";
+    $("noticeSource").textContent=q.source;$("noticeMeta").textContent=n.meta;$("noticeTitle").textContent=n.title;$("noticeBody").textContent=n.text;
+
+  }else{
+    $("prompt").textContent=q.prompt;
+    const photo=$("picture");
+    photo.innerHTML="";
+    if(q.image){
+      const img=document.createElement("img");img.src=q.image;img.alt=q.alt||q.picture||"Question picture";
+      photo.appendChild(img);
+    }else{photo.innerHTML=placeholder(q.picture||"Picture prompt");}
+    photo.style.animation="none";
+    void photo.offsetWidth;
+    photo.style.animation="";
+  }
+  const answerBox=$("answers");
+  answerBox.innerHTML="";
+  q.choices.forEach((label,n)=>{
+    const b=document.createElement("button");
+    b.type="button";b.className="answer";b.textContent=label;
+    if(st.choice!==null){
+      b.disabled=true;
+      if(n===q.a)b.classList.add("good");
+      if(n===st.choice && n!==q.a)b.classList.add("bad");
+    }else{b.onclick=()=>answer(n);}
+    answerBox.appendChild(b);
+  });
+  const feedback=$("feedback");
+  feedback.textContent=st.choice===null ? "" : (st.choice===q.a ? "Excellent! Correct answer! ⭐" : "Not quite. The correct answer is highlighted. 💡");
+  if(st.choice!==null)feedback.textContent+=" "+q.ex;
+  feedback.className="feedback"+(st.choice===null?"":st.choice===q.a?" success":" error");
+  feedback.setAttribute("aria-live","polite");
+  $("nextBtn").disabled=st.choice===null;
+  $("nextBtn").classList.toggle("ready",st.choice!==null);
+  $("nextBtn").textContent=pos===QUESTIONS.length-1?"See Results →":"Next →";
+  $("backBtn").disabled=pos===0;
+  const scene=$("gameScreen").querySelector(MODE==="present"?".stage":".content");
+  scene.classList.remove("fx-enter");
+  void scene.offsetWidth;
+  scene.classList.add("fx-enter");
+}
+function answer(choice){
+  if(state[pos].choice!==null)return;
+  state[pos].choice=choice;
+  const correct=choice===QUESTIONS[pos].a;
+  chime(correct?"correct":"wrong");
+  if(correct)particles(24);
+  render();
+  animateScore();
+}
+function next(){
+  if(state[pos].choice===null)return;
+  if(pos===QUESTIONS.length-1){finish();return;}
+  const prevRound=QUESTIONS[pos].round;
+  pos++;
+  render();
+  if(QUESTIONS[pos].round!==prevRound)toastRound(QUESTIONS[pos].round);
+}
+function back(){if(pos>0){pos--;render();}}
+function restart(){
+  newAttempt();
+  startedAt=Date.now();
+  pos=0;state.forEach(s=>s.choice=null);setScreen("gameScreen");render();toastRound(QUESTIONS[0].round);
+}
+async function finish(){
+  if(finished||state.some(s=>s.choice===null))return;
+  finished=true;const thisAttempt=attemptId;
+  setScreen("resultScreen");const score=points(),pct=Math.round(score/QUESTIONS.length*100);
+  $("playerResult").textContent=player;$("finalPoints").textContent=score;$("finalTotal").textContent=QUESTIONS.length;
+  $("resultMessage").textContent=pct+"% · "+(pct>=85?"Amazing! You’re a reading detective!":pct>=60?"Good work! Keep reading carefully!":"Every try helps. Read the clues and try again!");
+  chime("finish");particles(100);
+  const payload={studentName:player,gameTitle:document.title,score,total:QUESTIONS.length,percentage:pct,durationSeconds:Math.max(0,Math.round((Date.now()-startedAt)/1000)),completedAt:new Date().toISOString(),attemptId:thisAttempt,gameUrl:location.href};
+  if(/\/_templates?\//.test(location.pathname)){$("recordStatus").textContent="Preview — score not sent.";return;}
+  try{localStorage.setItem("noticeDetectiveResult:"+thisAttempt,JSON.stringify(payload));}catch(_){}
+  $("recordStatus").textContent="Submitting score to your teacher…";
+  try{if(!window.TeacherRecords)throw Error("unavailable");const result=await TeacherRecords.submit(payload);
+    if(thisAttempt!==attemptId)return;
+    $("recordStatus").textContent=result.sent?"✅ Score submitted to your teacher.":"⚠️ Score saved on this device. Unable to send right now.";
+  }catch(_){if(thisAttempt===attemptId)$("recordStatus").textContent="⚠️ Score saved on this device. Unable to send right now.";}
+}
+function toggleSound(){
+  soundOn=!soundOn;
+  $("soundBtn").textContent=soundOn?"🔊 Sound On":"🔇 Sound Off";
+  $("soundBtn").setAttribute("aria-pressed",String(soundOn));
+}
+$("startBtn").addEventListener("click",start);
+$("nameInput").addEventListener("keydown",e=>{if(e.key==="Enter")start();});
+$("nextBtn").addEventListener("click",next);
+$("backBtn").addEventListener("click",back);
+$("restartBtn").addEventListener("click",restart);
+$("playAgainBtn").addEventListener("click",restart);
+$("soundBtn").addEventListener("click",toggleSound);
+
+</script>
+</body>
+</html>

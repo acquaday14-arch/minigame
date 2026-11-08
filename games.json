@@ -166,5 +166,11 @@
     "description": "35 questions: 20 present simple, present continuous and past simple activities; all 10 worksheet word clues; all 5 Ben–Sam camping replies. Choices, tap-to-build sentences and source worksheet images. No timer.",
     "level": "A1–A2",
     "path": "./three-tense-camping-quest/"
+  },
+  {
+    "title": "Notice Detective Reading Quest",
+    "description": "24 reading choices from all 12 worksheet messages and notices: 12 main-meaning questions and 12 detail challenges. Includes cropped source images, readable text and explanations. No timer.",
+    "level": "A2 · Reading Part 1",
+    "path": "./notice-detective/"
   }
 ]
