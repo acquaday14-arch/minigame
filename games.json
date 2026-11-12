@@ -178,5 +178,11 @@
     "description": "30 questions: 16 everyday quantifier choices (some, any, a little, a few, a lot of, many, much), all 6 Water facts and myths reading sections, and all 8 worksheet vocabulary meanings. Source images and readable text. No timer.",
     "level": "A2",
     "path": "./water-quantifier-quest/"
+  },
+  {
+    "title": "Shopping Talk Quest",
+    "description": "30 real-life shopping conversations covering all 20 worksheet shop types and all 6 shopping expressions, plus four combined situations. Choose useful replies, check original worksheet excerpts and practise the dialogues aloud. No timer.",
+    "level": "A2–B1",
+    "path": "./shopping-talk-quest/"
   }
 ]

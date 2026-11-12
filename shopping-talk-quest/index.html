@@ -1,0 +1,1117 @@
+<!doctype html>
+<html lang="en" data-template-effects-version="2">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Shopping Talk Quest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --purple:#5b36d6;--purple2:#7a57eb;--ink:#20285c;--pink:#ef5aa7;
+      --yellow:#ffd76a;--mint:#6be0b2;--sky:#74c7ff;--soft:#f8f6ff;--line:#d9cff8;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;min-height:100vh;padding:18px;
+      font-family:"Fredoka",ui-rounded,"Trebuchet MS",Arial,sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at 9% 12%,#ffe2f0 0 7%,transparent 7.5%),
+        radial-gradient(circle at 90% 14%,#dff5ff 0 8%,transparent 8.5%),
+        linear-gradient(180deg,#f8fbff,#f4efff);
+    }
+    button,input{font:inherit}
+    .app{width:min(1060px,98vw);margin:1vh auto}
+    .frame{
+      background:#fff;border:4px solid #4b32bf;border-radius:32px;overflow:hidden;
+      box-shadow:0 14px 0 #ded5ff,0 24px 44px rgba(63,47,147,.14)
+    }
+    .top{
+      background:linear-gradient(135deg,var(--purple),#6541dc);
+      padding:18px 28px;color:#fff;display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:center
+    }
+    .pill{border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.12);padding:9px 15px;border-radius:999px;font-weight:700}
+    .top .pill:last-child{justify-self:end}
+    .progress{height:10px;background:#dacdfd}
+    .progress>div{height:100%;width:25%;background:linear-gradient(90deg,#ffd75f,#ffae73);transition:.25s}
+    .stage{padding:28px 34px 24px;min-height:650px;position:relative}
+    .kicker{text-align:center;color:var(--pink);font-size:14px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+    h1{text-align:center;font-size:clamp(38px,6vw,62px);margin:8px 0 8px;color:#432cb5;line-height:.98}
+    .instruction{text-align:center;font-size:20px;font-weight:600;margin-bottom:24px}
+    .card{
+      width:min(780px,100%);margin:0 auto;border:2px solid var(--line);border-radius:24px;padding:24px;
+      background:linear-gradient(180deg,#fff,#fcfbff)
+    }
+    .question{font-size:clamp(24px,4vw,36px);font-weight:700;text-align:center;margin:6px 0 22px}
+    .answers{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .answer{
+      border:3px solid #ded3fa;background:#fbf9ff;border-radius:18px;padding:15px 18px;color:var(--ink);
+      font-weight:700;font-size:18px;cursor:pointer;transition:.14s
+    }
+    .answer:hover{transform:translateY(-2px);border-color:#aa8df3}
+    .answer.good{border-color:#65d5a8;background:#ebfff6;color:#17734e;animation:pop .28s ease}
+    .answer.bad{border-color:#ff98a4;background:#fff0f2;color:#a63a47;animation:shake .28s ease}
+    .feedback{min-height:42px;text-align:center;margin:18px 0 4px;font-size:19px;font-weight:700}
+    .controls{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:14px;margin-top:28px}
+    .btn{border:2px solid #dbd2f8;border-radius:15px;background:#fff;color:#4734a9;padding:12px 18px;font-weight:700;cursor:pointer}
+    .controls .next{justify-self:end;background:linear-gradient(135deg,#ffd37c,#ffbd84);border:0;color:#76563b}
+    .center{text-align:center}
+    .hidden{display:none!important}
+    .start{padding:60px 32px;text-align:center}
+    .start p{font-size:19px;color:#667085}
+    .start input{width:min(560px,100%);padding:15px 17px;border:2px solid #d8cff4;border-radius:16px;font-size:18px}
+    .start .btn{margin-top:12px;background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;border:0}
+    .stars{font-size:26px;letter-spacing:5px}
+    .confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:20}
+    .confetti i{position:absolute;width:10px;height:16px;border-radius:3px;animation:fall 900ms linear forwards}
+    @keyframes pop{50%{transform:scale(1.035)}}
+    @keyframes shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+    @keyframes fall{from{transform:translateY(-10vh) rotate(0)}to{transform:translateY(110vh) rotate(500deg);opacity:.7}}
+    @media(max-width:700px){.top{grid-template-columns:1fr 1fr}.top>div:nth-child(2){grid-column:1/-1;grid-row:2;text-align:center}.stage{padding:22px 16px}.answers{grid-template-columns:1fr}.controls{grid-template-columns:1fr 1fr}.controls .restart{display:none}}
+  
+    /* Template FX v2 — reduced-motion aware and dependency-free */
+    .fx-enter{animation:fx-enter .38s cubic-bezier(.2,.8,.2,1) both}
+    .answer{transition:transform .17s ease,border-color .2s ease,box-shadow .2s ease,background .2s ease}
+    .answer:active,.btn:active{transform:scale(.97)}
+    .answer:focus-visible,.btn:focus-visible{outline:4px solid #f7bb56;outline-offset:3px}
+    .answer.good{box-shadow:0 0 0 4px rgba(81,213,157,.13)}
+    .answer.bad{box-shadow:0 0 0 4px rgba(255,118,144,.13)}
+    .answer:disabled{cursor:default}
+    .pill.score-pulse,.score-pulse{animation:fx-pulse .35s ease}
+    .feedback.success{color:#10845c;animation:fx-pop .4s ease both}
+    .feedback.error{color:#b44453;animation:fx-shake .32s ease both}
+    .mid-actions{display:flex;gap:8px;align-items:center;justify-content:center}
+    .mid-actions .btn{white-space:nowrap}
+    .btn:disabled{opacity:.4;cursor:not-allowed;filter:grayscale(.25)}
+    .next.ready{animation:fx-glow 1.8s ease-in-out infinite}
+    .fx-particles{position:fixed;inset:0;z-index:100;pointer-events:none;overflow:hidden}
+    .fx-particles span{position:absolute;top:-24px;width:10px;height:16px;border-radius:3px;animation:fx-rain 1.15s cubic-bezier(.2,.7,.5,1) forwards}
+    .fx-round-toast{position:fixed;inset:0;z-index:90;pointer-events:none;display:flex;justify-content:center;align-items:center;background:rgba(45,29,122,.11)}
+    .fx-round-toast.hidden{display:none!important}
+    .fx-round-pill{
+      text-align:center;border:4px solid #fff;border-radius:28px;
+      background:linear-gradient(135deg,#5b36d6,#8b6cf0);color:white;
+      padding:24px 36px;box-shadow:0 20px 60px rgba(54,38,152,.25);
+      font-size:clamp(25px,4vw,42px);font-weight:700;animation:fx-toast .7s ease both
+    }
+    .fx-round-pill small{display:block;font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:#ffdf85;margin-bottom:4px}
+    .result-area{text-align:center;padding:56px 24px}
+    .result-area h1{font-size:clamp(40px,6vw,64px);margin:10px 0;color:#432cb5}
+    .result-area .result-score{font-size:clamp(60px,10vw,100px);color:#5b36d6;font-weight:700;line-height:1.12}
+    .result-area .result-sub{font-size:21px;margin:8px 0 28px}
+    .result-area .btn{background:#6040d7;color:#fff;border:0;padding:15px 30px;font-size:18px}
+    .result-area .result-stars{font-size:38px;letter-spacing:8px;animation:fx-float 2s ease-in-out infinite}
+    .picture{animation:fx-picture-in .55s cubic-bezier(.2,.8,.2,1) both;transition:transform .25s ease,box-shadow .25s ease}
+    .picture:hover{transform:translateY(-3px) rotate(-1deg);box-shadow:0 17px 34px rgba(82,58,173,.21)}
+    .picture img{width:100%;height:100%;object-fit:cover;display:block}
+    @keyframes fx-enter{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes fx-pop{0%{transform:scale(.83);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+    @keyframes fx-pulse{50%{transform:scale(1.09)}}
+    @keyframes fx-shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+    @keyframes fx-glow{50%{box-shadow:0 0 0 6px rgba(255,205,100,.22)}}
+    @keyframes fx-rain{0%{transform:translateY(-10vh) rotate(0deg);opacity:1}100%{transform:translateY(112vh) rotate(620deg);opacity:0}}
+    @keyframes fx-toast{0%{transform:scale(.7) translateY(25px);opacity:0}40%{transform:scale(1.05);opacity:1}100%{transform:scale(1);opacity:1}}
+    @keyframes fx-float{50%{transform:translateY(-9px)}}
+    @keyframes fx-picture-in{from{opacity:0;transform:scale(.91) rotate(-2deg)}to{opacity:1;transform:scale(1) rotate(0)}}
+    @media(max-width:700px){
+      .controls{grid-template-columns:1fr 1fr}
+      .controls .mid-actions{grid-column:1/-1;grid-row:2;justify-content:center}
+      .controls .restart{display:inline-flex}
+      .result-area{padding:42px 16px}
+      .mid-actions .btn{font-size:14px;padding:10px 12px}
+    }
+    @media(prefers-reduced-motion:reduce){
+      *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+    }
+
+    .card{width:min(900px,100%);padding:22px}.answers{grid-template-columns:1fr;gap:10px}.answer{font-size:21px;line-height:1.35;padding:15px 18px;text-align:left;min-height:56px}.scene{color:#b1367b;font-size:16px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px}.speech{background:#edf7ff;border:2px solid #d6eafa;border-radius:20px;padding:20px;font-family:"Trebuchet MS",Arial,sans-serif;font-size:24px;line-height:1.5}.speech strong{color:#5339bc}.question{font-size:24px;margin:20px 0 14px}.feedback{font-size:18px;line-height:1.45;margin-top:18px;min-height:0}.completed-reply{border-radius:16px;background:#ebfff6;border:2px solid #75d2ad;padding:15px;margin-top:14px;font-size:21px;line-height:1.4;color:#126b4b}.source-card{margin:18px auto 0;background:white;border:2px solid #e0d8f4;border-radius:16px;padding:12px;max-width:650px;text-align:center}.source-label{font-size:14px;color:#695f87;margin-bottom:8px}.source-card img{display:block;max-width:100%;max-height:220px;width:auto;height:auto;margin:auto}.speak{text-align:center;color:#584390;font-size:17px;line-height:1.4}.stage{padding:24px;min-height:530px}#gameScreen h1{font-size:40px;line-height:1.1}.instruction{margin:12px 0 20px}.btn{min-height:48px}.start label{font-size:20px}.fx-round-pill{max-width:90vw}@media(max-width:700px){body{padding:8px}.app{width:100%}.stage{padding:20px 12px}.card{padding:15px}.speech{font-size:21px;padding:15px}.answer{font-size:19px}.completed-reply{font-size:19px}.top{padding:16px 12px;gap:8px}.pill{font-size:14px;padding:9px}#gameScreen h1{font-size:32px}.start{padding:38px 18px}}
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="frame" id="startScreen">
+      <div class="start">
+        <div class="stars">⭐ ✨ ⭐</div>
+        <div class="kicker">Listen to the situation · Choose · Speak</div>
+        <h1>Shopping Talk Quest</h1>
+        <p>30 real-life conversations · 3 rounds · No timer<br>Find the right shop, choose a useful reply and practise shopping expressions.<br>After each answer, read the dialogue aloud with a partner.</p>
+        <label for="nameInput">Student name</label><br><input id="nameInput" maxlength="80" autocomplete="name" placeholder="Enter your name"><p id="nameError" role="alert"></p>
+        <br>
+        <button class="btn" id="startBtn">Start Challenge</button>
+      </div>
+    </section>
+
+    <section class="frame hidden" id="gameScreen">
+      <div class="top">
+        <div class="pill" id="roundPill">Round 1 / 3</div>
+        <div class="pill">⭐ <span id="score">0</span> / <span id="total">30</span> points</div>
+        <div class="pill" id="questionPill">Question 1 / 30</div>
+      </div>
+      <div class="progress"><div id="bar"></div></div>
+
+      <div class="stage">
+        <div class="kicker" id="kicker">Read carefully · 1 of 30</div>
+        <h1 id="title">Choose the best answer</h1>
+        <div class="instruction" id="instruction">Pick the sentence that sounds natural.</div>
+
+        <div class="card">
+          <div class="scene" id="scene"></div><div class="dialogue" id="dialogue"></div><div class="question" id="question"></div>
+          <div class="answers" id="answers"></div>
+          <div class="feedback" id="feedback"></div><div class="completed-reply hidden" id="completedReply"></div><div class="source-card hidden" id="sourceCard"><div class="source-label">From your worksheet · word check</div><img id="sourceImage" alt=""></div><p class="speak hidden" id="speakPrompt">🗣️ Say it together: take turns reading the conversation aloud.</p>
+        </div>
+
+        <div class="controls">
+          <button class="btn" id="backBtn">← Back</button>
+          <div class="mid-actions"><button class="btn" id="soundBtn" aria-pressed="true">🔊 Sound On</button><button class="btn restart" id="restartBtn">↻ Restart</button></div>
+          <button class="btn next" id="nextBtn">Next →</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="frame hidden" id="resultScreen">
+      <div class="result-area">
+        <div class="result-stars">🌟 🎉 🌟</div>
+        <h1>Great Job, <span id="playerResult"></span>!</h1>
+        <div class="result-score"><span id="finalPoints">0</span>/<span id="finalTotal">30</span></div>
+        <p class="result-sub" id="resultMessage"></p>
+        <p class="result-sub" id="recordStatus"></p>
+        <button class="btn" id="playAgainBtn">↻ Play Again</button>
+      </div>
+    </section>
+  <div class="fx-particles" id="fxParticles" aria-hidden="true"></div>
+    <div class="fx-round-toast hidden" id="roundToast" aria-hidden="true"><div class="fx-round-pill"><small>LEVEL UP ✨</small><span id="roundToastText"></span></div></div>
+  </main>
+
+<script src="/minigame/shared/teacher-records-config.js"></script>
+<script src="/minigame/shared/teacher-records.js"></script>
+<script>
+
+const QUESTIONS=[
+  {
+    "round": 1,
+    "type": "mc",
+    "tag": "baker’s",
+    "scene": "Breakfast plans",
+    "dialogue": [
+      [
+        "You",
+        "We’ve run out of bread. Where can I get a fresh loaf for breakfast?"
+      ]
+    ],
+    "respondent": "Friend",
+    "q": "What is the best reply?",
+    "choices": [
+      "There’s a baker’s on the corner. They bake bread every morning.",
+      "Try the fishmonger’s. They sell fresh salmon.",
+      "Go to the florist’s. They have fresh roses."
+    ],
+    "a": 0,
+    "target": "There’s a baker’s on the corner. They bake bread every morning.",
+    "ex": "A baker’s sells bread, cakes and other baked goods.",
+    "image": "assets/baker.webp",
+    "source": "baker"
+  },
+  {
+    "round": 1,
+    "type": "mc",
+    "tag": "butcher’s",
+    "scene": "Shopping for dinner",
+    "dialogue": [
+      [
+        "You",
+        "I’m making beef stew tonight. Where can I buy some fresh meat?"
+      ]
+    ],
+    "respondent": "Friend",
+    "q": "What is the best reply?",
+    "choices": [
+      "The launderette is open until eight.",
+      "Try the stationer’s next to the bank.",
+      "There’s a butcher’s opposite the bus stop."
+    ],
+    "a": 2,
+    "target": "There’s a butcher’s opposite the bus stop.",
+    "ex": "A butcher’s sells meat. The other places sell stationery or provide laundry facilities.",
+    "image": "assets/butcher.webp",
+    "source": "butcher"
+  },
+  {
+    "round": 1,
+    "type": "mc",
+    "tag": "chain store",
+    "scene": "A familiar shop",
+    "dialogue": [
+      [
+        "You",
+        "This shop has the same name and logo as the one near my office. They have branches all over the country. What kind of shop is it?"
+      ]
+    ],
+    "respondent": "Friend",
+    "q": "What is the best reply?",
+    "choices": [
+      "It’s an estate agent’s — they arrange property sales.",
+      "It’s a chain store — one of many shops owned by the same company.",
+      "It’s a market stall — one stand at a street market."
+    ],
+    "a": 1,
+    "target": "It’s a chain store — one of many shops owned by the same company.",
+    "ex": "A chain store is one shop in a group operated by the same company.",
+    "image": "assets/chain-store.webp",
+    "source": "chain-store"
+  },
+  {
+    "round": 1,
+    "type": "mc",
+    "tag": "chemist’s",
+    "scene": "On the way home",
+    "dialogue": [
+      [
+        "You",
+        "I need to buy some toothpaste and shampoo. Is there a shop nearby that sells those and medicines?"
+      ]
+    ],
+    "respondent": "Friend",
+    "q": "What is the best reply?",
+    "choices": [
+      "Yes, there’s a chemist’s beside the post office.",
+      "Yes, the travel agent’s sells holiday packages.",
+      "Yes, the jeweller’s has silver necklaces."
+    ],
+    "a": 0,
+    "target": "Yes, there’s a chemist’s beside the post office.",
+    "ex": "In British English, a chemist’s is a pharmacy. It also sells toiletries such as toothpaste.",
+    "image": "assets/chemist.webp",
+    "source": "chemist"
+  },
+  {
+    "round": 1,
+    "type": "mc",
+    "tag": "delicatessen / deli",
+    "scene": "Pizza night",
+    "dialogue": [
+      [
+        "You",
+        "I’m cooking dinner for my family. I’m making pizza, but there’s no cheese left. Where can I get some cheese and sliced ham?"
+      ]
+    ],
+    "respondent": "Friend",
+    "q": "What is the best reply?",
+    "choices": [
+      "Try the newsagent’s. It has today’s newspapers.",
+      "Try the dry cleaner’s on King Street.",
+      "Try the delicatessen near the square. It has a cheese counter and sliced meats."
+    ],
+    "a": 2,
+    "target": "Try the delicatessen near the square. It has a cheese counter and sliced meats.",
+    "ex": "A delicatessen, or deli, sells foods such as cheeses and prepared meats.",
+    "image": "assets/deli.webp",
+    "source": "deli"
+  },
+  {
+    "round": 1,
+    "type": "mc",
+    "tag": "DIY store / hardware store",
+    "scene": "A repair at home",
+    "dialogue": [
+      [
+        "You",
+        "The shelf has come loose. Where can I buy some screws and a screwdriver?"
+      ]
+    ],
+    "respondent": "Friend",
+    "q": "What is the best reply?",
+    "choices": [
+      "Try the baker’s for a loaf of bread.",
+      "Try the DIY store. They sell tools and materials for home repairs.",
+      "Try the greengrocer’s for fresh vegetables."
+    ],
+    "a": 1,
+    "target": "Try the DIY store. They sell tools and materials for home repairs.",
+    "ex": "A DIY store or hardware store sells tools, screws and materials for repairs.",
+    "image": "assets/diy.webp",
+    "source": "diy"
+  },
+  {
+    "round": 1,
+    "type": "mc",
+    "tag": "dry cleaner’s",
+    "scene": "Getting ready for a meeting",
+    "dialogue": [
+      [
+        "You",
+        "The label on my suit says “dry clean only”. Where should I take it?"
+      ]
+    ],
+    "respondent": "Friend",
+    "q": "What is the best reply?",
+    "choices": [
+      "Take it to the dry cleaner’s. They clean clothes that need special care.",
+      "Take it to the fishmonger’s. They clean and sell fish.",
+      "Take it to the estate agent’s. They show people flats."
+    ],
+    "a": 0,
+    "target": "Take it to the dry cleaner’s. They clean clothes that need special care.",
+    "ex": "A dry cleaner’s professionally cleans clothing that should not be washed in a normal machine.",
+    "image": "assets/dry-cleaner.webp",
+    "source": "dry-cleaner"
+  },
+  {
+    "round": 1,
+    "type": "mc",
+    "tag": "estate agent’s",
+    "scene": "Finding a new home",
+    "dialogue": [
+      [
+        "You",
+        "We want to rent a flat near the station. Who can help us arrange some viewings?"
+      ]
+    ],
+    "respondent": "Friend",
+    "q": "What is the best reply?",
+    "choices": [
+      "Ask at the health food store.",
+      "Ask at the off-licence.",
+      "Try the estate agent’s in the high street."
+    ],
+    "a": 2,
+    "target": "Try the estate agent’s in the high street.",
+    "ex": "An estate agent’s helps people buy, sell or rent property and can arrange viewings.",
+    "image": "assets/estate-agent.webp",
+    "source": "estate-agent"
+  },
+  {
+    "round": 1,
+    "type": "mc",
+    "tag": "fishmonger’s",
+    "scene": "Planning lunch",
+    "dialogue": [
+      [
+        "You",
+        "I want some fresh salmon for lunch. Which specialist shop should I try?"
+      ]
+    ],
+    "respondent": "Friend",
+    "q": "What is the best reply?",
+    "choices": [
+      "The florist’s. It specialises in flowers.",
+      "The fishmonger’s. It specialises in fish and seafood.",
+      "The butcher’s. It specialises in beef and other meat."
+    ],
+    "a": 1,
+    "target": "The fishmonger’s. It specialises in fish and seafood.",
+    "ex": "A fishmonger’s is a specialist shop for fish and seafood.",
+    "image": "assets/fishmonger.webp",
+    "source": "fishmonger"
+  },
+  {
+    "round": 1,
+    "type": "mc",
+    "tag": "florist’s",
+    "scene": "A birthday surprise",
+    "dialogue": [
+      [
+        "You",
+        "It’s my mum’s birthday. Where can I order a bouquet of flowers?"
+      ]
+    ],
+    "respondent": "Friend",
+    "q": "What is the best reply?",
+    "choices": [
+      "There’s a florist’s opposite the station.",
+      "There’s a launderette beside the station.",
+      "There’s a DIY store behind the station."
+    ],
+    "a": 0,
+    "target": "There’s a florist’s opposite the station.",
+    "ex": "A florist’s sells and arranges flowers. A bouquet is a bunch of flowers.",
+    "image": "assets/florist.webp",
+    "source": "florist"
+  },
+  {
+    "round": 2,
+    "type": "mc",
+    "tag": "greengrocer’s",
+    "scene": "Fruit for the week",
+    "dialogue": [
+      [
+        "You",
+        "I need some apples, carrots and tomatoes. Is there a specialist fruit and vegetable shop near here?"
+      ]
+    ],
+    "respondent": "Friend",
+    "q": "What is the best reply?",
+    "choices": [
+      "Yes, there’s an off-licence near the bridge.",
+      "Yes, the jeweller’s is next door.",
+      "Yes, there’s a greengrocer’s at the end of this street."
+    ],
+    "a": 2,
+    "target": "Yes, there’s a greengrocer’s at the end of this street.",
+    "ex": "A greengrocer’s specialises in fresh fruit and vegetables.",
+    "image": "assets/greengrocer.webp",
+    "source": "greengrocer"
+  },
+  {
+    "round": 2,
+    "type": "mc",
+    "tag": "health food store",
+    "scene": "Specialist groceries",
+    "dialogue": [
+      [
+        "You",
+        "I’m looking for a shop that specialises in foods sold for a healthy diet, such as organic grains and seeds. Where should I go?"
+      ]
+    ],
+    "respondent": "Friend",
+    "q": "What is the best reply?",
+    "choices": [
+      "Try the newsagent’s.",
+      "Try the health food store.",
+      "Try the travel agent’s."
+    ],
+    "a": 1,
+    "target": "Try the health food store.",
+    "ex": "A health food store specialises in foods marketed for a healthy diet, often including organic products.",
+    "image": "assets/health-food.webp",
+    "source": "health-food"
+  },
+  {
+    "round": 2,
+    "type": "mc",
+    "tag": "hypermarket",
+    "scene": "One big shopping trip",
+    "dialogue": [
+      [
+        "You",
+        "We need groceries, a new kettle and some clothes. Is there one very large shop where we can buy all of those?"
+      ]
+    ],
+    "respondent": "Friend",
+    "q": "What is the best reply?",
+    "choices": [
+      "Yes, the hypermarket has food, electrical goods and clothes under one roof.",
+      "Yes, the florist’s has bouquets in different colours.",
+      "Yes, the fishmonger’s has fresh seafood."
+    ],
+    "a": 0,
+    "target": "Yes, the hypermarket has food, electrical goods and clothes under one roof.",
+    "ex": "A hypermarket is a very large shop selling groceries and a wide range of other goods.",
+    "image": "assets/hypermarket.webp",
+    "source": "hypermarket"
+  },
+  {
+    "round": 2,
+    "type": "mc",
+    "tag": "jeweller’s",
+    "scene": "An anniversary gift",
+    "dialogue": [
+      [
+        "You",
+        "I’d like to buy a silver bracelet for my partner. Where should I look?"
+      ]
+    ],
+    "respondent": "Friend",
+    "q": "What is the best reply?",
+    "choices": [
+      "There’s a greengrocer’s by the bus stop.",
+      "Try the butcher’s on the main road.",
+      "There’s a jeweller’s in the shopping centre."
+    ],
+    "a": 2,
+    "target": "There’s a jeweller’s in the shopping centre.",
+    "ex": "A jeweller’s sells jewellery such as rings, necklaces and bracelets.",
+    "image": "assets/jeweller.webp",
+    "source": "jeweller"
+  },
+  {
+    "round": 2,
+    "type": "mc",
+    "tag": "launderette",
+    "scene": "Laundry day",
+    "dialogue": [
+      [
+        "You",
+        "My washing machine is broken. Is there somewhere I can wash and dry my clothes myself?"
+      ]
+    ],
+    "respondent": "Friend",
+    "q": "What is the best reply?",
+    "choices": [
+      "You can buy a newspaper at the newsagent’s.",
+      "You can use the machines at the launderette.",
+      "You can book a flight at the travel agent’s."
+    ],
+    "a": 1,
+    "target": "You can use the machines at the launderette.",
+    "ex": "A launderette has washing machines and dryers that customers pay to use.",
+    "image": "assets/launderette.webp",
+    "source": "launderette"
+  },
+  {
+    "round": 2,
+    "type": "mc",
+    "tag": "market stall",
+    "scene": "Saturday shopping",
+    "dialogue": [
+      [
+        "You",
+        "Where did you buy those handmade candles? I’d like to visit the seller. He doesn’t have a permanent shop, does he?"
+      ]
+    ],
+    "respondent": "Friend",
+    "q": "What is the best reply?",
+    "choices": [
+      "No, he sells them from a market stall in the square on Saturdays.",
+      "Yes, he sells houses at the estate agent’s.",
+      "No, he washes clothes at the launderette."
+    ],
+    "a": 0,
+    "target": "No, he sells them from a market stall in the square on Saturdays.",
+    "ex": "A market stall is a stand or table from which someone sells goods at a market.",
+    "image": "assets/market-stall.webp",
+    "source": "market-stall"
+  },
+  {
+    "round": 2,
+    "type": "mc",
+    "tag": "newsagent’s",
+    "scene": "Something to read",
+    "dialogue": [
+      [
+        "You",
+        "I’d like today’s newspaper and a magazine for the train journey. Where can I get them?"
+      ]
+    ],
+    "respondent": "Friend",
+    "q": "What is the best reply?",
+    "choices": [
+      "At the dry cleaner’s opposite the bank.",
+      "At the florist’s next to the bank.",
+      "At the newsagent’s beside the station."
+    ],
+    "a": 2,
+    "target": "At the newsagent’s beside the station.",
+    "ex": "A newsagent’s sells newspapers and magazines, often with other small items.",
+    "image": "assets/newsagent.webp",
+    "source": "newsagent"
+  },
+  {
+    "round": 2,
+    "type": "mc",
+    "tag": "off-licence",
+    "scene": "Dinner with friends",
+    "dialogue": [
+      [
+        "You",
+        "I’d like to buy a bottle of wine to take to dinner at a friend’s house. Where can I buy one to take away?"
+      ]
+    ],
+    "respondent": "Friend",
+    "q": "What is the best reply?",
+    "choices": [
+      "At the chemist’s, with the shampoo.",
+      "At the off-licence on the corner.",
+      "At the stationer’s, with the envelopes."
+    ],
+    "a": 1,
+    "target": "At the off-licence on the corner.",
+    "ex": "An off-licence is a British shop that sells alcoholic drinks to take away.",
+    "image": "assets/off-licence.webp",
+    "source": "off-licence"
+  },
+  {
+    "round": 2,
+    "type": "mc",
+    "tag": "stationer’s",
+    "scene": "Supplies for work",
+    "dialogue": [
+      [
+        "You",
+        "I need some envelopes, notebooks and pens for work. Which shop should I try?"
+      ]
+    ],
+    "respondent": "Friend",
+    "q": "What is the best reply?",
+    "choices": [
+      "Try the stationer’s in Green Street.",
+      "Try the fishmonger’s in Green Street.",
+      "Try the florist’s in Green Street."
+    ],
+    "a": 0,
+    "target": "Try the stationer’s in Green Street.",
+    "ex": "A stationer’s sells stationery: paper, pens, notebooks and other writing supplies.",
+    "image": "assets/stationer.webp",
+    "source": "stationer"
+  },
+  {
+    "round": 2,
+    "type": "mc",
+    "tag": "travel agent’s",
+    "scene": "Booking a holiday",
+    "dialogue": [
+      [
+        "You",
+        "We’d like someone to help us book flights and a hotel for our holiday. Where should we go?"
+      ]
+    ],
+    "respondent": "Friend",
+    "q": "What is the best reply?",
+    "choices": [
+      "To a dry cleaner’s. They clean suits.",
+      "To an estate agent’s. They sell and rent homes.",
+      "To a travel agent’s. They help arrange holidays."
+    ],
+    "a": 2,
+    "target": "To a travel agent’s. They help arrange holidays.",
+    "ex": "A travel agent’s helps customers arrange trips, transport and accommodation.",
+    "image": "assets/travel-agent.webp",
+    "source": "travel-agent"
+  },
+  {
+    "round": 3,
+    "type": "mc",
+    "tag": "close down",
+    "scene": "A shop on the high street",
+    "dialogue": [
+      [
+        "You",
+        "Why is the old shoe shop empty? I heard it stopped doing business permanently last month."
+      ]
+    ],
+    "respondent": "Friend",
+    "q": "What is the best reply?",
+    "choices": [
+      "Yes, it’s just looking round for the afternoon.",
+      "Yes, it closed down last month.",
+      "Yes, it’s opening up a new branch here tomorrow."
+    ],
+    "a": 1,
+    "target": "Yes, it closed down last month.",
+    "ex": "Close down means stop trading or doing business. It does not mean simply closing for the evening.",
+    "image": "assets/close-down.webp",
+    "source": "close-down"
+  },
+  {
+    "round": 3,
+    "type": "mc",
+    "tag": "look round",
+    "scene": "Inside a clothes shop",
+    "dialogue": [
+      [
+        "Shop assistant",
+        "Hello! Do you need any help?"
+      ]
+    ],
+    "respondent": "Customer",
+    "q": "What is the best reply?",
+    "choices": [
+      "No thanks. I’d just like to look round for a few minutes.",
+      "No thanks. I bought everything here yesterday.",
+      "Yes, please. I’m ready to pay for this jacket now."
+    ],
+    "a": 0,
+    "target": "No thanks. I’d just like to look round for a few minutes.",
+    "ex": "Look round means walk around a place to see what is there.",
+    "image": "assets/look-round.webp",
+    "source": "look-round"
+  },
+  {
+    "round": 3,
+    "type": "mc",
+    "tag": "open up",
+    "scene": "A new place in town",
+    "dialogue": [
+      [
+        "You",
+        "That empty building has a sign saying “New café — first day Monday!” What’s happening there?"
+      ]
+    ],
+    "respondent": "Friend",
+    "q": "What is the best reply?",
+    "choices": [
+      "They’re trying on a new café on Monday.",
+      "They’re closing down the café permanently on Monday.",
+      "They’re opening up a new café on Monday."
+    ],
+    "a": 2,
+    "target": "They’re opening up a new café on Monday.",
+    "ex": "Open up means start trading or doing business.",
+    "image": "assets/open-up.webp",
+    "source": "open-up"
+  },
+  {
+    "round": 3,
+    "type": "mc",
+    "tag": "try on",
+    "scene": "Choosing a sweater · ask the shop assistant",
+    "dialogue": [
+      [
+        "Shop assistant",
+        "Do you think this sweater is the right size for you?"
+      ]
+    ],
+    "respondent": "Customer",
+    "q": "You are not sure it fits. What should you ask?",
+    "choices": [
+      "Could you keep it? I’ve decided I don’t want a sweater.",
+      "Can I try it on, please?",
+      "Could you wrap it up? I don’t need to check the fit."
+    ],
+    "a": 1,
+    "target": "Can I try it on, please?",
+    "ex": "Try on means put clothing on to see whether it fits or suits you. The pronoun goes between try and on: try it on.",
+    "image": "assets/try-on.webp",
+    "source": "try-on"
+  },
+  {
+    "round": 3,
+    "type": "mc",
+    "tag": "look for",
+    "scene": "Asking for directions",
+    "dialogue": [
+      [
+        "Passer-by",
+        "You look a little lost. Can I help you find somewhere?"
+      ]
+    ],
+    "respondent": "You",
+    "q": "You need to find a butcher’s. What do you say?",
+    "choices": [
+      "I’m looking for a butcher’s. Is there one near here?",
+      "I’m waiting for a friend. I know where to go.",
+      "I’m looking round the market. I don’t need to find a shop."
+    ],
+    "a": 0,
+    "target": "I’m looking for a butcher’s. Is there one near here?",
+    "ex": "Look for means try to find something or someone.",
+    "image": "assets/look-for.webp",
+    "source": "look-for"
+  },
+  {
+    "round": 3,
+    "type": "mc",
+    "tag": "be out of",
+    "scene": "Asking about sizes",
+    "dialogue": [
+      [
+        "Customer",
+        "Have you got this jacket in a medium?"
+      ]
+    ],
+    "respondent": "Shop assistant",
+    "q": "You have no medium jackets in stock. What do you say?",
+    "choices": [
+      "Yes, I’ll bring you a medium to try on now.",
+      "Yes, the mediums are on the rail behind you.",
+      "I’m sorry, we’re out of mediums at the moment."
+    ],
+    "a": 2,
+    "target": "I’m sorry, we’re out of mediums at the moment.",
+    "ex": "Be out of something means have none left or not have it in stock.",
+    "image": "assets/out-of.webp",
+    "source": "out-of"
+  },
+  {
+    "round": 3,
+    "type": "mc",
+    "tag": "restaurant",
+    "scene": "Looking for somewhere to eat",
+    "dialogue": [
+      [
+        "You",
+        "I’m hungry. Are there any restaurants near here?"
+      ]
+    ],
+    "respondent": "Friend",
+    "q": "What is the best reply?",
+    "choices": [
+      "The stationer’s sells notebooks.",
+      "Yes, there’s an Italian restaurant across the road. It serves lunch until three.",
+      "The dry cleaner’s will clean your suit."
+    ],
+    "a": 1,
+    "target": "Yes, there’s an Italian restaurant across the road. It serves lunch until three.",
+    "ex": "The reply answers the request for somewhere to eat and gives a useful location.",
+    "image": null,
+    "source": null
+  },
+  {
+    "round": 3,
+    "type": "mc",
+    "tag": "be out of + deli",
+    "scene": "A change of plan",
+    "dialogue": [
+      [
+        "You",
+        "The deli is out of the cheese I wanted. I need cheese for tonight’s pizza. What could I ask the assistant?"
+      ]
+    ],
+    "respondent": "Customer",
+    "q": "What is the best reply?",
+    "choices": [
+      "Have you got another kind of cheese that would work on pizza?",
+      "Can you put that exact cheese aside? I’ll collect it right now.",
+      "Can I pay for that exact cheese and take it home now?"
+    ],
+    "a": 0,
+    "target": "Have you got another kind of cheese that would work on pizza?",
+    "ex": "When a product is out of stock, asking about a suitable alternative keeps the conversation useful.",
+    "image": "assets/deli.webp",
+    "source": "deli"
+  },
+  {
+    "round": 3,
+    "type": "mc",
+    "tag": "try on + another size",
+    "scene": "At the changing rooms",
+    "dialogue": [
+      [
+        "Customer",
+        "I tried this jacket on, but it’s too small."
+      ]
+    ],
+    "respondent": "Shop assistant",
+    "q": "What is the best reply?",
+    "choices": [
+      "The estate agent’s has a flat to rent.",
+      "The florist’s has red flowers today.",
+      "Would you like to try the next size up?"
+    ],
+    "a": 2,
+    "target": "Would you like to try the next size up?",
+    "ex": "The next size up means the next larger size. This reply responds directly to the fit problem.",
+    "image": "assets/try-on.webp",
+    "source": "try-on"
+  },
+  {
+    "round": 3,
+    "type": "mc",
+    "tag": "look round",
+    "scene": "Shopping with a friend",
+    "dialogue": [
+      [
+        "You",
+        "We’ve only just arrived, and I don’t want to buy anything yet. What can we say to the shop assistant?"
+      ]
+    ],
+    "respondent": "Customer",
+    "q": "What is the best reply?",
+    "choices": [
+      "We’ve decided to leave without looking at anything.",
+      "We’d just like to look round first, thanks.",
+      "We’ve chosen our items and would like to pay now."
+    ],
+    "a": 1,
+    "target": "We’d just like to look round first, thanks.",
+    "ex": "Look round is a polite, natural way to say you want to browse before deciding.",
+    "image": "assets/look-round.webp",
+    "source": "look-round"
+  }
+];
+
+
+const MODE = "present";
+const $ = id => document.getElementById(id);
+const state = QUESTIONS.map(() => ({choice:null}));
+let pos = 0;
+let player = "";
+let soundOn = true;
+let audioCtx = null;
+let roundTimer = null;
+let startedAt = null;
+let attemptId="",finished=false;
+const ROUND_NAMES=["Daily errands","More places to go","Shopping conversations"];
+function newAttempt(){attemptId=window.crypto&&crypto.randomUUID?crypto.randomUUID():Date.now()+"-"+Math.random();finished=false;}
+
+const totalRounds = Math.max(...QUESTIONS.map(q=>q.round));
+$("total").textContent = QUESTIONS.length;
+const roundElement = () => $(MODE === "present" ? "roundPill" : "round");
+const counterElement = () => $(MODE === "present" ? "questionPill" : "counter");
+
+function points() {
+  return state.reduce((n,s,idx)=>n+(s.choice === QUESTIONS[idx].a ? 1 : 0),0);
+}
+function chime(kind) {
+  if (!soundOn) return;
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    if (!audioCtx) audioCtx = new AC();
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    const melodies = {
+      correct:[[659,0,.11],[880,.11,.15],[1046,.23,.18]],
+      wrong:[[330,0,.13],[220,.11,.19]],
+      round:[[523,0,.1],[659,.11,.1],[784,.23,.19]],
+      finish:[[523,0,.14],[659,.15,.14],[784,.31,.15],[1046,.49,.28]]
+    };
+    const now = audioCtx.currentTime;
+    (melodies[kind] || melodies.correct).forEach(([hz,delay,len])=>{
+      const osc=audioCtx.createOscillator(),gain=audioCtx.createGain();
+      osc.type=kind==="wrong"?"triangle":"sine";
+      osc.frequency.setValueAtTime(hz,now+delay);
+      gain.gain.setValueAtTime(.0001,now+delay);
+      gain.gain.exponentialRampToValueAtTime(.095,now+delay+.018);
+      gain.gain.exponentialRampToValueAtTime(.0001,now+delay+len);
+      osc.connect(gain);gain.connect(audioCtx.destination);
+      osc.start(now+delay);osc.stop(now+delay+len+.01);
+    });
+  } catch (_) {}
+}
+function particles(count) {
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const box=$("fxParticles"), colors=["#ffc85b","#f65caf","#6de0b1","#77caff","#9e76f2","#ff9d78"];
+  for(let n=0;n<count;n++){
+    const p=document.createElement("span");
+    p.style.left=(Math.random()*100)+"%";
+    p.style.background=colors[n%colors.length];
+    p.style.animationDelay=(Math.random()*.27)+"s";
+    p.style.animationDuration=(.95+Math.random()*.7)+"s";
+    box.appendChild(p);
+    p.addEventListener("animationend",()=>p.remove(),{once:true});
+  }
+}
+function animateScore() {
+  const el=$("score");
+  el.textContent=points();
+  el.classList.remove("score-pulse");
+  void el.offsetWidth;
+  el.classList.add("score-pulse");
+}
+function toastRound(round){
+  if(roundTimer)clearTimeout(roundTimer);
+  $("roundToastText").textContent="Round "+round+" / "+totalRounds+" · "+ROUND_NAMES[round-1];
+  $("roundToast").classList.remove("hidden");
+  chime("round");
+  roundTimer=setTimeout(()=>$("roundToast").classList.add("hidden"),900);
+}
+function setScreen(id){
+  ["startScreen","gameScreen","resultScreen"].forEach(x=>$(x).classList.toggle("hidden",x!==id));
+}
+function start(){
+  const name=$("nameInput").value.trim();
+  if(!name){$("nameError").textContent="Please enter your name first.";$("nameInput").focus();return;}
+  $("nameError").textContent="";newAttempt();
+  player=name;
+  startedAt=Date.now();
+  pos=0;
+  state.forEach(s=>s.choice=null);
+  setScreen("gameScreen");
+  render();
+  toastRound(QUESTIONS[0].round);
+}
+function render(){
+  const q=QUESTIONS[pos], st=state[pos];
+  roundElement().textContent="Round "+q.round+" / "+totalRounds+(MODE==="picture"?" · Picture questions":"");
+  counterElement().textContent="Question "+(pos+1)+" / "+QUESTIONS.length;
+  $("bar").style.width=(state.filter(s=>s.choice!==null).length/QUESTIONS.length*100)+"%";
+  $("score").textContent=points();
+  $("kicker").textContent=ROUND_NAMES[q.round-1]+" · "+(pos+1)+" of "+QUESTIONS.length;
+  if(MODE==="present"){
+    $("title").textContent=q.round===3?"Keep the conversation going":"Where should I go?";
+    $("instruction").textContent="Read the situation. Choose the most useful reply.";
+    $("scene").textContent=q.scene;
+    const dialogue=$("dialogue");dialogue.replaceChildren();
+    q.dialogue.forEach(([speaker,line])=>{const row=document.createElement("div");row.className="speech";const label=document.createElement("strong");label.textContent=speaker+": ";row.append(label,document.createTextNode(line));dialogue.appendChild(row);});
+    $("question").textContent=q.q;
+    const answered=st.choice!==null;
+    $("sourceCard").classList.toggle("hidden",!answered||!q.image);
+    if(answered&&q.image){$("sourceImage").src=q.image;$("sourceImage").alt="Worksheet reference for "+q.tag;}
+    $("completedReply").classList.toggle("hidden",!answered);
+    $("completedReply").textContent=answered?q.respondent+": "+q.target:"";
+    $("speakPrompt").classList.toggle("hidden",!answered);
+
+  }else{
+    $("prompt").textContent=q.prompt;
+    const photo=$("picture");
+    photo.innerHTML="";
+    if(q.image){
+      const img=document.createElement("img");img.src=q.image;img.alt=q.alt||q.picture||"Question picture";
+      photo.appendChild(img);
+    }else{photo.innerHTML=placeholder(q.picture||"Picture prompt");}
+    photo.style.animation="none";
+    void photo.offsetWidth;
+    photo.style.animation="";
+  }
+  const answerBox=$("answers");
+  answerBox.innerHTML="";
+  q.choices.forEach((label,n)=>{
+    const b=document.createElement("button");
+    b.type="button";b.className="answer";b.textContent=label;
+    if(st.choice!==null){
+      b.disabled=true;
+      if(n===q.a)b.classList.add("good");
+      if(n===st.choice && n!==q.a)b.classList.add("bad");
+    }else{b.onclick=()=>answer(n);}
+    answerBox.appendChild(b);
+  });
+  const feedback=$("feedback");
+  feedback.textContent=st.choice===null ? "" : (st.choice===q.a ? "Excellent! Correct answer! ⭐" : "Not quite. The correct answer is highlighted. 💡");
+  if(st.choice!==null)feedback.textContent+=" "+q.ex;
+  feedback.className="feedback"+(st.choice===null?"":st.choice===q.a?" success":" error");
+  feedback.setAttribute("aria-live","polite");
+  $("nextBtn").disabled=st.choice===null;
+  $("nextBtn").classList.toggle("ready",st.choice!==null);
+  $("nextBtn").textContent=pos===QUESTIONS.length-1?"See Results →":"Next →";
+  $("backBtn").disabled=pos===0;
+  const scene=$("gameScreen").querySelector(MODE==="present"?".stage":".content");
+  scene.classList.remove("fx-enter");
+  void scene.offsetWidth;
+  scene.classList.add("fx-enter");
+}
+function answer(choice){
+  if(state[pos].choice!==null)return;
+  state[pos].choice=choice;
+  const correct=choice===QUESTIONS[pos].a;
+  chime(correct?"correct":"wrong");
+  if(correct)particles(24);
+  render();
+  animateScore();
+}
+function next(){
+  if(state[pos].choice===null)return;
+  if(pos===QUESTIONS.length-1){finish();return;}
+  const prevRound=QUESTIONS[pos].round;
+  pos++;
+  render();
+  if(QUESTIONS[pos].round!==prevRound)toastRound(QUESTIONS[pos].round);
+}
+function back(){if(pos>0){pos--;render();}}
+function restart(){
+  newAttempt();
+  startedAt=Date.now();
+  pos=0;state.forEach(s=>s.choice=null);setScreen("gameScreen");render();toastRound(QUESTIONS[0].round);
+}
+async function finish(){
+  if(finished||state.some(s=>s.choice===null))return;
+  finished=true;const thisAttempt=attemptId;
+  setScreen("resultScreen");const score=points(),pct=Math.round(score/QUESTIONS.length*100);
+  $("playerResult").textContent=player;$("finalPoints").textContent=score;$("finalTotal").textContent=QUESTIONS.length;
+  $("resultMessage").textContent=pct+"% · "+(pct>=85?"Amazing! You’re ready to shop and chat!":pct>=60?"Good work! Keep practising!":"Every try helps. Read the situation and try again!");
+  chime("finish");particles(100);
+  const payload={studentName:player,gameTitle:document.title,score,total:QUESTIONS.length,percentage:pct,durationSeconds:Math.max(0,Math.round((Date.now()-startedAt)/1000)),completedAt:new Date().toISOString(),attemptId:thisAttempt,gameUrl:location.href};
+  if(/\/_templates?\//.test(location.pathname)){$("recordStatus").textContent="Preview — score not sent.";return;}
+  try{localStorage.setItem("shoppingTalkResult:"+thisAttempt,JSON.stringify(payload));}catch(_){}
+  $("recordStatus").textContent="Submitting score to your teacher…";
+  try{if(!window.TeacherRecords)throw Error("unavailable");const result=await TeacherRecords.submit(payload);
+    if(thisAttempt!==attemptId)return;
+    $("recordStatus").textContent=result.sent?"✅ Score submitted to your teacher.":"⚠️ Score saved on this device. Unable to send right now.";
+  }catch(_){if(thisAttempt===attemptId)$("recordStatus").textContent="⚠️ Score saved on this device. Unable to send right now.";}
+}
+function toggleSound(){
+  soundOn=!soundOn;
+  $("soundBtn").textContent=soundOn?"🔊 Sound On":"🔇 Sound Off";
+  $("soundBtn").setAttribute("aria-pressed",String(soundOn));
+}
+$("startBtn").addEventListener("click",start);
+$("nameInput").addEventListener("keydown",e=>{if(e.key==="Enter")start();});
+$("nextBtn").addEventListener("click",next);
+$("backBtn").addEventListener("click",back);
+$("restartBtn").addEventListener("click",restart);
+$("playAgainBtn").addEventListener("click",restart);
+$("soundBtn").addEventListener("click",toggleSound);
+
+</script>
+</body>
+</html>
