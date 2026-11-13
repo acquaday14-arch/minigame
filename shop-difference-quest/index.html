@@ -1,0 +1,877 @@
+<!doctype html>
+<html lang="en" data-template-effects-version="2">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Shop Difference Quest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --purple:#5b36d6;--purple2:#7a57eb;--ink:#20285c;--pink:#ef5aa7;
+      --yellow:#ffd76a;--mint:#6be0b2;--sky:#74c7ff;--soft:#f8f6ff;--line:#d9cff8;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;min-height:100vh;padding:18px;
+      font-family:"Fredoka",ui-rounded,"Trebuchet MS",Arial,sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at 9% 12%,#ffe2f0 0 7%,transparent 7.5%),
+        radial-gradient(circle at 90% 14%,#dff5ff 0 8%,transparent 8.5%),
+        linear-gradient(180deg,#f8fbff,#f4efff);
+    }
+    button,input{font:inherit}
+    .app{width:min(1060px,98vw);margin:1vh auto}
+    .frame{
+      background:#fff;border:4px solid #4b32bf;border-radius:32px;overflow:hidden;
+      box-shadow:0 14px 0 #ded5ff,0 24px 44px rgba(63,47,147,.14)
+    }
+    .top{
+      background:linear-gradient(135deg,var(--purple),#6541dc);
+      padding:18px 28px;color:#fff;display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:center
+    }
+    .pill{border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.12);padding:9px 15px;border-radius:999px;font-weight:700}
+    .top .pill:last-child{justify-self:end}
+    .progress{height:10px;background:#dacdfd}
+    .progress>div{height:100%;width:25%;background:linear-gradient(90deg,#ffd75f,#ffae73);transition:.25s}
+    .stage{padding:28px 34px 24px;min-height:650px;position:relative}
+    .kicker{text-align:center;color:var(--pink);font-size:14px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+    h1{text-align:center;font-size:clamp(38px,6vw,62px);margin:8px 0 8px;color:#432cb5;line-height:.98}
+    .instruction{text-align:center;font-size:20px;font-weight:600;margin-bottom:24px}
+    .card{
+      width:min(780px,100%);margin:0 auto;border:2px solid var(--line);border-radius:24px;padding:24px;
+      background:linear-gradient(180deg,#fff,#fcfbff)
+    }
+    .question{font-size:clamp(24px,4vw,36px);font-weight:700;text-align:center;margin:6px 0 22px}
+    .answers{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .answer{
+      border:3px solid #ded3fa;background:#fbf9ff;border-radius:18px;padding:15px 18px;color:var(--ink);
+      font-weight:700;font-size:18px;cursor:pointer;transition:.14s
+    }
+    .answer:hover{transform:translateY(-2px);border-color:#aa8df3}
+    .answer.good{border-color:#65d5a8;background:#ebfff6;color:#17734e;animation:pop .28s ease}
+    .answer.bad{border-color:#ff98a4;background:#fff0f2;color:#a63a47;animation:shake .28s ease}
+    .feedback{min-height:42px;text-align:center;margin:18px 0 4px;font-size:19px;font-weight:700}
+    .controls{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:14px;margin-top:28px}
+    .btn{border:2px solid #dbd2f8;border-radius:15px;background:#fff;color:#4734a9;padding:12px 18px;font-weight:700;cursor:pointer}
+    .controls .next{justify-self:end;background:linear-gradient(135deg,#ffd37c,#ffbd84);border:0;color:#76563b}
+    .center{text-align:center}
+    .hidden{display:none!important}
+    .start{padding:60px 32px;text-align:center}
+    .start p{font-size:19px;color:#667085}
+    .start input{width:min(560px,100%);padding:15px 17px;border:2px solid #d8cff4;border-radius:16px;font-size:18px}
+    .start .btn{margin-top:12px;background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;border:0}
+    .stars{font-size:26px;letter-spacing:5px}
+    .confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:20}
+    .confetti i{position:absolute;width:10px;height:16px;border-radius:3px;animation:fall 900ms linear forwards}
+    @keyframes pop{50%{transform:scale(1.035)}}
+    @keyframes shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+    @keyframes fall{from{transform:translateY(-10vh) rotate(0)}to{transform:translateY(110vh) rotate(500deg);opacity:.7}}
+    @media(max-width:700px){.top{grid-template-columns:1fr 1fr}.top>div:nth-child(2){grid-column:1/-1;grid-row:2;text-align:center}.stage{padding:22px 16px}.answers{grid-template-columns:1fr}.controls{grid-template-columns:1fr 1fr}.controls .restart{display:none}}
+  
+    /* Template FX v2 — reduced-motion aware and dependency-free */
+    .fx-enter{animation:fx-enter .38s cubic-bezier(.2,.8,.2,1) both}
+    .answer{transition:transform .17s ease,border-color .2s ease,box-shadow .2s ease,background .2s ease}
+    .answer:active,.btn:active{transform:scale(.97)}
+    .answer:focus-visible,.btn:focus-visible{outline:4px solid #f7bb56;outline-offset:3px}
+    .answer.good{box-shadow:0 0 0 4px rgba(81,213,157,.13)}
+    .answer.bad{box-shadow:0 0 0 4px rgba(255,118,144,.13)}
+    .answer:disabled{cursor:default}
+    .pill.score-pulse,.score-pulse{animation:fx-pulse .35s ease}
+    .feedback.success{color:#10845c;animation:fx-pop .4s ease both}
+    .feedback.error{color:#b44453;animation:fx-shake .32s ease both}
+    .mid-actions{display:flex;gap:8px;align-items:center;justify-content:center}
+    .mid-actions .btn{white-space:nowrap}
+    .btn:disabled{opacity:.4;cursor:not-allowed;filter:grayscale(.25)}
+    .next.ready{animation:fx-glow 1.8s ease-in-out infinite}
+    .fx-particles{position:fixed;inset:0;z-index:100;pointer-events:none;overflow:hidden}
+    .fx-particles span{position:absolute;top:-24px;width:10px;height:16px;border-radius:3px;animation:fx-rain 1.15s cubic-bezier(.2,.7,.5,1) forwards}
+    .fx-round-toast{position:fixed;inset:0;z-index:90;pointer-events:none;display:flex;justify-content:center;align-items:center;background:rgba(45,29,122,.11)}
+    .fx-round-toast.hidden{display:none!important}
+    .fx-round-pill{
+      text-align:center;border:4px solid #fff;border-radius:28px;
+      background:linear-gradient(135deg,#5b36d6,#8b6cf0);color:white;
+      padding:24px 36px;box-shadow:0 20px 60px rgba(54,38,152,.25);
+      font-size:clamp(25px,4vw,42px);font-weight:700;animation:fx-toast .7s ease both
+    }
+    .fx-round-pill small{display:block;font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:#ffdf85;margin-bottom:4px}
+    .result-area{text-align:center;padding:56px 24px}
+    .result-area h1{font-size:clamp(40px,6vw,64px);margin:10px 0;color:#432cb5}
+    .result-area .result-score{font-size:clamp(60px,10vw,100px);color:#5b36d6;font-weight:700;line-height:1.12}
+    .result-area .result-sub{font-size:21px;margin:8px 0 28px}
+    .result-area .btn{background:#6040d7;color:#fff;border:0;padding:15px 30px;font-size:18px}
+    .result-area .result-stars{font-size:38px;letter-spacing:8px;animation:fx-float 2s ease-in-out infinite}
+    .picture{animation:fx-picture-in .55s cubic-bezier(.2,.8,.2,1) both;transition:transform .25s ease,box-shadow .25s ease}
+    .picture:hover{transform:translateY(-3px) rotate(-1deg);box-shadow:0 17px 34px rgba(82,58,173,.21)}
+    .picture img{width:100%;height:100%;object-fit:cover;display:block}
+    @keyframes fx-enter{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes fx-pop{0%{transform:scale(.83);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+    @keyframes fx-pulse{50%{transform:scale(1.09)}}
+    @keyframes fx-shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+    @keyframes fx-glow{50%{box-shadow:0 0 0 6px rgba(255,205,100,.22)}}
+    @keyframes fx-rain{0%{transform:translateY(-10vh) rotate(0deg);opacity:1}100%{transform:translateY(112vh) rotate(620deg);opacity:0}}
+    @keyframes fx-toast{0%{transform:scale(.7) translateY(25px);opacity:0}40%{transform:scale(1.05);opacity:1}100%{transform:scale(1);opacity:1}}
+    @keyframes fx-float{50%{transform:translateY(-9px)}}
+    @keyframes fx-picture-in{from{opacity:0;transform:scale(.91) rotate(-2deg)}to{opacity:1;transform:scale(1) rotate(0)}}
+    @media(max-width:700px){
+      .controls{grid-template-columns:1fr 1fr}
+      .controls .mid-actions{grid-column:1/-1;grid-row:2;justify-content:center}
+      .controls .restart{display:inline-flex}
+      .result-area{padding:42px 16px}
+      .mid-actions .btn{font-size:14px;padding:10px 12px}
+    }
+    @media(prefers-reduced-motion:reduce){
+      *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+    }
+
+    .card{width:min(900px,100%);padding:22px}.answers{grid-template-columns:1fr;gap:10px}.answer{font-size:21px;line-height:1.35;padding:15px 18px;text-align:left;min-height:56px}.scene{color:#b1367b;font-size:16px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px}.speech{background:#edf7ff;border:2px solid #d6eafa;border-radius:20px;padding:20px;font-family:"Trebuchet MS",Arial,sans-serif;font-size:24px;line-height:1.5}.speech strong{color:#5339bc}.question{font-size:24px;margin:20px 0 14px}.feedback{font-size:18px;line-height:1.45;margin-top:18px;min-height:0}.completed-reply{display:none!important;border-radius:16px;background:#ebfff6;border:2px solid #75d2ad;padding:15px;margin-top:14px;font-size:21px;line-height:1.4;color:#126b4b}.source-card{margin:0 auto 18px;background:white;border:2px solid #e0d8f4;border-radius:16px;padding:12px;max-width:100%;text-align:center}.source-label{font-size:14px;color:#695f87;margin-bottom:8px}.source-card img{display:block;max-width:100%;max-height:90px;width:auto;height:auto;margin:auto}.speak{text-align:center;color:#584390;font-size:17px;line-height:1.4}.stage{padding:24px;min-height:530px}#gameScreen h1{font-size:40px;line-height:1.1}.instruction{margin:12px 0 20px}.btn{min-height:48px}.start label{font-size:20px}.fx-round-pill{max-width:90vw}@media(max-width:700px){body{padding:8px}.app{width:100%}.stage{padding:20px 12px}.card{padding:15px}.speech{font-size:21px;padding:15px}.answer{font-size:19px}.completed-reply{font-size:19px}.top{padding:16px 12px;gap:8px}.pill{font-size:14px;padding:9px}#gameScreen h1{font-size:32px}.start{padding:38px 18px}}
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="frame" id="startScreen">
+      <div class="start">
+        <div class="stars">⭐ ✨ ⭐</div>
+        <div class="kicker">Compare · Choose · Explain</div>
+        <h1>Shop Difference Quest</h1>
+        <p>20 questions · 5 worksheet pairs · No timer<br>Compare similar shops and expressions in real-life situations.<br>After each answer, explain the difference with a partner.</p>
+        <label for="nameInput">Student name</label><br><input id="nameInput" maxlength="80" autocomplete="name" placeholder="Enter your name"><p id="nameError" role="alert"></p>
+        <br>
+        <button class="btn" id="startBtn">Start Challenge</button>
+      </div>
+    </section>
+
+    <section class="frame hidden" id="gameScreen">
+      <div class="top">
+        <div class="pill" id="roundPill">Round 1 / 5</div>
+        <div class="pill">⭐ <span id="score">0</span> / <span id="total">20</span> points</div>
+        <div class="pill" id="questionPill">Question 1 / 20</div>
+      </div>
+      <div class="progress"><div id="bar"></div></div>
+
+      <div class="stage">
+        <div class="kicker" id="kicker">Read carefully · 1 of 20</div>
+        <h1 id="title">Choose the best answer</h1>
+        <div class="instruction" id="instruction">Pick the sentence that sounds natural.</div>
+
+        <div class="card">
+          <div class="source-card" id="sourceCard"><div class="source-label">Compare this pair from your worksheet</div><img id="sourceImage" alt=""></div><div class="scene" id="scene"></div><div class="dialogue" id="dialogue"></div><div class="question" id="question"></div>
+          <div class="answers" id="answers"></div>
+          <div class="feedback" id="feedback"></div><div class="completed-reply hidden" id="completedReply"></div><p class="speak hidden" id="speakPrompt">🗣️ Say it together: take turns reading the conversation aloud.</p>
+        </div>
+
+        <div class="controls">
+          <button class="btn" id="backBtn">← Back</button>
+          <div class="mid-actions"><button class="btn" id="soundBtn" aria-pressed="true">🔊 Sound On</button><button class="btn restart" id="restartBtn">↻ Restart</button></div>
+          <button class="btn next" id="nextBtn">Next →</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="frame hidden" id="resultScreen">
+      <div class="result-area">
+        <div class="result-stars">🌟 🎉 🌟</div>
+        <h1>Great Job, <span id="playerResult"></span>!</h1>
+        <div class="result-score"><span id="finalPoints">0</span>/<span id="finalTotal">20</span></div>
+        <p class="result-sub" id="resultMessage"></p>
+        <p class="result-sub" id="recordStatus"></p>
+        <button class="btn" id="playAgainBtn">↻ Play Again</button>
+      </div>
+    </section>
+  <div class="fx-particles" id="fxParticles" aria-hidden="true"></div>
+    <div class="fx-round-toast hidden" id="roundToast" aria-hidden="true"><div class="fx-round-pill"><small>LEVEL UP ✨</small><span id="roundToastText"></span></div></div>
+  </main>
+
+<script src="/minigame/shared/teacher-records-config.js"></script>
+<script src="/minigame/shared/teacher-records.js"></script>
+<script>
+
+const QUESTIONS=[
+  {
+    "round": 1,
+    "type": "mc",
+    "scene": "Explain the difference",
+    "dialogue": [
+      [
+        "You",
+        "My new neighbour says there’s a DIY store and a hypermarket nearby. What’s the difference?"
+      ]
+    ],
+    "q": "What is the best reply?",
+    "choices": [
+      "A DIY store specialises in home-improvement tools and materials; a hypermarket sells groceries and a wide range of other goods.",
+      "A DIY store only sells groceries; a hypermarket only sells tools.",
+      "They are both specialist shops that only sell furniture."
+    ],
+    "a": 0,
+    "target": "A DIY store specialises in home-improvement tools and materials; a hypermarket sells groceries and a wide range of other goods.",
+    "ex": "A DIY store specialises in tools and materials for home improvements, whereas a hypermarket sells groceries and many other kinds of goods.",
+    "speak": "Explain the difference using “whereas”. Give one example of something you could buy at each place.",
+    "respondent": "Friend",
+    "tag": "DIY store vs hypermarket",
+    "image": "assets/pair-1.webp"
+  },
+  {
+    "round": 1,
+    "type": "mc",
+    "scene": "Fixing a shelf",
+    "dialogue": [
+      [
+        "You",
+        "I need advice about wall fixings, a drill and screws. Which specialist shop should I try?"
+      ]
+    ],
+    "q": "What is the best reply?",
+    "choices": [
+      "The newsagent’s specialises in newspapers.",
+      "The travel agent’s can advise you about flights.",
+      "The DIY store is the specialist shop for home repairs."
+    ],
+    "a": 2,
+    "target": "The DIY store is the specialist shop for home repairs.",
+    "ex": "A DIY store specialises in the tools and materials needed for jobs such as putting up a shelf.",
+    "speak": "Partner A: ask for tools for a home repair. Partner B: recommend a shop and explain why.",
+    "respondent": "Friend",
+    "tag": "DIY store vs hypermarket",
+    "image": "assets/pair-1.webp"
+  },
+  {
+    "round": 1,
+    "type": "mc",
+    "scene": "One shopping trip",
+    "dialogue": [
+      [
+        "You",
+        "I need milk, vegetables, a kettle and some clothes. I’d like one very large shop with all those departments. Where should I go?"
+      ]
+    ],
+    "q": "What is the best reply?",
+    "choices": [
+      "A stationer’s — it specialises in writing supplies.",
+      "A hypermarket — it sells food and a wide range of other goods.",
+      "A dry cleaner’s — it has a clothes-cleaning service."
+    ],
+    "a": 1,
+    "target": "A hypermarket — it sells food and a wide range of other goods.",
+    "ex": "A hypermarket combines a large food shop with departments for many non-food products.",
+    "speak": "Name three things you might buy at a hypermarket. Ask your partner what they need.",
+    "respondent": "Friend",
+    "tag": "DIY store vs hypermarket",
+    "image": "assets/pair-1.webp"
+  },
+  {
+    "round": 1,
+    "type": "mc",
+    "scene": "A mixed shopping list",
+    "dialogue": [
+      [
+        "You",
+        "We need a specialist shop for paint and decorating advice, then a large shop for our weekly groceries. Which order makes sense?"
+      ]
+    ],
+    "q": "What is the best reply?",
+    "choices": [
+      "Hypermarket for specialist decorating advice, then DIY store for the weekly food shop.",
+      "Travel agent’s first, then estate agent’s.",
+      "DIY store first, then hypermarket."
+    ],
+    "a": 2,
+    "target": "DIY store first, then hypermarket.",
+    "ex": "The DIY store is the specialist choice for decorating supplies and advice. The hypermarket suits a large grocery shop.",
+    "speak": "Explain your two shopping stops. Start with “First, we’ll go to…”",
+    "respondent": "Friend",
+    "tag": "DIY store vs hypermarket",
+    "image": "assets/pair-1.webp"
+  },
+  {
+    "round": 2,
+    "type": "mc",
+    "scene": "Explain the difference",
+    "dialogue": [
+      [
+        "You",
+        "What is the main difference between a stationer’s and a newsagent’s?"
+      ]
+    ],
+    "q": "What is the best reply?",
+    "choices": [
+      "A stationer’s mainly sells newspapers; a newsagent’s specialises in printers and office paper.",
+      "A stationer’s specialises in writing and office supplies; a newsagent’s mainly sells newspapers and magazines.",
+      "A stationer’s rents homes; a newsagent’s books holidays."
+    ],
+    "a": 1,
+    "target": "A stationer’s specialises in writing and office supplies; a newsagent’s mainly sells newspapers and magazines.",
+    "ex": "A stationer’s specialises in writing and office supplies, whereas a newsagent’s mainly sells newspapers and magazines. Their product ranges can overlap.",
+    "speak": "Compare the two shops. Mention that some newsagents also sell pens or paper.",
+    "respondent": "Friend",
+    "tag": "Stationer’s vs newsagent’s",
+    "image": "assets/pair-2.webp"
+  },
+  {
+    "round": 2,
+    "type": "mc",
+    "scene": "Supplies for a presentation",
+    "dialogue": [
+      [
+        "You",
+        "Our office needs a range of notebooks, envelopes and drawing paper. Which specialist shop should we try first?"
+      ]
+    ],
+    "q": "What is the best reply?",
+    "choices": [
+      "The stationer’s specialises in writing and paper supplies.",
+      "The fishmonger’s specialises in seafood.",
+      "The florist’s specialises in flowers."
+    ],
+    "a": 0,
+    "target": "The stationer’s specialises in writing and paper supplies.",
+    "ex": "A stationer’s specialises in the supplies on this list. Some newsagents also sell a smaller selection of stationery.",
+    "speak": "Ask your partner for three items you need for work or study.",
+    "respondent": "Friend",
+    "tag": "Stationer’s vs newsagent’s",
+    "image": "assets/pair-2.webp"
+  },
+  {
+    "round": 2,
+    "type": "mc",
+    "scene": "Before a train journey",
+    "dialogue": [
+      [
+        "You",
+        "I’d like today’s newspaper and a magazine. Which of the two shops mainly sells these?"
+      ]
+    ],
+    "q": "What is the best reply?",
+    "choices": [
+      "The dry cleaner’s. It prints the daily news.",
+      "The newsagent’s. That’s its main type of product.",
+      "The stationer’s. Newspapers are its main speciality."
+    ],
+    "a": 1,
+    "target": "The newsagent’s. That’s its main type of product.",
+    "ex": "Newspapers and magazines are the main products associated with a newsagent’s.",
+    "speak": "Partner A: ask where to get something to read. Partner B: suggest a newsagent’s.",
+    "respondent": "Friend",
+    "tag": "Stationer’s vs newsagent’s",
+    "image": "assets/pair-2.webp"
+  },
+  {
+    "round": 2,
+    "type": "mc",
+    "scene": "Avoid an overgeneralisation",
+    "dialogue": [
+      [
+        "You",
+        "My friend says, “A newsagent’s can never sell pens.” Is that right?"
+      ]
+    ],
+    "q": "What is the best reply?",
+    "choices": [
+      "No. A newsagent’s may sell pens too, but a stationer’s specialises in stationery.",
+      "Yes. Newsagents only sell food.",
+      "Yes. Only a stationer’s is allowed to sell pens."
+    ],
+    "a": 0,
+    "target": "No. A newsagent’s may sell pens too, but a stationer’s specialises in stationery.",
+    "ex": "Shop ranges can overlap. We distinguish the main focus, rather than saying a product can only be sold at one type of shop.",
+    "speak": "Correct your partner politely: “Not necessarily. A newsagent’s may…, but a stationer’s…”",
+    "respondent": "Friend",
+    "tag": "Stationer’s vs newsagent’s",
+    "image": "assets/pair-2.webp"
+  },
+  {
+    "round": 3,
+    "type": "mc",
+    "scene": "Explain the difference",
+    "dialogue": [
+      [
+        "You",
+        "My suit needs special cleaning, and my towels need a normal wash. How do a dry cleaner’s and a launderette differ?"
+      ]
+    ],
+    "q": "What is the best reply?",
+    "choices": [
+      "A dry cleaner’s only lends clothes; a launderette sells new clothes.",
+      "A dry cleaner’s sells washing machines; a launderette repairs suits.",
+      "A dry cleaner’s professionally cleans clothes needing special care; a launderette usually lets customers use washing machines and dryers."
+    ],
+    "a": 2,
+    "target": "A dry cleaner’s professionally cleans clothes needing special care; a launderette usually lets customers use washing machines and dryers.",
+    "ex": "At a dry cleaner’s, staff professionally clean clothes that need special care. At a launderette, customers usually pay to use washing machines and dryers.",
+    "speak": "Explain the difference. Use “At a dry cleaner’s…” and “At a launderette…”",
+    "respondent": "Friend",
+    "tag": "Dry cleaner’s vs launderette",
+    "image": "assets/pair-3.webp"
+  },
+  {
+    "round": 3,
+    "type": "mc",
+    "scene": "A jacket with a care label",
+    "dialogue": [
+      [
+        "You",
+        "The label on this jacket says “dry clean only”. Where should I take it?"
+      ]
+    ],
+    "q": "What is the best reply?",
+    "choices": [
+      "To the dry cleaner’s, where staff can provide the specified cleaning service.",
+      "To the launderette and put it in any normal washing machine.",
+      "To the newsagent’s with the newspapers."
+    ],
+    "a": 0,
+    "target": "To the dry cleaner’s, where staff can provide the specified cleaning service.",
+    "ex": "Follow the care label. A normal machine wash at a launderette is not the same service as dry cleaning.",
+    "speak": "Show an imaginary care label and explain where you would take the jacket.",
+    "respondent": "Friend",
+    "tag": "Dry cleaner’s vs launderette",
+    "image": "assets/pair-3.webp"
+  },
+  {
+    "round": 3,
+    "type": "mc",
+    "scene": "A broken washing machine",
+    "dialogue": [
+      [
+        "You",
+        "My washing machine is broken. I want to pay to wash and dry a bag of ordinary towels myself. Where should I go?"
+      ]
+    ],
+    "q": "What is the best reply?",
+    "choices": [
+      "To the travel agent’s to change a booking.",
+      "To the estate agent’s to arrange a viewing.",
+      "To a self-service launderette with washing machines and dryers."
+    ],
+    "a": 2,
+    "target": "To a self-service launderette with washing machines and dryers.",
+    "ex": "A self-service launderette lets customers use machines for ordinary laundry.",
+    "speak": "Partner A: explain the problem. Partner B: recommend a launderette and give a reason.",
+    "respondent": "Friend",
+    "tag": "Dry cleaner’s vs launderette",
+    "image": "assets/pair-3.webp"
+  },
+  {
+    "round": 3,
+    "type": "mc",
+    "scene": "Two different jobs",
+    "dialogue": [
+      [
+        "You",
+        "I have a dry-clean-only suit and some machine-washable sheets. Which plan fits the care instructions?"
+      ]
+    ],
+    "q": "What is the best reply?",
+    "choices": [
+      "Take both items to a newsagent’s for cleaning.",
+      "Take the suit to a dry cleaner’s and wash the sheets at a launderette.",
+      "Put the suit in a normal machine and take the sheets to an estate agent’s."
+    ],
+    "a": 1,
+    "target": "Take the suit to a dry cleaner’s and wash the sheets at a launderette.",
+    "ex": "The suit needs the cleaning service on its label. The sheets can use an ordinary washing machine.",
+    "speak": "Explain which item goes where and why. Then swap roles.",
+    "respondent": "Friend",
+    "tag": "Dry cleaner’s vs launderette",
+    "image": "assets/pair-3.webp"
+  },
+  {
+    "round": 4,
+    "type": "mc",
+    "scene": "Explain the difference",
+    "dialogue": [
+      [
+        "You",
+        "I keep mixing up estate agent’s and travel agent’s. What does each one do?"
+      ]
+    ],
+    "q": "What is the best reply?",
+    "choices": [
+      "An estate agent’s books flights; a travel agent’s arranges flat viewings.",
+      "Both only sell household furniture.",
+      "An estate agent’s deals with property; a travel agent’s arranges trips and holidays."
+    ],
+    "a": 2,
+    "target": "An estate agent’s deals with property; a travel agent’s arranges trips and holidays.",
+    "ex": "An estate agent’s helps people buy, sell or rent property, whereas a travel agent’s helps people arrange trips and holidays.",
+    "speak": "Give one request you could make at an estate agent’s and one at a travel agent’s.",
+    "respondent": "Friend",
+    "tag": "Estate agent’s vs travel agent’s",
+    "image": "assets/pair-4.webp"
+  },
+  {
+    "round": 4,
+    "type": "mc",
+    "scene": "Moving closer to work",
+    "dialogue": [
+      [
+        "You",
+        "We want to rent a flat near my office. Who could arrange some viewings?"
+      ]
+    ],
+    "q": "What is the best reply?",
+    "choices": [
+      "A travel agent. They can show us flights.",
+      "An estate agent. They can show us suitable properties.",
+      "A dry cleaner. They can show us cleaned clothes."
+    ],
+    "a": 1,
+    "target": "An estate agent. They can show us suitable properties.",
+    "ex": "Viewings are appointments to look around properties. An estate agent can arrange them.",
+    "speak": "Partner A: describe the flat you need. Partner B: offer to arrange a viewing.",
+    "respondent": "Friend",
+    "tag": "Estate agent’s vs travel agent’s",
+    "image": "assets/pair-4.webp"
+  },
+  {
+    "round": 4,
+    "type": "mc",
+    "scene": "Planning a holiday",
+    "dialogue": [
+      [
+        "You",
+        "We’d like help booking flights and a hotel for our holiday. Which agent should we contact?"
+      ]
+    ],
+    "q": "What is the best reply?",
+    "choices": [
+      "A travel agent to discuss the trip.",
+      "An estate agent to discuss the monthly rent.",
+      "A stationer to order more envelopes."
+    ],
+    "a": 0,
+    "target": "A travel agent to discuss the trip.",
+    "ex": "Flights, hotels and holiday arrangements are the relevant services of a travel agent.",
+    "speak": "Partner A: ask about a holiday. Partner B: ask where and when they want to travel.",
+    "respondent": "Friend",
+    "tag": "Estate agent’s vs travel agent’s",
+    "image": "assets/pair-4.webp"
+  },
+  {
+    "round": 4,
+    "type": "mc",
+    "scene": "A misunderstanding",
+    "dialogue": [
+      [
+        "Situation",
+        "Customer: “Can you help me rent a flat for a year?” Travel agent: “We arrange holidays.” What is the most useful reply?"
+      ]
+    ],
+    "q": "What is the best reply?",
+    "choices": [
+      "Then I’ll bring my dry-clean-only suit here.",
+      "Sorry, I need an estate agent. Could you tell me where the nearest one is?",
+      "Great, please book my flight before we discuss the flat."
+    ],
+    "a": 1,
+    "target": "Sorry, I need an estate agent. Could you tell me where the nearest one is?",
+    "ex": "The customer needs long-term housing rather than holiday arrangements, so an estate agent is the better match.",
+    "speak": "Practise politely correcting the misunderstanding and asking for directions.",
+    "respondent": "Customer",
+    "tag": "Estate agent’s vs travel agent’s",
+    "image": "assets/pair-4.webp"
+  },
+  {
+    "round": 5,
+    "type": "mc",
+    "scene": "Explain the difference",
+    "dialogue": [
+      [
+        "You",
+        "Shop A says “We’re closing at 6 today. Open again at 9 tomorrow.” Shop B says “We’re closing down. Saturday is our last day.” What’s the difference?"
+      ]
+    ],
+    "q": "What is the best reply?",
+    "choices": [
+      "Shop A is shutting for the day; Shop B is stopping business permanently.",
+      "Both shops are only taking a short lunch break.",
+      "Shop A is stopping business permanently; Shop B opens again on Sunday."
+    ],
+    "a": 0,
+    "target": "Shop A is shutting for the day; Shop B is stopping business permanently.",
+    "ex": "In a daily opening-hours context, closing means shutting for the day. Closing down means the business is stopping permanently. Context matters: closing alone can also describe a permanent closure.",
+    "speak": "Explain the difference using the two notices. Say whether each shop will reopen.",
+    "respondent": "Friend",
+    "tag": "Closing vs closing down",
+    "image": "assets/pair-5.webp"
+  },
+  {
+    "round": 5,
+    "type": "mc",
+    "scene": "Just before closing time",
+    "dialogue": [
+      [
+        "Situation",
+        "Assistant: “We’re closing in five minutes, but we open again tomorrow at nine.” What is a sensible reply?"
+      ]
+    ],
+    "q": "What is the best reply?",
+    "choices": [
+      "I’m sorry your business is ending permanently.",
+      "So this must be your final day of trading.",
+      "Thanks. I’ll come back tomorrow morning."
+    ],
+    "a": 2,
+    "target": "Thanks. I’ll come back tomorrow morning.",
+    "ex": "The assistant explicitly says the shop will reopen tomorrow. This is a daily closing time, not a permanent closure.",
+    "speak": "Partner A: announce closing time. Partner B: ask what time the shop opens tomorrow.",
+    "respondent": "Customer",
+    "tag": "Closing vs closing down",
+    "image": "assets/pair-5.webp"
+  },
+  {
+    "round": 5,
+    "type": "mc",
+    "scene": "A final sale",
+    "dialogue": [
+      [
+        "You",
+        "The sign says “Closing-down sale — final day Sunday”. Can we plan to shop there next month?"
+      ]
+    ],
+    "q": "What is the best reply?",
+    "choices": [
+      "No. The sign says the business is stopping permanently.",
+      "Yes. It only means the shop shuts for lunch on Sunday.",
+      "Yes. Closing down means the shop is opening a new daily shift."
+    ],
+    "a": 0,
+    "target": "No. The sign says the business is stopping permanently.",
+    "ex": "Closing down and final day together clearly describe the end of the business, rather than the end of a normal day.",
+    "speak": "Tell your partner why the shop will not be available next month.",
+    "respondent": "Friend",
+    "tag": "Closing vs closing down",
+    "image": "assets/pair-5.webp"
+  },
+  {
+    "round": 5,
+    "type": "mc",
+    "scene": "Check the context",
+    "dialogue": [
+      [
+        "You",
+        "Someone says “The shop’s closing.” There is no other information. Can you be certain it is only closing for the day?"
+      ]
+    ],
+    "q": "What is the best reply?",
+    "choices": [
+      "Yes. “Closing down” always means a short lunch break.",
+      "Yes. “Closing” can never mean a permanent closure.",
+      "No. Ask whether it will reopen; the context tells us. “Closing down” makes permanent closure explicit."
+    ],
+    "a": 2,
+    "target": "No. Ask whether it will reopen; the context tells us. “Closing down” makes permanent closure explicit.",
+    "ex": "Closing alone can refer to a temporary or permanent closure depending on context. Ask “Will it reopen tomorrow?” if you are unsure.",
+    "speak": "Ask a follow-up question to find out whether the closure is temporary or permanent.",
+    "respondent": "Friend",
+    "tag": "Closing vs closing down",
+    "image": "assets/pair-5.webp"
+  }
+];
+
+
+const MODE = "present";
+const $ = id => document.getElementById(id);
+const state = QUESTIONS.map(() => ({choice:null}));
+let pos = 0;
+let player = "";
+let soundOn = true;
+let audioCtx = null;
+let roundTimer = null;
+let startedAt = null;
+let attemptId="",finished=false;
+const ROUND_NAMES=["DIY store vs hypermarket", "Stationer’s vs newsagent’s", "Dry cleaner’s vs launderette", "Estate agent’s vs travel agent’s", "Closing vs closing down"];
+function newAttempt(){attemptId=window.crypto&&crypto.randomUUID?crypto.randomUUID():Date.now()+"-"+Math.random();finished=false;}
+
+const totalRounds = Math.max(...QUESTIONS.map(q=>q.round));
+$("total").textContent = QUESTIONS.length;
+const roundElement = () => $(MODE === "present" ? "roundPill" : "round");
+const counterElement = () => $(MODE === "present" ? "questionPill" : "counter");
+
+function points() {
+  return state.reduce((n,s,idx)=>n+(s.choice === QUESTIONS[idx].a ? 1 : 0),0);
+}
+function chime(kind) {
+  if (!soundOn) return;
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    if (!audioCtx) audioCtx = new AC();
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    const melodies = {
+      correct:[[659,0,.11],[880,.11,.15],[1046,.23,.18]],
+      wrong:[[330,0,.13],[220,.11,.19]],
+      round:[[523,0,.1],[659,.11,.1],[784,.23,.19]],
+      finish:[[523,0,.14],[659,.15,.14],[784,.31,.15],[1046,.49,.28]]
+    };
+    const now = audioCtx.currentTime;
+    (melodies[kind] || melodies.correct).forEach(([hz,delay,len])=>{
+      const osc=audioCtx.createOscillator(),gain=audioCtx.createGain();
+      osc.type=kind==="wrong"?"triangle":"sine";
+      osc.frequency.setValueAtTime(hz,now+delay);
+      gain.gain.setValueAtTime(.0001,now+delay);
+      gain.gain.exponentialRampToValueAtTime(.095,now+delay+.018);
+      gain.gain.exponentialRampToValueAtTime(.0001,now+delay+len);
+      osc.connect(gain);gain.connect(audioCtx.destination);
+      osc.start(now+delay);osc.stop(now+delay+len+.01);
+    });
+  } catch (_) {}
+}
+function particles(count) {
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const box=$("fxParticles"), colors=["#ffc85b","#f65caf","#6de0b1","#77caff","#9e76f2","#ff9d78"];
+  for(let n=0;n<count;n++){
+    const p=document.createElement("span");
+    p.style.left=(Math.random()*100)+"%";
+    p.style.background=colors[n%colors.length];
+    p.style.animationDelay=(Math.random()*.27)+"s";
+    p.style.animationDuration=(.95+Math.random()*.7)+"s";
+    box.appendChild(p);
+    p.addEventListener("animationend",()=>p.remove(),{once:true});
+  }
+}
+function animateScore() {
+  const el=$("score");
+  el.textContent=points();
+  el.classList.remove("score-pulse");
+  void el.offsetWidth;
+  el.classList.add("score-pulse");
+}
+function toastRound(round){
+  if(roundTimer)clearTimeout(roundTimer);
+  $("roundToastText").textContent="Round "+round+" / "+totalRounds+" · "+ROUND_NAMES[round-1];
+  $("roundToast").classList.remove("hidden");
+  chime("round");
+  roundTimer=setTimeout(()=>$("roundToast").classList.add("hidden"),900);
+}
+function setScreen(id){
+  ["startScreen","gameScreen","resultScreen"].forEach(x=>$(x).classList.toggle("hidden",x!==id));
+}
+function start(){
+  const name=$("nameInput").value.trim();
+  if(!name){$("nameError").textContent="Please enter your name first.";$("nameInput").focus();return;}
+  $("nameError").textContent="";newAttempt();
+  player=name;
+  startedAt=Date.now();
+  pos=0;
+  state.forEach(s=>s.choice=null);
+  setScreen("gameScreen");
+  render();
+  toastRound(QUESTIONS[0].round);
+}
+function render(){
+  const q=QUESTIONS[pos], st=state[pos];
+  roundElement().textContent="Round "+q.round+" / "+totalRounds+(MODE==="picture"?" · Picture questions":"");
+  counterElement().textContent="Question "+(pos+1)+" / "+QUESTIONS.length;
+  $("bar").style.width=(state.filter(s=>s.choice!==null).length/QUESTIONS.length*100)+"%";
+  $("score").textContent=points();
+  $("kicker").textContent=ROUND_NAMES[q.round-1]+" · "+(pos+1)+" of "+QUESTIONS.length;
+  if(MODE==="present"){
+    $("title").textContent="What’s the difference?";
+    $("instruction").textContent="Compare the worksheet pair. Choose the best answer.";
+    $("scene").textContent=q.scene;
+    const dialogue=$("dialogue");dialogue.replaceChildren();
+    q.dialogue.forEach(([speaker,line])=>{const row=document.createElement("div");row.className="speech";const label=document.createElement("strong");label.textContent=speaker+": ";row.append(label,document.createTextNode(line));dialogue.appendChild(row);});
+    $("question").textContent=q.q;
+    const answered=st.choice!==null;
+    $("sourceCard").classList.remove("hidden");
+    $("sourceImage").src=q.image;$("sourceImage").alt="Worksheet comparison: "+q.tag;
+    $("completedReply").classList.toggle("hidden",!answered);
+    $("completedReply").textContent=answered?q.respondent+": "+q.target:"";
+    $("speakPrompt").classList.toggle("hidden",!answered);$("speakPrompt").textContent="🗣️ Partner practice (not scored): "+q.speak;
+
+  }else{
+    $("prompt").textContent=q.prompt;
+    const photo=$("picture");
+    photo.innerHTML="";
+    if(q.image){
+      const img=document.createElement("img");img.src=q.image;img.alt=q.alt||q.picture||"Question picture";
+      photo.appendChild(img);
+    }else{photo.innerHTML=placeholder(q.picture||"Picture prompt");}
+    photo.style.animation="none";
+    void photo.offsetWidth;
+    photo.style.animation="";
+  }
+  const answerBox=$("answers");
+  answerBox.innerHTML="";
+  q.choices.forEach((label,n)=>{
+    const b=document.createElement("button");
+    b.type="button";b.className="answer";b.textContent=label;
+    if(st.choice!==null){
+      b.disabled=true;
+      if(n===q.a)b.classList.add("good");
+      if(n===st.choice && n!==q.a)b.classList.add("bad");
+    }else{b.onclick=()=>answer(n);}
+    answerBox.appendChild(b);
+  });
+  const feedback=$("feedback");
+  feedback.textContent=st.choice===null ? "" : (st.choice===q.a ? "Excellent! Correct answer! ⭐" : "Not quite. The correct answer is highlighted. 💡");
+  if(st.choice!==null)feedback.textContent+=" "+q.ex;
+  feedback.className="feedback"+(st.choice===null?"":st.choice===q.a?" success":" error");
+  feedback.setAttribute("aria-live","polite");
+  $("nextBtn").disabled=st.choice===null;
+  $("nextBtn").classList.toggle("ready",st.choice!==null);
+  $("nextBtn").textContent=pos===QUESTIONS.length-1?"See Results →":"Next →";
+  $("backBtn").disabled=pos===0;
+  const scene=$("gameScreen").querySelector(MODE==="present"?".stage":".content");
+  scene.classList.remove("fx-enter");
+  void scene.offsetWidth;
+  scene.classList.add("fx-enter");
+}
+function answer(choice){
+  if(state[pos].choice!==null)return;
+  state[pos].choice=choice;
+  const correct=choice===QUESTIONS[pos].a;
+  chime(correct?"correct":"wrong");
+  if(correct)particles(24);
+  render();
+  animateScore();
+}
+function next(){
+  if(state[pos].choice===null)return;
+  if(pos===QUESTIONS.length-1){finish();return;}
+  const prevRound=QUESTIONS[pos].round;
+  pos++;
+  render();
+  if(QUESTIONS[pos].round!==prevRound)toastRound(QUESTIONS[pos].round);
+}
+function back(){if(pos>0){pos--;render();}}
+function restart(){
+  newAttempt();
+  startedAt=Date.now();
+  pos=0;state.forEach(s=>s.choice=null);setScreen("gameScreen");render();toastRound(QUESTIONS[0].round);
+}
+async function finish(){
+  if(finished||state.some(s=>s.choice===null))return;
+  finished=true;const thisAttempt=attemptId;
+  setScreen("resultScreen");const score=points(),pct=Math.round(score/QUESTIONS.length*100);
+  $("playerResult").textContent=player;$("finalPoints").textContent=score;$("finalTotal").textContent=QUESTIONS.length;
+  $("resultMessage").textContent=pct+"% · "+(pct>=85?"Amazing! You can explain the difference!":pct>=60?"Good work! Keep practising!":"Every try helps. Read the situation and try again!");
+  chime("finish");particles(100);
+  const payload={studentName:player,gameTitle:document.title,score,total:QUESTIONS.length,percentage:pct,durationSeconds:Math.max(0,Math.round((Date.now()-startedAt)/1000)),completedAt:new Date().toISOString(),attemptId:thisAttempt,gameUrl:location.href};
+  if(/\/_templates?\//.test(location.pathname)){$("recordStatus").textContent="Preview — score not sent.";return;}
+  try{localStorage.setItem("shopDifferenceResult:"+thisAttempt,JSON.stringify(payload));}catch(_){}
+  $("recordStatus").textContent="Submitting score to your teacher…";
+  try{if(!window.TeacherRecords)throw Error("unavailable");const result=await TeacherRecords.submit(payload);
+    if(thisAttempt!==attemptId)return;
+    $("recordStatus").textContent=result.sent?"✅ Score submitted to your teacher.":"⚠️ Score saved on this device. Unable to send right now.";
+  }catch(_){if(thisAttempt===attemptId)$("recordStatus").textContent="⚠️ Score saved on this device. Unable to send right now.";}
+}
+function toggleSound(){
+  soundOn=!soundOn;
+  $("soundBtn").textContent=soundOn?"🔊 Sound On":"🔇 Sound Off";
+  $("soundBtn").setAttribute("aria-pressed",String(soundOn));
+}
+$("startBtn").addEventListener("click",start);
+$("nameInput").addEventListener("keydown",e=>{if(e.key==="Enter")start();});
+$("nextBtn").addEventListener("click",next);
+$("backBtn").addEventListener("click",back);
+$("restartBtn").addEventListener("click",restart);
+$("playAgainBtn").addEventListener("click",restart);
+$("soundBtn").addEventListener("click",toggleSound);
+
+</script>
+</body>
+</html>

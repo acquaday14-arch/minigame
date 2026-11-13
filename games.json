@@ -184,5 +184,11 @@
     "description": "30 real-life shopping conversations covering all 20 worksheet shop types and all 6 shopping expressions, plus four combined situations. Choose useful replies, check original worksheet excerpts and practise the dialogues aloud. No timer.",
     "level": "A2–B1",
     "path": "./shopping-talk-quest/"
+  },
+  {
+    "title": "Shop Difference Quest",
+    "description": "20 questions across all 5 worksheet pairs: DIY store vs hypermarket, stationer’s vs newsagent’s, dry cleaner’s vs launderette, estate agent’s vs travel agent’s, closing vs closing down. Real-life choices and unscored partner speaking prompts. No timer.",
+    "level": "A2–B1",
+    "path": "./shop-difference-quest/"
   }
 ]
