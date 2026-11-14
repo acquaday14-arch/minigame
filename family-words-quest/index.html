@@ -1,0 +1,1555 @@
+<!doctype html>
+<html lang="en" data-template-effects-version="2">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Family & Everyday Words Quest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --purple:#5b36d6;--purple2:#7a57eb;--ink:#20285c;--pink:#ef5aa7;
+      --yellow:#ffd76a;--mint:#6be0b2;--sky:#74c7ff;--soft:#f8f6ff;--line:#d9cff8;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;min-height:100vh;padding:18px;
+      font-family:"Fredoka",ui-rounded,"Trebuchet MS",Arial,sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at 9% 12%,#ffe2f0 0 7%,transparent 7.5%),
+        radial-gradient(circle at 90% 14%,#dff5ff 0 8%,transparent 8.5%),
+        linear-gradient(180deg,#f8fbff,#f4efff);
+    }
+    button,input{font:inherit}
+    .app{width:min(1060px,98vw);margin:1vh auto}
+    .frame{
+      background:#fff;border:4px solid #4b32bf;border-radius:32px;overflow:hidden;
+      box-shadow:0 14px 0 #ded5ff,0 24px 44px rgba(63,47,147,.14)
+    }
+    .top{
+      background:linear-gradient(135deg,var(--purple),#6541dc);
+      padding:18px 28px;color:#fff;display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:center
+    }
+    .pill{border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.12);padding:9px 15px;border-radius:999px;font-weight:700}
+    .top .pill:last-child{justify-self:end}
+    .progress{height:10px;background:#dacdfd}
+    .progress>div{height:100%;width:25%;background:linear-gradient(90deg,#ffd75f,#ffae73);transition:.25s}
+    .stage{padding:28px 34px 24px;min-height:650px;position:relative}
+    .kicker{text-align:center;color:var(--pink);font-size:14px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+    h1{text-align:center;font-size:clamp(38px,6vw,62px);margin:8px 0 8px;color:#432cb5;line-height:.98}
+    .instruction{text-align:center;font-size:20px;font-weight:600;margin-bottom:24px}
+    .card{
+      width:min(780px,100%);margin:0 auto;border:2px solid var(--line);border-radius:24px;padding:24px;
+      background:linear-gradient(180deg,#fff,#fcfbff)
+    }
+    .question{font-size:clamp(24px,4vw,36px);font-weight:700;text-align:center;margin:6px 0 22px}
+    .answers{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .answer{
+      border:3px solid #ded3fa;background:#fbf9ff;border-radius:18px;padding:15px 18px;color:var(--ink);
+      font-weight:700;font-size:18px;cursor:pointer;transition:.14s
+    }
+    .answer:hover{transform:translateY(-2px);border-color:#aa8df3}
+    .answer.good{border-color:#65d5a8;background:#ebfff6;color:#17734e;animation:pop .28s ease}
+    .answer.bad{border-color:#ff98a4;background:#fff0f2;color:#a63a47;animation:shake .28s ease}
+    .feedback{min-height:42px;text-align:center;margin:18px 0 4px;font-size:19px;font-weight:700}
+    .controls{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:14px;margin-top:28px}
+    .btn{border:2px solid #dbd2f8;border-radius:15px;background:#fff;color:#4734a9;padding:12px 18px;font-weight:700;cursor:pointer}
+    .controls .next{justify-self:end;background:linear-gradient(135deg,#ffd37c,#ffbd84);border:0;color:#76563b}
+    .center{text-align:center}
+    .hidden{display:none!important}
+    .start{padding:60px 32px;text-align:center}
+    .start p{font-size:19px;color:#667085}
+    .start input{width:min(560px,100%);padding:15px 17px;border:2px solid #d8cff4;border-radius:16px;font-size:18px}
+    .start .btn{margin-top:12px;background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;border:0}
+    .stars{font-size:26px;letter-spacing:5px}
+    .confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:20}
+    .confetti i{position:absolute;width:10px;height:16px;border-radius:3px;animation:fall 900ms linear forwards}
+    @keyframes pop{50%{transform:scale(1.035)}}
+    @keyframes shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+    @keyframes fall{from{transform:translateY(-10vh) rotate(0)}to{transform:translateY(110vh) rotate(500deg);opacity:.7}}
+    @media(max-width:700px){.top{grid-template-columns:1fr 1fr}.top>div:nth-child(2){grid-column:1/-1;grid-row:2;text-align:center}.stage{padding:22px 16px}.answers{grid-template-columns:1fr}.controls{grid-template-columns:1fr 1fr}.controls .restart{display:none}}
+  
+    /* Template FX v2 — reduced-motion aware and dependency-free */
+    .fx-enter{animation:fx-enter .38s cubic-bezier(.2,.8,.2,1) both}
+    .answer{transition:transform .17s ease,border-color .2s ease,box-shadow .2s ease,background .2s ease}
+    .answer:active,.btn:active{transform:scale(.97)}
+    .answer:focus-visible,.btn:focus-visible{outline:4px solid #f7bb56;outline-offset:3px}
+    .answer.good{box-shadow:0 0 0 4px rgba(81,213,157,.13)}
+    .answer.bad{box-shadow:0 0 0 4px rgba(255,118,144,.13)}
+    .answer:disabled{cursor:default}
+    .pill.score-pulse,.score-pulse{animation:fx-pulse .35s ease}
+    .feedback.success{color:#10845c;animation:fx-pop .4s ease both}
+    .feedback.error{color:#b44453;animation:fx-shake .32s ease both}
+    .mid-actions{display:flex;gap:8px;align-items:center;justify-content:center}
+    .mid-actions .btn{white-space:nowrap}
+    .btn:disabled{opacity:.4;cursor:not-allowed;filter:grayscale(.25)}
+    .next.ready{animation:fx-glow 1.8s ease-in-out infinite}
+    .fx-particles{position:fixed;inset:0;z-index:100;pointer-events:none;overflow:hidden}
+    .fx-particles span{position:absolute;top:-24px;width:10px;height:16px;border-radius:3px;animation:fx-rain 1.15s cubic-bezier(.2,.7,.5,1) forwards}
+    .fx-round-toast{position:fixed;inset:0;z-index:90;pointer-events:none;display:flex;justify-content:center;align-items:center;background:rgba(45,29,122,.11)}
+    .fx-round-toast.hidden{display:none!important}
+    .fx-round-pill{
+      text-align:center;border:4px solid #fff;border-radius:28px;
+      background:linear-gradient(135deg,#5b36d6,#8b6cf0);color:white;
+      padding:24px 36px;box-shadow:0 20px 60px rgba(54,38,152,.25);
+      font-size:clamp(25px,4vw,42px);font-weight:700;animation:fx-toast .7s ease both
+    }
+    .fx-round-pill small{display:block;font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:#ffdf85;margin-bottom:4px}
+    .result-area{text-align:center;padding:56px 24px}
+    .result-area h1{font-size:clamp(40px,6vw,64px);margin:10px 0;color:#432cb5}
+    .result-area .result-score{font-size:clamp(60px,10vw,100px);color:#5b36d6;font-weight:700;line-height:1.12}
+    .result-area .result-sub{font-size:21px;margin:8px 0 28px}
+    .result-area .btn{background:#6040d7;color:#fff;border:0;padding:15px 30px;font-size:18px}
+    .result-area .result-stars{font-size:38px;letter-spacing:8px;animation:fx-float 2s ease-in-out infinite}
+    .picture{animation:fx-picture-in .55s cubic-bezier(.2,.8,.2,1) both;transition:transform .25s ease,box-shadow .25s ease}
+    .picture:hover{transform:translateY(-3px) rotate(-1deg);box-shadow:0 17px 34px rgba(82,58,173,.21)}
+    .picture img{width:100%;height:100%;object-fit:cover;display:block}
+    @keyframes fx-enter{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes fx-pop{0%{transform:scale(.83);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+    @keyframes fx-pulse{50%{transform:scale(1.09)}}
+    @keyframes fx-shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+    @keyframes fx-glow{50%{box-shadow:0 0 0 6px rgba(255,205,100,.22)}}
+    @keyframes fx-rain{0%{transform:translateY(-10vh) rotate(0deg);opacity:1}100%{transform:translateY(112vh) rotate(620deg);opacity:0}}
+    @keyframes fx-toast{0%{transform:scale(.7) translateY(25px);opacity:0}40%{transform:scale(1.05);opacity:1}100%{transform:scale(1);opacity:1}}
+    @keyframes fx-float{50%{transform:translateY(-9px)}}
+    @keyframes fx-picture-in{from{opacity:0;transform:scale(.91) rotate(-2deg)}to{opacity:1;transform:scale(1) rotate(0)}}
+    @media(max-width:700px){
+      .controls{grid-template-columns:1fr 1fr}
+      .controls .mid-actions{grid-column:1/-1;grid-row:2;justify-content:center}
+      .controls .restart{display:inline-flex}
+      .result-area{padding:42px 16px}
+      .mid-actions .btn{font-size:14px;padding:10px 12px}
+    }
+    @media(prefers-reduced-motion:reduce){
+      *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+    }
+
+    .card{width:min(920px,100%);padding:22px}.stage{padding:24px;min-height:550px}#gameScreen h1{font-size:38px;line-height:1.1}.instruction{margin:12px 0 20px}.answers{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.answer{font-size:23px;min-height:58px;line-height:1.3}.question{font-size:27px;line-height:1.35;margin:14px 0 18px}.lesson-media{text-align:center;margin-bottom:10px}.lesson-media>img{display:block;width:auto;height:190px;max-width:100%;object-fit:contain;margin:auto;border-radius:15px;border:3px solid #e5dcfa;image-rendering:auto}.lesson-media.story{display:grid;grid-template-columns:minmax(180px,.72fr) minmax(0,1.28fr);gap:20px;align-items:start}.lesson-media.story>img{width:100%;height:auto;max-height:260px;object-fit:contain}.reading-text{text-align:left;font-family:"Trebuchet MS",Arial,sans-serif;font-size:21px;line-height:1.6;background:#f0f8ff;border:2px solid #dbedfb;border-radius:18px;padding:18px}.reading-text h2{font-family:"Fredoka","Trebuchet MS",sans-serif;color:#5b36d6;margin:0 0 8px;font-size:26px}.reading-text p{margin:0}.gap{white-space:nowrap;padding:1px 3px;color:#6c627f}.gap.current{background:#ffe89c;border:2px solid #e5a92a;border-radius:6px;color:#4d360e;font-weight:bold}.gap.solved{color:#17734e}.source-label{text-align:center;font-size:14px;color:#6b607e;margin:10px 0}.word-bank{display:flex;flex-wrap:wrap;justify-content:center;gap:7px;margin:14px 0 20px}.word-bank span{padding:7px 12px;border-radius:99px;background:#f0eaff;color:#5137aa;font-size:18px}.fill-area label{display:block;text-align:left;font-size:18px;margin:10px 0}.fill-row{display:flex;gap:10px}.fill-row input{flex:1;min-width:0;border:3px solid #d5c7f4;border-radius:14px;padding:14px;font-size:24px;color:#20285c}.fill-row .btn{background:#6541dc;color:#fff;font-size:18px}.fill-row input:focus-visible{outline:3px solid #ffc85b;outline-offset:2px}.fill-row input:disabled{background:#f7f4ff;opacity:1;color:#514a68}#fillError{color:#a92d48;font-size:17px;margin-top:8px}.feedback{font-size:18px;line-height:1.45}.btn{min-height:48px}.start label{font-size:20px}details{background:#f7f4ff;border-radius:12px;padding:12px;margin-bottom:10px}summary{cursor:pointer;font-size:16px;color:#62478e}details img{display:block;max-width:100%;height:auto;margin:12px auto 0;max-height:150px}.fx-round-pill{max-width:90vw}@media(max-width:700px){body{padding:8px}.app{width:100%}.stage{padding:20px 12px}.card{padding:15px}.lesson-media.story{grid-template-columns:1fr}.lesson-media.story>img{width:auto;max-width:100%;max-height:190px}.reading-text{font-size:20px;padding:14px}.top{padding:16px 12px;gap:8px}.pill{font-size:14px;padding:9px}.fill-row{flex-direction:column}.question{font-size:24px}#gameScreen h1{font-size:31px}.start{padding:38px 18px}.answers{grid-template-columns:1fr 1fr}.answer{font-size:21px}.word-bank span{font-size:16px}}
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="frame" id="startScreen">
+      <div class="start">
+        <div class="stars">⭐ ✨ ⭐</div>
+        <div class="kicker">Look · Read · Discover</div>
+        <h1>Family & Everyday Words Quest</h1>
+        <p>45 activities · All 3 worksheets · No timer<br>Picture adjectives, family stories and Flyers word clues.<br>Choose answers or type a word. Examples are included as practice.</p>
+        <label for="nameInput">Student name</label><br><input id="nameInput" maxlength="80" autocomplete="name" placeholder="Enter your name"><p id="nameError" role="alert"></p>
+        <br>
+        <button class="btn" id="startBtn">Start Challenge</button>
+      </div>
+    </section>
+
+    <section class="frame hidden" id="gameScreen">
+      <div class="top">
+        <div class="pill" id="roundPill">Round 1 / 5</div>
+        <div class="pill">⭐ <span id="score">0</span> / <span id="total">45</span> points</div>
+        <div class="pill" id="questionPill">Question 1 / 45</div>
+      </div>
+      <div class="progress"><div id="bar"></div></div>
+
+      <div class="stage">
+        <div class="kicker" id="kicker">Read carefully · 1 of 45</div>
+        <h1 id="title">Choose the best answer</h1>
+        <div class="instruction" id="instruction">Pick the sentence that sounds natural.</div>
+
+        <div class="card">
+          <div class="lesson-media" id="media"><img id="lessonImage" alt=""><div id="readingText" class="reading-text hidden"></div></div>
+          <details id="originalClue" class="hidden"><summary>View the original worksheet clue</summary><img id="clueImage" alt="Original worksheet clue"></details>
+          <div class="source-label" id="sourceLabel"></div>
+          <div class="question" id="question"></div>
+          <div class="word-bank hidden" id="wordBank" aria-label="Worksheet word bank"></div>
+          <div class="answers" id="answers"></div>
+          <div class="fill-area hidden" id="fillArea"><label for="blankInput">Your word or phrase</label><div class="fill-row"><input id="blankInput" autocomplete="off" autocapitalize="none" spellcheck="false"><button type="button" class="btn" id="checkFill">Check answer ✓</button></div><div id="fillError" role="alert"></div></div>
+          <div class="feedback" id="feedback"></div>
+        </div>
+
+        <div class="controls">
+          <button class="btn" id="backBtn">← Back</button>
+          <div class="mid-actions"><button class="btn" id="soundBtn" aria-pressed="true">🔊 Sound On</button><button class="btn restart" id="restartBtn">↻ Restart</button></div>
+          <button class="btn next" id="nextBtn">Next →</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="frame hidden" id="resultScreen">
+      <div class="result-area">
+        <div class="result-stars">🌟 🎉 🌟</div>
+        <h1>Great Job, <span id="playerResult"></span>!</h1>
+        <div class="result-score"><span id="finalPoints">0</span>/<span id="finalTotal">45</span></div>
+        <p class="result-sub" id="resultMessage"></p>
+        <p class="result-sub" id="recordStatus"></p>
+        <button class="btn" id="playAgainBtn">↻ Play Again</button>
+      </div>
+    </section>
+  <div class="fx-particles" id="fxParticles" aria-hidden="true"></div>
+    <div class="fx-round-toast hidden" id="roundToast" aria-hidden="true"><div class="fx-round-pill"><small>LEVEL UP ✨</small><span id="roundToastText"></span></div></div>
+  </main>
+
+<script src="/minigame/shared/teacher-records-config.js"></script>
+<script src="/minigame/shared/teacher-records.js"></script>
+<script>
+
+const FAMILIES=[
+  {
+    "name": "Harry",
+    "image": "assets/family-1.webp",
+    "bank": [
+      "nothing",
+      "noisy",
+      "popular",
+      "bored",
+      "everyone"
+    ],
+    "text": "Harry’s my brother and {a} says he looks like me. That’s because we’re twins! But he’s different from me. He isn’t quiet. He’s very {b}! He plays his drums very loudly. At school, Harry’s got lots of friends. He’s really {c}! At the moment, Harry’s {d} because he says he’s got {e} to do.",
+    "answers": [
+      "everyone",
+      "noisy",
+      "popular",
+      "bored",
+      "nothing"
+    ],
+    "ex": [
+      "Everyone means all the people. Everyone says the twins look alike.",
+      "Harry plays drums loudly and is not quiet, so he is noisy.",
+      "Harry has lots of friends. Popular means liked by many people.",
+      "Bored describes how Harry feels when he has nothing to do.",
+      "Nothing means not anything. Harry says he has nothing to do."
+    ]
+  },
+  {
+    "name": "Holly",
+    "image": "assets/family-2.webp",
+    "bank": [
+      "lucky",
+      "kind",
+      "untidy",
+      "everywhere",
+      "everything"
+    ],
+    "text": "Everyone likes Holly because she’s very {a}. She plays games with our sister Emma and always chats to her. Holly’s very {b}. She leaves all her things {c}! But I think I’m {d} because I’ve got a twin sister and she knows {e} about me! It’s fun!",
+    "answers": [
+      "kind",
+      "untidy",
+      "everywhere",
+      "lucky",
+      "everything"
+    ],
+    "ex": [
+      "Holly gives Emma time and attention. Kind describes someone who is caring and helpful.",
+      "Holly leaves her things all over the room, so she is untidy.",
+      "Everywhere means in all places. Holly leaves things all over her room.",
+      "Lucky means fortunate. The speaker is happy to have a twin sister.",
+      "Everything means all things. Her twin knows everything about her."
+    ]
+  },
+  {
+    "name": "Emma",
+    "image": "assets/family-3.webp",
+    "bank": [
+      "broken",
+      "unhappy",
+      "little",
+      "friendly",
+      "empty"
+    ],
+    "text": "This is our {a} sister, Emma. She’s only three. We all love her because she’s a nice, {b} girl and she always plays with us. But she can be naughty. Sometimes she throws her toys everywhere and some of them get {c}. She’s {d} at the moment. She’s crying because her glass of milk is {e}!",
+    "answers": [
+      "little",
+      "friendly",
+      "broken",
+      "unhappy",
+      "empty"
+    ],
+    "ex": [
+      "Little sister means younger sister here. Emma is only three.",
+      "Friendly means pleasant and happy to spend time with other people.",
+      "Toys can get broken when someone throws them.",
+      "Emma is crying, so she is unhappy at the moment.",
+      "There is no milk left in Emma’s glass. It is empty."
+    ]
+  },
+  {
+    "name": "William",
+    "image": "assets/family-4.webp",
+    "bank": [
+      "anything",
+      "clever",
+      "unkind",
+      "boring",
+      "difficult"
+    ],
+    "text": "This is our older brother, William. I think he’s {a} because he shouts at us! His teacher says he’s very {b} because he does well in tests. We think he’s {c} because he never does {d} interesting. He always plays chess with his friend! He says he can’t teach us because we’re too young and it’s a very {e} game! And then he just says “Go away!” to us.",
+    "answers": [
+      "unkind",
+      "clever",
+      "boring",
+      "anything",
+      "difficult"
+    ],
+    "ex": [
+      "Shouting at the younger children is not kind, so unkind fits.",
+      "William does well in tests. Clever means good at learning and understanding things.",
+      "Boring describes someone or something that the speaker does not find interesting. It is different from bored, a feeling.",
+      "Never is negative. Never does anything interesting means does nothing interesting.",
+      "Difficult means not easy. William says chess is difficult for the younger children."
+    ]
+  }
+];
+const QUESTIONS=[
+  {
+    "round": 1,
+    "type": "mc",
+    "q": "Which word matches this picture?",
+    "choices": [
+      "full",
+      "empty",
+      "quiet"
+    ],
+    "a": 0,
+    "target": "full",
+    "ex": "The bin is full: there is no room for more rubbish.",
+    "image": "assets/picture-a.webp",
+    "source": "Picture a"
+  },
+  {
+    "round": 1,
+    "type": "mc",
+    "q": "Which word matches this picture?",
+    "choices": [
+      "tidy",
+      "noisy",
+      "empty"
+    ],
+    "a": 2,
+    "target": "empty",
+    "ex": "The fridge has no food inside. It is empty.",
+    "image": "assets/picture-b.webp",
+    "source": "Picture b"
+  },
+  {
+    "round": 1,
+    "type": "mc",
+    "q": "Which word matches this picture?",
+    "choices": [
+      "broken",
+      "quiet",
+      "full"
+    ],
+    "a": 0,
+    "target": "broken",
+    "ex": "The necklace has come apart and its beads are loose. It is broken.",
+    "image": "assets/picture-c.webp",
+    "source": "Picture c"
+  },
+  {
+    "round": 1,
+    "type": "mc",
+    "q": "Which word matches this picture?",
+    "choices": [
+      "empty",
+      "untidy",
+      "tidy"
+    ],
+    "a": 1,
+    "target": "untidy",
+    "ex": "The bedroom has things lying around. It is untidy.",
+    "image": "assets/picture-d.webp",
+    "source": "Picture d"
+  },
+  {
+    "round": 1,
+    "type": "mc",
+    "q": "Which word matches this picture?",
+    "choices": [
+      "untidy",
+      "tidy",
+      "broken"
+    ],
+    "a": 1,
+    "target": "tidy",
+    "ex": "The bed is made and the room is neat. It is tidy.",
+    "image": "assets/picture-e.webp",
+    "source": "Picture e"
+  },
+  {
+    "round": 1,
+    "type": "mc",
+    "q": "Which word matches this picture?",
+    "choices": [
+      "empty",
+      "quiet",
+      "noisy"
+    ],
+    "a": 2,
+    "target": "noisy",
+    "ex": "The picture shows music and loud sounds. Noisy is the opposite of quiet.",
+    "image": "assets/picture-f.webp",
+    "source": "Picture f"
+  },
+  {
+    "round": 1,
+    "type": "mc",
+    "q": "Which word matches this picture?",
+    "choices": [
+      "quiet",
+      "full",
+      "untidy"
+    ],
+    "a": 0,
+    "target": "quiet",
+    "ex": "A finger to the lips asks people to be quiet.",
+    "image": "assets/picture-g.webp",
+    "source": "Picture g"
+  },
+  {
+    "round": 2,
+    "type": "fill",
+    "q": "Harry’s bedroom is very ___.",
+    "choices": [
+      "tidy"
+    ],
+    "a": 0,
+    "target": "tidy",
+    "ex": "Tidy means neat, with things in the right place.",
+    "image": "assets/picture-e.webp",
+    "bank": [
+      "empty",
+      "broken",
+      "full",
+      "quiet",
+      "noisy",
+      "tidy",
+      "untidy"
+    ],
+    "aliases": [],
+    "source": "Adjectives · sentence 1"
+  },
+  {
+    "round": 2,
+    "type": "fill",
+    "q": "Look! Mum’s necklace is ___.",
+    "choices": [
+      "broken"
+    ],
+    "a": 0,
+    "target": "broken",
+    "ex": "The necklace has come apart: it is broken.",
+    "image": "assets/picture-c.webp",
+    "bank": [
+      "empty",
+      "broken",
+      "full",
+      "quiet",
+      "noisy",
+      "tidy",
+      "untidy"
+    ],
+    "aliases": [],
+    "source": "Adjectives · sentence 2"
+  },
+  {
+    "round": 2,
+    "type": "fill",
+    "q": "The fridge was ___, so Dad went to the shop.",
+    "choices": [
+      "empty"
+    ],
+    "a": 0,
+    "target": "empty",
+    "ex": "Dad needed food because the fridge was empty.",
+    "image": "assets/picture-b.webp",
+    "bank": [
+      "empty",
+      "broken",
+      "full",
+      "quiet",
+      "noisy",
+      "tidy",
+      "untidy"
+    ],
+    "aliases": [],
+    "source": "Adjectives · sentence 3"
+  },
+  {
+    "round": 2,
+    "type": "fill",
+    "q": "Holly’s mum isn’t happy because her bedroom is always so ___.",
+    "choices": [
+      "untidy"
+    ],
+    "a": 0,
+    "target": "untidy",
+    "ex": "Untidy means messy, with things not in their proper places.",
+    "image": "assets/picture-d.webp",
+    "bank": [
+      "empty",
+      "broken",
+      "full",
+      "quiet",
+      "noisy",
+      "tidy",
+      "untidy"
+    ],
+    "aliases": [],
+    "source": "Adjectives · sentence 4"
+  },
+  {
+    "round": 2,
+    "type": "fill",
+    "q": "Be ___, please! Emma’s sleeping.",
+    "choices": [
+      "quiet"
+    ],
+    "a": 0,
+    "target": "quiet",
+    "ex": "We ask for quiet so that we do not wake someone who is sleeping.",
+    "image": "assets/picture-g.webp",
+    "bank": [
+      "empty",
+      "broken",
+      "full",
+      "quiet",
+      "noisy",
+      "tidy",
+      "untidy"
+    ],
+    "aliases": [],
+    "source": "Adjectives · sentence 5"
+  },
+  {
+    "round": 2,
+    "type": "fill",
+    "q": "I don’t like going into Harry’s room. He’s always so ___!",
+    "choices": [
+      "noisy"
+    ],
+    "a": 0,
+    "target": "noisy",
+    "ex": "Harry plays his drums loudly, so noisy fits the worksheet context.",
+    "image": "assets/picture-f.webp",
+    "bank": [
+      "empty",
+      "broken",
+      "full",
+      "quiet",
+      "noisy",
+      "tidy",
+      "untidy"
+    ],
+    "aliases": [],
+    "source": "Adjectives · sentence 6"
+  },
+  {
+    "round": 2,
+    "type": "fill",
+    "q": "I can’t throw this paper in the bin because it’s ___.",
+    "choices": [
+      "full"
+    ],
+    "a": 0,
+    "target": "full",
+    "ex": "A full bin has no space left for more paper.",
+    "image": "assets/picture-a.webp",
+    "bank": [
+      "empty",
+      "broken",
+      "full",
+      "quiet",
+      "noisy",
+      "tidy",
+      "untidy"
+    ],
+    "aliases": [],
+    "source": "Adjectives · sentence 7"
+  },
+  {
+    "round": 3,
+    "type": "mc",
+    "q": "Choose the word for gap (a).",
+    "choices": [
+      "popular",
+      "bored",
+      "everyone",
+      "nothing",
+      "noisy"
+    ],
+    "a": 2,
+    "target": "everyone",
+    "ex": "Everyone means all the people. Everyone says the twins look alike.",
+    "image": "assets/family-1.webp",
+    "family": 0,
+    "gap": "a",
+    "source": "Harry · gap a"
+  },
+  {
+    "round": 3,
+    "type": "mc",
+    "q": "Choose the word for gap (b).",
+    "choices": [
+      "nothing",
+      "noisy",
+      "popular",
+      "bored",
+      "everyone"
+    ],
+    "a": 1,
+    "target": "noisy",
+    "ex": "Harry plays drums loudly and is not quiet, so he is noisy.",
+    "image": "assets/family-1.webp",
+    "family": 0,
+    "gap": "b",
+    "source": "Harry · gap b"
+  },
+  {
+    "round": 3,
+    "type": "mc",
+    "q": "Choose the word for gap (c).",
+    "choices": [
+      "popular",
+      "bored",
+      "everyone",
+      "nothing",
+      "noisy"
+    ],
+    "a": 0,
+    "target": "popular",
+    "ex": "Harry has lots of friends. Popular means liked by many people.",
+    "image": "assets/family-1.webp",
+    "family": 0,
+    "gap": "c",
+    "source": "Harry · gap c"
+  },
+  {
+    "round": 3,
+    "type": "mc",
+    "q": "Choose the word for gap (d).",
+    "choices": [
+      "everyone",
+      "nothing",
+      "noisy",
+      "popular",
+      "bored"
+    ],
+    "a": 4,
+    "target": "bored",
+    "ex": "Bored describes how Harry feels when he has nothing to do.",
+    "image": "assets/family-1.webp",
+    "family": 0,
+    "gap": "d",
+    "source": "Harry · gap d"
+  },
+  {
+    "round": 3,
+    "type": "mc",
+    "q": "Choose the word for gap (e).",
+    "choices": [
+      "popular",
+      "bored",
+      "everyone",
+      "nothing",
+      "noisy"
+    ],
+    "a": 3,
+    "target": "nothing",
+    "ex": "Nothing means not anything. Harry says he has nothing to do.",
+    "image": "assets/family-1.webp",
+    "family": 0,
+    "gap": "e",
+    "source": "Harry · gap e"
+  },
+  {
+    "round": 3,
+    "type": "mc",
+    "q": "Choose the word for gap (a).",
+    "choices": [
+      "everything",
+      "lucky",
+      "kind",
+      "untidy",
+      "everywhere"
+    ],
+    "a": 2,
+    "target": "kind",
+    "ex": "Holly gives Emma time and attention. Kind describes someone who is caring and helpful.",
+    "image": "assets/family-2.webp",
+    "family": 1,
+    "gap": "a",
+    "source": "Holly · gap a"
+  },
+  {
+    "round": 3,
+    "type": "mc",
+    "q": "Choose the word for gap (b).",
+    "choices": [
+      "kind",
+      "untidy",
+      "everywhere",
+      "everything",
+      "lucky"
+    ],
+    "a": 1,
+    "target": "untidy",
+    "ex": "Holly leaves her things all over the room, so she is untidy.",
+    "image": "assets/family-2.webp",
+    "family": 1,
+    "gap": "b",
+    "source": "Holly · gap b"
+  },
+  {
+    "round": 3,
+    "type": "mc",
+    "q": "Choose the word for gap (c).",
+    "choices": [
+      "everything",
+      "lucky",
+      "kind",
+      "untidy",
+      "everywhere"
+    ],
+    "a": 4,
+    "target": "everywhere",
+    "ex": "Everywhere means in all places. Holly leaves things all over her room.",
+    "image": "assets/family-2.webp",
+    "family": 1,
+    "gap": "c",
+    "source": "Holly · gap c"
+  },
+  {
+    "round": 3,
+    "type": "mc",
+    "q": "Choose the word for gap (d).",
+    "choices": [
+      "kind",
+      "untidy",
+      "everywhere",
+      "everything",
+      "lucky"
+    ],
+    "a": 4,
+    "target": "lucky",
+    "ex": "Lucky means fortunate. The speaker is happy to have a twin sister.",
+    "image": "assets/family-2.webp",
+    "family": 1,
+    "gap": "d",
+    "source": "Holly · gap d"
+  },
+  {
+    "round": 3,
+    "type": "mc",
+    "q": "Choose the word for gap (e).",
+    "choices": [
+      "everywhere",
+      "everything",
+      "lucky",
+      "kind",
+      "untidy"
+    ],
+    "a": 1,
+    "target": "everything",
+    "ex": "Everything means all things. Her twin knows everything about her.",
+    "image": "assets/family-2.webp",
+    "family": 1,
+    "gap": "e",
+    "source": "Holly · gap e"
+  },
+  {
+    "round": 4,
+    "type": "mc",
+    "q": "Choose the word for gap (a).",
+    "choices": [
+      "unhappy",
+      "little",
+      "friendly",
+      "empty",
+      "broken"
+    ],
+    "a": 1,
+    "target": "little",
+    "ex": "Little sister means younger sister here. Emma is only three.",
+    "image": "assets/family-3.webp",
+    "family": 2,
+    "gap": "a",
+    "source": "Emma · gap a"
+  },
+  {
+    "round": 4,
+    "type": "mc",
+    "q": "Choose the word for gap (b).",
+    "choices": [
+      "friendly",
+      "empty",
+      "broken",
+      "unhappy",
+      "little"
+    ],
+    "a": 0,
+    "target": "friendly",
+    "ex": "Friendly means pleasant and happy to spend time with other people.",
+    "image": "assets/family-3.webp",
+    "family": 2,
+    "gap": "b",
+    "source": "Emma · gap b"
+  },
+  {
+    "round": 4,
+    "type": "mc",
+    "q": "Choose the word for gap (c).",
+    "choices": [
+      "broken",
+      "unhappy",
+      "little",
+      "friendly",
+      "empty"
+    ],
+    "a": 0,
+    "target": "broken",
+    "ex": "Toys can get broken when someone throws them.",
+    "image": "assets/family-3.webp",
+    "family": 2,
+    "gap": "c",
+    "source": "Emma · gap c"
+  },
+  {
+    "round": 4,
+    "type": "mc",
+    "q": "Choose the word for gap (d).",
+    "choices": [
+      "friendly",
+      "empty",
+      "broken",
+      "unhappy",
+      "little"
+    ],
+    "a": 3,
+    "target": "unhappy",
+    "ex": "Emma is crying, so she is unhappy at the moment.",
+    "image": "assets/family-3.webp",
+    "family": 2,
+    "gap": "d",
+    "source": "Emma · gap d"
+  },
+  {
+    "round": 4,
+    "type": "mc",
+    "q": "Choose the word for gap (e).",
+    "choices": [
+      "broken",
+      "unhappy",
+      "little",
+      "friendly",
+      "empty"
+    ],
+    "a": 4,
+    "target": "empty",
+    "ex": "There is no milk left in Emma’s glass. It is empty.",
+    "image": "assets/family-3.webp",
+    "family": 2,
+    "gap": "e",
+    "source": "Emma · gap e"
+  },
+  {
+    "round": 4,
+    "type": "mc",
+    "q": "Choose the word for gap (a).",
+    "choices": [
+      "unkind",
+      "boring",
+      "difficult",
+      "anything",
+      "clever"
+    ],
+    "a": 0,
+    "target": "unkind",
+    "ex": "Shouting at the younger children is not kind, so unkind fits.",
+    "image": "assets/family-4.webp",
+    "family": 3,
+    "gap": "a",
+    "source": "William · gap a"
+  },
+  {
+    "round": 4,
+    "type": "mc",
+    "q": "Choose the word for gap (b).",
+    "choices": [
+      "anything",
+      "clever",
+      "unkind",
+      "boring",
+      "difficult"
+    ],
+    "a": 1,
+    "target": "clever",
+    "ex": "William does well in tests. Clever means good at learning and understanding things.",
+    "image": "assets/family-4.webp",
+    "family": 3,
+    "gap": "b",
+    "source": "William · gap b"
+  },
+  {
+    "round": 4,
+    "type": "mc",
+    "q": "Choose the word for gap (c).",
+    "choices": [
+      "unkind",
+      "boring",
+      "difficult",
+      "anything",
+      "clever"
+    ],
+    "a": 1,
+    "target": "boring",
+    "ex": "Boring describes someone or something that the speaker does not find interesting. It is different from bored, a feeling.",
+    "image": "assets/family-4.webp",
+    "family": 3,
+    "gap": "c",
+    "source": "William · gap c"
+  },
+  {
+    "round": 4,
+    "type": "mc",
+    "q": "Choose the word for gap (d).",
+    "choices": [
+      "difficult",
+      "anything",
+      "clever",
+      "unkind",
+      "boring"
+    ],
+    "a": 1,
+    "target": "anything",
+    "ex": "Never is negative. Never does anything interesting means does nothing interesting.",
+    "image": "assets/family-4.webp",
+    "family": 3,
+    "gap": "d",
+    "source": "William · gap d"
+  },
+  {
+    "round": 4,
+    "type": "mc",
+    "q": "Choose the word for gap (e).",
+    "choices": [
+      "unkind",
+      "boring",
+      "difficult",
+      "anything",
+      "clever"
+    ],
+    "a": 2,
+    "target": "difficult",
+    "ex": "Difficult means not easy. William says chess is difficult for the younger children.",
+    "image": "assets/family-4.webp",
+    "family": 3,
+    "gap": "e",
+    "source": "William · gap e"
+  },
+  {
+    "round": 5,
+    "type": "fill",
+    "q": "You put things on this to keep your room tidy.",
+    "choices": [
+      "a shelf"
+    ],
+    "a": 0,
+    "target": "a shelf",
+    "ex": "A shelf is a flat surface where you can put books and other objects.",
+    "image": "assets/clue-00.webp",
+    "bank": [
+      "cushions",
+      "a bracelet",
+      "shorts",
+      "soap",
+      "pyjamas",
+      "files",
+      "an oven",
+      "a shelf",
+      "wifi",
+      "programmes",
+      "trainers",
+      "a fridge",
+      "a shower",
+      "films",
+      "shampoo"
+    ],
+    "aliases": [
+      "shelf"
+    ],
+    "source": "Flyers · example",
+    "clue": true
+  },
+  {
+    "round": 5,
+    "type": "fill",
+    "q": "This is like a necklace, but it is smaller and you wear it around your wrist.",
+    "choices": [
+      "a bracelet"
+    ],
+    "a": 0,
+    "target": "a bracelet",
+    "ex": "A bracelet goes around your wrist; a necklace goes around your neck.",
+    "image": "assets/clue-01.webp",
+    "bank": [
+      "cushions",
+      "a bracelet",
+      "shorts",
+      "soap",
+      "pyjamas",
+      "files",
+      "an oven",
+      "a shelf",
+      "wifi",
+      "programmes",
+      "trainers",
+      "a fridge",
+      "a shower",
+      "films",
+      "shampoo"
+    ],
+    "aliases": [
+      "bracelet"
+    ],
+    "source": "Flyers · question 1",
+    "clue": true
+  },
+  {
+    "round": 5,
+    "type": "fill",
+    "q": "This gives you a wireless connection to the internet, so you can search for things online.",
+    "choices": [
+      "wifi"
+    ],
+    "a": 0,
+    "target": "wifi",
+    "ex": "Wi-Fi is a wireless way to connect devices to a network and go online. The original clue has been made more precise.",
+    "image": "assets/clue-02.webp",
+    "bank": [
+      "cushions",
+      "a bracelet",
+      "shorts",
+      "soap",
+      "pyjamas",
+      "files",
+      "an oven",
+      "a shelf",
+      "wifi",
+      "programmes",
+      "trainers",
+      "a fridge",
+      "a shower",
+      "films",
+      "shampoo"
+    ],
+    "aliases": [
+      "wi-fi",
+      "wi fi"
+    ],
+    "source": "Flyers · question 2",
+    "clue": true
+  },
+  {
+    "round": 5,
+    "type": "fill",
+    "q": "You find this in a bottle in the bathroom and use it when you wash your hair.",
+    "choices": [
+      "shampoo"
+    ],
+    "a": 0,
+    "target": "shampoo",
+    "ex": "Shampoo is a product for washing your hair.",
+    "image": "assets/clue-03.webp",
+    "bank": [
+      "cushions",
+      "a bracelet",
+      "shorts",
+      "soap",
+      "pyjamas",
+      "files",
+      "an oven",
+      "a shelf",
+      "wifi",
+      "programmes",
+      "trainers",
+      "a fridge",
+      "a shower",
+      "films",
+      "shampoo"
+    ],
+    "aliases": [],
+    "source": "Flyers · question 3",
+    "clue": true
+  },
+  {
+    "round": 5,
+    "type": "fill",
+    "q": "This is part of a cooker. You put the food you want to cook in it.",
+    "choices": [
+      "an oven"
+    ],
+    "a": 0,
+    "target": "an oven",
+    "ex": "An oven is the enclosed part of a cooker used for baking or roasting food.",
+    "image": "assets/clue-04.webp",
+    "bank": [
+      "cushions",
+      "a bracelet",
+      "shorts",
+      "soap",
+      "pyjamas",
+      "files",
+      "an oven",
+      "a shelf",
+      "wifi",
+      "programmes",
+      "trainers",
+      "a fridge",
+      "a shower",
+      "films",
+      "shampoo"
+    ],
+    "aliases": [
+      "oven"
+    ],
+    "source": "Flyers · question 4",
+    "clue": true
+  },
+  {
+    "round": 5,
+    "type": "fill",
+    "q": "You find this in the bathroom. Water comes out of it and you go under it to get clean.",
+    "choices": [
+      "a shower"
+    ],
+    "a": 0,
+    "target": "a shower",
+    "ex": "You stand under a shower to wash your body.",
+    "image": "assets/clue-05.webp",
+    "bank": [
+      "cushions",
+      "a bracelet",
+      "shorts",
+      "soap",
+      "pyjamas",
+      "files",
+      "an oven",
+      "a shelf",
+      "wifi",
+      "programmes",
+      "trainers",
+      "a fridge",
+      "a shower",
+      "films",
+      "shampoo"
+    ],
+    "aliases": [
+      "shower"
+    ],
+    "source": "Flyers · question 5",
+    "clue": true
+  },
+  {
+    "round": 5,
+    "type": "fill",
+    "q": "You have these on sofas and armchairs. They are very nice to sit on.",
+    "choices": [
+      "cushions"
+    ],
+    "a": 0,
+    "target": "cushions",
+    "ex": "Cushions are soft pads used on seats or to rest against.",
+    "image": "assets/clue-06.webp",
+    "bank": [
+      "cushions",
+      "a bracelet",
+      "shorts",
+      "soap",
+      "pyjamas",
+      "files",
+      "an oven",
+      "a shelf",
+      "wifi",
+      "programmes",
+      "trainers",
+      "a fridge",
+      "a shower",
+      "films",
+      "shampoo"
+    ],
+    "aliases": [],
+    "source": "Flyers · question 6",
+    "clue": true
+  },
+  {
+    "round": 5,
+    "type": "fill",
+    "q": "You put these on your feet when you want to run or play sport.",
+    "choices": [
+      "trainers"
+    ],
+    "a": 0,
+    "target": "trainers",
+    "ex": "Trainers are shoes for sport. Sneakers is the common American English word.",
+    "image": "assets/clue-07.webp",
+    "bank": [
+      "cushions",
+      "a bracelet",
+      "shorts",
+      "soap",
+      "pyjamas",
+      "files",
+      "an oven",
+      "a shelf",
+      "wifi",
+      "programmes",
+      "trainers",
+      "a fridge",
+      "a shower",
+      "films",
+      "shampoo"
+    ],
+    "aliases": [
+      "sneakers"
+    ],
+    "source": "Flyers · question 7",
+    "clue": true
+  },
+  {
+    "round": 5,
+    "type": "fill",
+    "q": "You keep your work on the computer in these. You open them to find something and close them when you have finished.",
+    "choices": [
+      "files"
+    ],
+    "a": 0,
+    "target": "files",
+    "ex": "Files store documents and other work on a computer.",
+    "image": "assets/clue-08.webp",
+    "bank": [
+      "cushions",
+      "a bracelet",
+      "shorts",
+      "soap",
+      "pyjamas",
+      "files",
+      "an oven",
+      "a shelf",
+      "wifi",
+      "programmes",
+      "trainers",
+      "a fridge",
+      "a shower",
+      "films",
+      "shampoo"
+    ],
+    "aliases": [],
+    "source": "Flyers · question 8",
+    "clue": true
+  },
+  {
+    "round": 5,
+    "type": "fill",
+    "q": "There are many different kinds of these on television. Some are about sport and others are about the news.",
+    "choices": [
+      "programmes"
+    ],
+    "a": 0,
+    "target": "programmes",
+    "ex": "Programmes are shows on television, including sports and news. Programs is the American spelling.",
+    "image": "assets/clue-09.webp",
+    "bank": [
+      "cushions",
+      "a bracelet",
+      "shorts",
+      "soap",
+      "pyjamas",
+      "files",
+      "an oven",
+      "a shelf",
+      "wifi",
+      "programmes",
+      "trainers",
+      "a fridge",
+      "a shower",
+      "films",
+      "shampoo"
+    ],
+    "aliases": [
+      "programs",
+      "tv programmes",
+      "tv programs"
+    ],
+    "source": "Flyers · question 9",
+    "clue": true
+  },
+  {
+    "round": 5,
+    "type": "fill",
+    "q": "People put these on when they go to bed at night.",
+    "choices": [
+      "pyjamas"
+    ],
+    "a": 0,
+    "target": "pyjamas",
+    "ex": "Pyjamas are clothes worn in bed. Pajamas is the American spelling.",
+    "image": "assets/clue-10.webp",
+    "bank": [
+      "cushions",
+      "a bracelet",
+      "shorts",
+      "soap",
+      "pyjamas",
+      "files",
+      "an oven",
+      "a shelf",
+      "wifi",
+      "programmes",
+      "trainers",
+      "a fridge",
+      "a shower",
+      "films",
+      "shampoo"
+    ],
+    "aliases": [
+      "pajamas"
+    ],
+    "source": "Flyers · question 10",
+    "clue": true
+  }
+];
+
+
+const MODE = "present";
+const $ = id => document.getElementById(id);
+const state = QUESTIONS.map(() => ({choice:null}));
+let pos = 0;
+let player = "";
+let soundOn = true;
+let audioCtx = null;
+let roundTimer = null;
+let startedAt = null;
+let attemptId="",finished=false;
+const ROUND_NAMES=["Picture adjectives","Finish the sentence","Harry & Holly","Emma & William","Flyers word clues"];
+function newAttempt(){attemptId=window.crypto&&crypto.randomUUID?crypto.randomUUID():Date.now()+"-"+Math.random();finished=false;}
+
+const totalRounds = Math.max(...QUESTIONS.map(q=>q.round));
+$("total").textContent = QUESTIONS.length;
+const roundElement = () => $(MODE === "present" ? "roundPill" : "round");
+const counterElement = () => $(MODE === "present" ? "questionPill" : "counter");
+
+function points() {
+  return state.reduce((n,s,idx)=>n+(s.choice === QUESTIONS[idx].a ? 1 : 0),0);
+}
+function chime(kind) {
+  if (!soundOn) return;
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    if (!audioCtx) audioCtx = new AC();
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    const melodies = {
+      correct:[[659,0,.11],[880,.11,.15],[1046,.23,.18]],
+      wrong:[[330,0,.13],[220,.11,.19]],
+      round:[[523,0,.1],[659,.11,.1],[784,.23,.19]],
+      finish:[[523,0,.14],[659,.15,.14],[784,.31,.15],[1046,.49,.28]]
+    };
+    const now = audioCtx.currentTime;
+    (melodies[kind] || melodies.correct).forEach(([hz,delay,len])=>{
+      const osc=audioCtx.createOscillator(),gain=audioCtx.createGain();
+      osc.type=kind==="wrong"?"triangle":"sine";
+      osc.frequency.setValueAtTime(hz,now+delay);
+      gain.gain.setValueAtTime(.0001,now+delay);
+      gain.gain.exponentialRampToValueAtTime(.095,now+delay+.018);
+      gain.gain.exponentialRampToValueAtTime(.0001,now+delay+len);
+      osc.connect(gain);gain.connect(audioCtx.destination);
+      osc.start(now+delay);osc.stop(now+delay+len+.01);
+    });
+  } catch (_) {}
+}
+function particles(count) {
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const box=$("fxParticles"), colors=["#ffc85b","#f65caf","#6de0b1","#77caff","#9e76f2","#ff9d78"];
+  for(let n=0;n<count;n++){
+    const p=document.createElement("span");
+    p.style.left=(Math.random()*100)+"%";
+    p.style.background=colors[n%colors.length];
+    p.style.animationDelay=(Math.random()*.27)+"s";
+    p.style.animationDuration=(.95+Math.random()*.7)+"s";
+    box.appendChild(p);
+    p.addEventListener("animationend",()=>p.remove(),{once:true});
+  }
+}
+function animateScore() {
+  const el=$("score");
+  el.textContent=points();
+  el.classList.remove("score-pulse");
+  void el.offsetWidth;
+  el.classList.add("score-pulse");
+}
+function toastRound(round){
+  if(roundTimer)clearTimeout(roundTimer);
+  $("roundToastText").textContent="Round "+round+" / "+totalRounds+" · "+ROUND_NAMES[round-1];
+  $("roundToast").classList.remove("hidden");
+  chime("round");
+  roundTimer=setTimeout(()=>$("roundToast").classList.add("hidden"),900);
+}
+function setScreen(id){
+  ["startScreen","gameScreen","resultScreen"].forEach(x=>$(x).classList.toggle("hidden",x!==id));
+}
+function start(){
+  const name=$("nameInput").value.trim();
+  if(!name){$("nameError").textContent="Please enter your name first.";$("nameInput").focus();return;}
+  $("nameError").textContent="";newAttempt();
+  player=name;
+  startedAt=Date.now();
+  pos=0;
+  state.forEach(s=>{s.choice=null;s.input="";});
+  setScreen("gameScreen");
+  render();
+  toastRound(QUESTIONS[0].round);
+}
+function render(){
+  const q=QUESTIONS[pos], st=state[pos];
+  roundElement().textContent="Round "+q.round+" / "+totalRounds+(MODE==="picture"?" · Picture questions":"");
+  counterElement().textContent="Question "+(pos+1)+" / "+QUESTIONS.length;
+  $("bar").style.width=(state.filter(s=>s.choice!==null).length/QUESTIONS.length*100)+"%";
+  $("score").textContent=points();
+  $("kicker").textContent=ROUND_NAMES[q.round-1]+" · "+(pos+1)+" of "+QUESTIONS.length;
+  if(MODE==="present"){
+    $("title").textContent=["Picture detective","Complete the sentence","Meet the family","Meet the family","Flyers word detective"][q.round-1];
+    $("instruction").textContent=q.type==="fill"?"Type one word or phrase from the word bank, then check.":q.family!==undefined?"Read the story. Choose the word for the highlighted gap.":"Look at the picture and choose the matching word.";
+    $("question").textContent=q.q;
+    $("sourceLabel").textContent=q.source;
+    $("media").classList.toggle("hidden",!!q.clue);
+    $("media").classList.toggle("story",q.family!==undefined);
+    $("originalClue").classList.toggle("hidden",!q.clue);
+    $("originalClue").open=false;
+    if(q.clue){$("clueImage").src=q.image;}else{$("lessonImage").src=q.image;$("lessonImage").alt=q.family!==undefined?"Worksheet illustration: "+FAMILIES[q.family].name:"Worksheet picture for this adjective question";}
+    $("readingText").classList.toggle("hidden",q.family===undefined);
+    if(q.family!==undefined)renderStory(q);
+    $("wordBank").classList.toggle("hidden",q.type!=="fill");
+    $("wordBank").replaceChildren();
+    (q.bank||[]).forEach(word=>{const tag=document.createElement("span");tag.textContent=word;$("wordBank").appendChild(tag);});
+    $("fillArea").classList.toggle("hidden",q.type!=="fill");
+    $("answers").classList.toggle("hidden",q.type==="fill");
+    $("fillError").textContent="";
+    if(q.type==="fill"){
+      $("blankInput").value=st.input||"";$("blankInput").disabled=st.choice!==null;$("checkFill").disabled=st.choice!==null;
+      $("checkFill").onclick=checkFill;$("blankInput").oninput=()=>{state[pos].input=$("blankInput").value;$("fillError").textContent="";};
+      $("blankInput").onkeydown=e=>{if(e.key==="Enter")checkFill();};
+    }
+
+  }else{
+    $("prompt").textContent=q.prompt;
+    const photo=$("picture");
+    photo.innerHTML="";
+    if(q.image){
+      const img=document.createElement("img");img.src=q.image;img.alt=q.alt||q.picture||"Question picture";
+      photo.appendChild(img);
+    }else{photo.innerHTML=placeholder(q.picture||"Picture prompt");}
+    photo.style.animation="none";
+    void photo.offsetWidth;
+    photo.style.animation="";
+  }
+  const answerBox=$("answers");
+  answerBox.innerHTML="";
+  if(q.type!=="fill")q.choices.forEach((label,n)=>{
+    const b=document.createElement("button");
+    b.type="button";b.className="answer";b.textContent=label;
+    if(st.choice!==null){
+      b.disabled=true;
+      if(n===q.a)b.classList.add("good");
+      if(n===st.choice && n!==q.a)b.classList.add("bad");
+    }else{b.onclick=()=>answer(n);}
+    answerBox.appendChild(b);
+  });
+  const feedback=$("feedback");
+  feedback.textContent=st.choice===null ? "" : (st.choice===q.a ? "Excellent! Correct answer! ⭐" : "Incorrect. Let’s check the answer. 💡");
+  if(st.choice!==null)feedback.textContent+=(q.type==="fill"?" Answer: "+q.target+". ":" ")+q.ex;
+  feedback.className="feedback"+(st.choice===null?"":st.choice===q.a?" success":" error");
+  feedback.setAttribute("aria-live","polite");
+  $("nextBtn").disabled=st.choice===null;
+  $("nextBtn").classList.toggle("ready",st.choice!==null);
+  $("nextBtn").textContent=pos===QUESTIONS.length-1?"See Results →":"Next →";
+  $("backBtn").disabled=pos===0;
+  const scene=$("gameScreen").querySelector(MODE==="present"?".stage":".content");
+  scene.classList.remove("fx-enter");
+  void scene.offsetWidth;
+  scene.classList.add("fx-enter");
+}
+function normalise(value){return String(value).trim().toLowerCase().replace(/[.!?]+$/g,"").replace(/\s+/g," ");}
+function acceptFill(index,value){const q=QUESTIONS[index];return [q.target,...(q.aliases||[])].some(x=>normalise(x)===normalise(value));}
+function checkFill(){
+  if(QUESTIONS[pos].type!=="fill"||state[pos].choice!==null)return;
+  const value=$("blankInput").value;
+  if(!value.trim()){$("fillError").textContent="Type an answer first.";$("blankInput").focus();return;}
+  state[pos].input=value;
+  answer(acceptFill(pos,value)?QUESTIONS[pos].a:-1);
+}
+function renderStory(q){
+  const box=$("readingText");box.replaceChildren();
+  const name=document.createElement("h2");name.textContent=FAMILIES[q.family].name;box.appendChild(name);
+  const p=document.createElement("p");
+  FAMILIES[q.family].text.split(/(\{[a-e]\})/g).forEach(part=>{
+    if(/^\{[a-e]\}$/.test(part)){
+      const gap=part[1],index=QUESTIONS.findIndex(x=>x.family===q.family&&x.gap===gap),done=index>=0&&state[index].choice!==null;
+      const span=document.createElement("span");span.className="gap"+(q.gap===gap?" current":"")+(done?" solved":"");span.textContent="("+gap+") "+(done?QUESTIONS[index].target:"___");p.appendChild(span);
+    }else p.appendChild(document.createTextNode(part));
+  });box.appendChild(p);
+}
+function answer(choice){
+  if(state[pos].choice!==null)return;
+  state[pos].choice=choice;
+  const correct=choice===QUESTIONS[pos].a;
+  chime(correct?"correct":"wrong");
+  if(correct)particles(24);
+  render();
+  animateScore();
+}
+function next(){
+  if(state[pos].choice===null)return;
+  if(pos===QUESTIONS.length-1){finish();return;}
+  const prevRound=QUESTIONS[pos].round;
+  pos++;
+  render();
+  if(QUESTIONS[pos].round!==prevRound)toastRound(QUESTIONS[pos].round);
+}
+function back(){if(pos>0){pos--;render();}}
+function restart(){
+  newAttempt();
+  startedAt=Date.now();
+  pos=0;state.forEach(s=>{s.choice=null;s.input="";});setScreen("gameScreen");render();toastRound(QUESTIONS[0].round);
+}
+async function finish(){
+  if(finished||state.some(s=>s.choice===null))return;
+  finished=true;const thisAttempt=attemptId;
+  setScreen("resultScreen");const score=points(),pct=Math.round(score/QUESTIONS.length*100);
+  $("playerResult").textContent=player;$("finalPoints").textContent=score;$("finalTotal").textContent=QUESTIONS.length;
+  $("resultMessage").textContent=pct+"% · "+(pct>=85?"Amazing! You’re a word detective!":pct>=60?"Good work! Keep practising!":"Every try helps. Read the situation and try again!");
+  chime("finish");particles(100);
+  const payload={studentName:player,gameTitle:document.title,score,total:QUESTIONS.length,percentage:pct,durationSeconds:Math.max(0,Math.round((Date.now()-startedAt)/1000)),completedAt:new Date().toISOString(),attemptId:thisAttempt,gameUrl:location.href};
+  if(/\/_templates?\//.test(location.pathname)){$("recordStatus").textContent="Preview — score not sent.";return;}
+  try{localStorage.setItem("familyWordsResult:"+thisAttempt,JSON.stringify(payload));}catch(_){}
+  $("recordStatus").textContent="Submitting score to your teacher…";
+  try{if(!window.TeacherRecords)throw Error("unavailable");const result=await TeacherRecords.submit(payload);
+    if(thisAttempt!==attemptId)return;
+    $("recordStatus").textContent=result.sent?"✅ Score submitted to your teacher.":"⚠️ Score saved on this device. Unable to send right now.";
+  }catch(_){if(thisAttempt===attemptId)$("recordStatus").textContent="⚠️ Score saved on this device. Unable to send right now.";}
+}
+function toggleSound(){
+  soundOn=!soundOn;
+  $("soundBtn").textContent=soundOn?"🔊 Sound On":"🔇 Sound Off";
+  $("soundBtn").setAttribute("aria-pressed",String(soundOn));
+}
+$("startBtn").addEventListener("click",start);
+$("nameInput").addEventListener("keydown",e=>{if(e.key==="Enter")start();});
+$("nextBtn").addEventListener("click",next);
+$("backBtn").addEventListener("click",back);
+$("restartBtn").addEventListener("click",restart);
+$("playAgainBtn").addEventListener("click",restart);
+$("soundBtn").addEventListener("click",toggleSound);
+
+</script>
+</body>
+</html>
