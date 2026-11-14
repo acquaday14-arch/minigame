@@ -136,7 +136,7 @@
         <div class="stars">⭐ ✨ ⭐</div>
         <div class="kicker">Look · Read · Discover</div>
         <h1>Family & Everyday Words Quest</h1>
-        <p>45 activities · All 3 worksheets · No timer<br>Picture adjectives, family stories and Flyers word clues.<br>Choose answers or type a word. Examples are included as practice.</p>
+        <p>30 questions · All 3 worksheets · No timer<br>Picture adjectives, family stories and Flyers word clues.<br>Choose answers or type a word. Read the full stories and answer the highlighted gaps.</p>
         <label for="nameInput">Student name</label><br><input id="nameInput" maxlength="80" autocomplete="name" placeholder="Enter your name"><p id="nameError" role="alert"></p>
         <br>
         <button class="btn" id="startBtn">Start Challenge</button>
@@ -145,14 +145,14 @@
 
     <section class="frame hidden" id="gameScreen">
       <div class="top">
-        <div class="pill" id="roundPill">Round 1 / 5</div>
-        <div class="pill">⭐ <span id="score">0</span> / <span id="total">45</span> points</div>
-        <div class="pill" id="questionPill">Question 1 / 45</div>
+        <div class="pill" id="roundPill">Round 1 / 4</div>
+        <div class="pill">⭐ <span id="score">0</span> / <span id="total">30</span> points</div>
+        <div class="pill" id="questionPill">Question 1 / 30</div>
       </div>
       <div class="progress"><div id="bar"></div></div>
 
       <div class="stage">
-        <div class="kicker" id="kicker">Read carefully · 1 of 45</div>
+        <div class="kicker" id="kicker">Read carefully · 1 of 30</div>
         <h1 id="title">Choose the best answer</h1>
         <div class="instruction" id="instruction">Pick the sentence that sounds natural.</div>
 
@@ -179,7 +179,7 @@
       <div class="result-area">
         <div class="result-stars">🌟 🎉 🌟</div>
         <h1>Great Job, <span id="playerResult"></span>!</h1>
-        <div class="result-score"><span id="finalPoints">0</span>/<span id="finalTotal">45</span></div>
+        <div class="result-score"><span id="finalPoints">0</span>/<span id="finalTotal">30</span></div>
         <p class="result-sub" id="resultMessage"></p>
         <p class="result-sub" id="recordStatus"></p>
         <button class="btn" id="playAgainBtn">↻ Play Again</button>
@@ -407,186 +407,6 @@ const QUESTIONS=[
   },
   {
     "round": 2,
-    "type": "fill",
-    "q": "Harry’s bedroom is very ___.",
-    "choices": [
-      "tidy"
-    ],
-    "a": 0,
-    "target": "tidy",
-    "ex": "Tidy means neat, with things in the right place.",
-    "image": "assets/picture-e.webp",
-    "bank": [
-      "empty",
-      "broken",
-      "full",
-      "quiet",
-      "noisy",
-      "tidy",
-      "untidy"
-    ],
-    "aliases": [],
-    "source": "Adjectives · sentence 1"
-  },
-  {
-    "round": 2,
-    "type": "fill",
-    "q": "Look! Mum’s necklace is ___.",
-    "choices": [
-      "broken"
-    ],
-    "a": 0,
-    "target": "broken",
-    "ex": "The necklace has come apart: it is broken.",
-    "image": "assets/picture-c.webp",
-    "bank": [
-      "empty",
-      "broken",
-      "full",
-      "quiet",
-      "noisy",
-      "tidy",
-      "untidy"
-    ],
-    "aliases": [],
-    "source": "Adjectives · sentence 2"
-  },
-  {
-    "round": 2,
-    "type": "fill",
-    "q": "The fridge was ___, so Dad went to the shop.",
-    "choices": [
-      "empty"
-    ],
-    "a": 0,
-    "target": "empty",
-    "ex": "Dad needed food because the fridge was empty.",
-    "image": "assets/picture-b.webp",
-    "bank": [
-      "empty",
-      "broken",
-      "full",
-      "quiet",
-      "noisy",
-      "tidy",
-      "untidy"
-    ],
-    "aliases": [],
-    "source": "Adjectives · sentence 3"
-  },
-  {
-    "round": 2,
-    "type": "fill",
-    "q": "Holly’s mum isn’t happy because her bedroom is always so ___.",
-    "choices": [
-      "untidy"
-    ],
-    "a": 0,
-    "target": "untidy",
-    "ex": "Untidy means messy, with things not in their proper places.",
-    "image": "assets/picture-d.webp",
-    "bank": [
-      "empty",
-      "broken",
-      "full",
-      "quiet",
-      "noisy",
-      "tidy",
-      "untidy"
-    ],
-    "aliases": [],
-    "source": "Adjectives · sentence 4"
-  },
-  {
-    "round": 2,
-    "type": "fill",
-    "q": "Be ___, please! Emma’s sleeping.",
-    "choices": [
-      "quiet"
-    ],
-    "a": 0,
-    "target": "quiet",
-    "ex": "We ask for quiet so that we do not wake someone who is sleeping.",
-    "image": "assets/picture-g.webp",
-    "bank": [
-      "empty",
-      "broken",
-      "full",
-      "quiet",
-      "noisy",
-      "tidy",
-      "untidy"
-    ],
-    "aliases": [],
-    "source": "Adjectives · sentence 5"
-  },
-  {
-    "round": 2,
-    "type": "fill",
-    "q": "I don’t like going into Harry’s room. He’s always so ___!",
-    "choices": [
-      "noisy"
-    ],
-    "a": 0,
-    "target": "noisy",
-    "ex": "Harry plays his drums loudly, so noisy fits the worksheet context.",
-    "image": "assets/picture-f.webp",
-    "bank": [
-      "empty",
-      "broken",
-      "full",
-      "quiet",
-      "noisy",
-      "tidy",
-      "untidy"
-    ],
-    "aliases": [],
-    "source": "Adjectives · sentence 6"
-  },
-  {
-    "round": 2,
-    "type": "fill",
-    "q": "I can’t throw this paper in the bin because it’s ___.",
-    "choices": [
-      "full"
-    ],
-    "a": 0,
-    "target": "full",
-    "ex": "A full bin has no space left for more paper.",
-    "image": "assets/picture-a.webp",
-    "bank": [
-      "empty",
-      "broken",
-      "full",
-      "quiet",
-      "noisy",
-      "tidy",
-      "untidy"
-    ],
-    "aliases": [],
-    "source": "Adjectives · sentence 7"
-  },
-  {
-    "round": 3,
-    "type": "mc",
-    "q": "Choose the word for gap (a).",
-    "choices": [
-      "popular",
-      "bored",
-      "everyone",
-      "nothing",
-      "noisy"
-    ],
-    "a": 2,
-    "target": "everyone",
-    "ex": "Everyone means all the people. Everyone says the twins look alike.",
-    "image": "assets/family-1.webp",
-    "family": 0,
-    "gap": "a",
-    "source": "Harry · gap a"
-  },
-  {
-    "round": 3,
     "type": "mc",
     "q": "Choose the word for gap (b).",
     "choices": [
@@ -605,7 +425,7 @@ const QUESTIONS=[
     "source": "Harry · gap b"
   },
   {
-    "round": 3,
+    "round": 2,
     "type": "mc",
     "q": "Choose the word for gap (c).",
     "choices": [
@@ -624,7 +444,7 @@ const QUESTIONS=[
     "source": "Harry · gap c"
   },
   {
-    "round": 3,
+    "round": 2,
     "type": "mc",
     "q": "Choose the word for gap (d).",
     "choices": [
@@ -643,26 +463,7 @@ const QUESTIONS=[
     "source": "Harry · gap d"
   },
   {
-    "round": 3,
-    "type": "mc",
-    "q": "Choose the word for gap (e).",
-    "choices": [
-      "popular",
-      "bored",
-      "everyone",
-      "nothing",
-      "noisy"
-    ],
-    "a": 3,
-    "target": "nothing",
-    "ex": "Nothing means not anything. Harry says he has nothing to do.",
-    "image": "assets/family-1.webp",
-    "family": 0,
-    "gap": "e",
-    "source": "Harry · gap e"
-  },
-  {
-    "round": 3,
+    "round": 2,
     "type": "mc",
     "q": "Choose the word for gap (a).",
     "choices": [
@@ -681,26 +482,7 @@ const QUESTIONS=[
     "source": "Holly · gap a"
   },
   {
-    "round": 3,
-    "type": "mc",
-    "q": "Choose the word for gap (b).",
-    "choices": [
-      "kind",
-      "untidy",
-      "everywhere",
-      "everything",
-      "lucky"
-    ],
-    "a": 1,
-    "target": "untidy",
-    "ex": "Holly leaves her things all over the room, so she is untidy.",
-    "image": "assets/family-2.webp",
-    "family": 1,
-    "gap": "b",
-    "source": "Holly · gap b"
-  },
-  {
-    "round": 3,
+    "round": 2,
     "type": "mc",
     "q": "Choose the word for gap (c).",
     "choices": [
@@ -719,26 +501,7 @@ const QUESTIONS=[
     "source": "Holly · gap c"
   },
   {
-    "round": 3,
-    "type": "mc",
-    "q": "Choose the word for gap (d).",
-    "choices": [
-      "kind",
-      "untidy",
-      "everywhere",
-      "everything",
-      "lucky"
-    ],
-    "a": 4,
-    "target": "lucky",
-    "ex": "Lucky means fortunate. The speaker is happy to have a twin sister.",
-    "image": "assets/family-2.webp",
-    "family": 1,
-    "gap": "d",
-    "source": "Holly · gap d"
-  },
-  {
-    "round": 3,
+    "round": 2,
     "type": "mc",
     "q": "Choose the word for gap (e).",
     "choices": [
@@ -757,7 +520,7 @@ const QUESTIONS=[
     "source": "Holly · gap e"
   },
   {
-    "round": 4,
+    "round": 3,
     "type": "mc",
     "q": "Choose the word for gap (a).",
     "choices": [
@@ -776,7 +539,7 @@ const QUESTIONS=[
     "source": "Emma · gap a"
   },
   {
-    "round": 4,
+    "round": 3,
     "type": "mc",
     "q": "Choose the word for gap (b).",
     "choices": [
@@ -795,26 +558,7 @@ const QUESTIONS=[
     "source": "Emma · gap b"
   },
   {
-    "round": 4,
-    "type": "mc",
-    "q": "Choose the word for gap (c).",
-    "choices": [
-      "broken",
-      "unhappy",
-      "little",
-      "friendly",
-      "empty"
-    ],
-    "a": 0,
-    "target": "broken",
-    "ex": "Toys can get broken when someone throws them.",
-    "image": "assets/family-3.webp",
-    "family": 2,
-    "gap": "c",
-    "source": "Emma · gap c"
-  },
-  {
-    "round": 4,
+    "round": 3,
     "type": "mc",
     "q": "Choose the word for gap (d).",
     "choices": [
@@ -833,26 +577,7 @@ const QUESTIONS=[
     "source": "Emma · gap d"
   },
   {
-    "round": 4,
-    "type": "mc",
-    "q": "Choose the word for gap (e).",
-    "choices": [
-      "broken",
-      "unhappy",
-      "little",
-      "friendly",
-      "empty"
-    ],
-    "a": 4,
-    "target": "empty",
-    "ex": "There is no milk left in Emma’s glass. It is empty.",
-    "image": "assets/family-3.webp",
-    "family": 2,
-    "gap": "e",
-    "source": "Emma · gap e"
-  },
-  {
-    "round": 4,
+    "round": 3,
     "type": "mc",
     "q": "Choose the word for gap (a).",
     "choices": [
@@ -871,7 +596,7 @@ const QUESTIONS=[
     "source": "William · gap a"
   },
   {
-    "round": 4,
+    "round": 3,
     "type": "mc",
     "q": "Choose the word for gap (b).",
     "choices": [
@@ -890,7 +615,7 @@ const QUESTIONS=[
     "source": "William · gap b"
   },
   {
-    "round": 4,
+    "round": 3,
     "type": "mc",
     "q": "Choose the word for gap (c).",
     "choices": [
@@ -910,44 +635,6 @@ const QUESTIONS=[
   },
   {
     "round": 4,
-    "type": "mc",
-    "q": "Choose the word for gap (d).",
-    "choices": [
-      "difficult",
-      "anything",
-      "clever",
-      "unkind",
-      "boring"
-    ],
-    "a": 1,
-    "target": "anything",
-    "ex": "Never is negative. Never does anything interesting means does nothing interesting.",
-    "image": "assets/family-4.webp",
-    "family": 3,
-    "gap": "d",
-    "source": "William · gap d"
-  },
-  {
-    "round": 4,
-    "type": "mc",
-    "q": "Choose the word for gap (e).",
-    "choices": [
-      "unkind",
-      "boring",
-      "difficult",
-      "anything",
-      "clever"
-    ],
-    "a": 2,
-    "target": "difficult",
-    "ex": "Difficult means not easy. William says chess is difficult for the younger children.",
-    "image": "assets/family-4.webp",
-    "family": 3,
-    "gap": "e",
-    "source": "William · gap e"
-  },
-  {
-    "round": 5,
     "type": "fill",
     "q": "You put things on this to keep your room tidy.",
     "choices": [
@@ -981,7 +668,7 @@ const QUESTIONS=[
     "clue": true
   },
   {
-    "round": 5,
+    "round": 4,
     "type": "fill",
     "q": "This is like a necklace, but it is smaller and you wear it around your wrist.",
     "choices": [
@@ -1015,7 +702,7 @@ const QUESTIONS=[
     "clue": true
   },
   {
-    "round": 5,
+    "round": 4,
     "type": "fill",
     "q": "This gives you a wireless connection to the internet, so you can search for things online.",
     "choices": [
@@ -1050,7 +737,7 @@ const QUESTIONS=[
     "clue": true
   },
   {
-    "round": 5,
+    "round": 4,
     "type": "fill",
     "q": "You find this in a bottle in the bathroom and use it when you wash your hair.",
     "choices": [
@@ -1082,7 +769,7 @@ const QUESTIONS=[
     "clue": true
   },
   {
-    "round": 5,
+    "round": 4,
     "type": "fill",
     "q": "This is part of a cooker. You put the food you want to cook in it.",
     "choices": [
@@ -1116,7 +803,7 @@ const QUESTIONS=[
     "clue": true
   },
   {
-    "round": 5,
+    "round": 4,
     "type": "fill",
     "q": "You find this in the bathroom. Water comes out of it and you go under it to get clean.",
     "choices": [
@@ -1150,7 +837,7 @@ const QUESTIONS=[
     "clue": true
   },
   {
-    "round": 5,
+    "round": 4,
     "type": "fill",
     "q": "You have these on sofas and armchairs. They are very nice to sit on.",
     "choices": [
@@ -1182,7 +869,7 @@ const QUESTIONS=[
     "clue": true
   },
   {
-    "round": 5,
+    "round": 4,
     "type": "fill",
     "q": "You put these on your feet when you want to run or play sport.",
     "choices": [
@@ -1216,7 +903,7 @@ const QUESTIONS=[
     "clue": true
   },
   {
-    "round": 5,
+    "round": 4,
     "type": "fill",
     "q": "You keep your work on the computer in these. You open them to find something and close them when you have finished.",
     "choices": [
@@ -1248,7 +935,7 @@ const QUESTIONS=[
     "clue": true
   },
   {
-    "round": 5,
+    "round": 4,
     "type": "fill",
     "q": "There are many different kinds of these on television. Some are about sport and others are about the news.",
     "choices": [
@@ -1284,7 +971,7 @@ const QUESTIONS=[
     "clue": true
   },
   {
-    "round": 5,
+    "round": 4,
     "type": "fill",
     "q": "People put these on when they go to bed at night.",
     "choices": [
@@ -1330,7 +1017,7 @@ let audioCtx = null;
 let roundTimer = null;
 let startedAt = null;
 let attemptId="",finished=false;
-const ROUND_NAMES=["Picture adjectives","Finish the sentence","Harry & Holly","Emma & William","Flyers word clues"];
+const ROUND_NAMES=["Picture adjectives","Harry & Holly","Emma & William","Flyers word clues"];
 function newAttempt(){attemptId=window.crypto&&crypto.randomUUID?crypto.randomUUID():Date.now()+"-"+Math.random();finished=false;}
 
 const totalRounds = Math.max(...QUESTIONS.map(q=>q.round));
@@ -1417,7 +1104,7 @@ function render(){
   $("score").textContent=points();
   $("kicker").textContent=ROUND_NAMES[q.round-1]+" · "+(pos+1)+" of "+QUESTIONS.length;
   if(MODE==="present"){
-    $("title").textContent=["Picture detective","Complete the sentence","Meet the family","Meet the family","Flyers word detective"][q.round-1];
+    $("title").textContent=["Picture detective","Meet the family","Meet the family","Flyers word detective"][q.round-1];
     $("instruction").textContent=q.type==="fill"?"Type one word or phrase from the word bank, then check.":q.family!==undefined?"Read the story. Choose the word for the highlighted gap.":"Look at the picture and choose the matching word.";
     $("question").textContent=q.q;
     $("sourceLabel").textContent=q.source;
@@ -1494,7 +1181,7 @@ function renderStory(q){
   FAMILIES[q.family].text.split(/(\{[a-e]\})/g).forEach(part=>{
     if(/^\{[a-e]\}$/.test(part)){
       const gap=part[1],index=QUESTIONS.findIndex(x=>x.family===q.family&&x.gap===gap),done=index>=0&&state[index].choice!==null;
-      const span=document.createElement("span");span.className="gap"+(q.gap===gap?" current":"")+(done?" solved":"");span.textContent="("+gap+") "+(done?QUESTIONS[index].target:"___");p.appendChild(span);
+      const span=document.createElement("span");span.className="gap"+(q.gap===gap?" current":"")+(done?" solved":"");if(index<0)span.className="provided";span.textContent=index<0?FAMILIES[q.family].answers[gap.charCodeAt(0)-97]:"("+gap+") "+(done?QUESTIONS[index].target:"___");p.appendChild(span);
     }else p.appendChild(document.createTextNode(part));
   });box.appendChild(p);
 }
