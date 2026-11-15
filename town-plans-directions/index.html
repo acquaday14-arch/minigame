@@ -1,0 +1,1045 @@
+<!doctype html>
+<html lang="en" data-template-effects-version="2">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Town Plans & Directions Quest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--purple:#5b36d6;--dark:#242b62;--pink:#e64a98;--soft:#f7f5ff;--line:#d9cff8;--yellow:#ffd57a}
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;background:linear-gradient(180deg,#f3f7ff,#f7f1ff);padding:12px;font-family:"Fredoka",ui-rounded,"Trebuchet MS",Arial,sans-serif;color:var(--dark)}
+    button,input{font:inherit}
+    .shell{width:min(1060px,100%);margin:1vh auto;background:white;border:4px solid #4330ad;border-radius:34px;overflow:hidden;box-shadow:0 14px 0 #ded6ff}
+    .hud{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;padding:18px 28px;background:linear-gradient(135deg,#5132c8,#6948df);color:white}
+    .pill{border:1px solid rgba(255,255,255,.45);background:rgba(255,255,255,.12);border-radius:999px;padding:9px 15px;font-weight:700}
+    .hud .pill:nth-child(2){justify-self:center}.hud .pill:last-child{justify-self:end}
+    .track{height:9px;background:#dcd1ff}.bar{height:100%;width:33%;background:#ffd267;transition:.25s}
+    .content{padding:22px 30px 20px;min-height:700px}
+    .kicker{text-align:center;color:var(--pink);font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+    h1{text-align:center;color:#432cb5;font-size:clamp(40px,6vw,60px);line-height:1;margin:8px 0}
+    .instruction{text-align:center;font-size:20px;font-weight:600;margin-bottom:14px}
+    .image-wrap{display:grid;place-items:center;margin:10px 0 18px}
+    .picture{
+      width:min(310px,80vw);aspect-ratio:1/1;border:4px solid #a98bf5;border-radius:28px;overflow:hidden;
+      box-shadow:0 10px 22px rgba(82,58,173,.16);background:linear-gradient(135deg,#ffedf5,#e7f5ff);position:relative
+    }
+    .picture svg{width:100%;height:100%;display:block}
+    .prompt{text-align:center;font-size:clamp(25px,4vw,35px);font-weight:700;margin:12px 0}
+    .answers{width:min(780px,100%);margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .answer{border:3px solid #ded4f9;background:#fbfaff;border-radius:18px;padding:14px;color:var(--dark);font-weight:700;font-size:18px;cursor:pointer}
+    .answer:hover{border-color:#ab95ed}
+    .answer.good{border-color:#63d7a6;background:#eafff5;color:#176a49;animation:pop .28s}
+    .answer.bad{border-color:#ff9fab;background:#fff0f2;color:#a33745;animation:shake .28s}
+    .feedback{text-align:center;min-height:36px;margin:15px 0;font-size:19px;font-weight:700}
+    .controls{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;margin-top:25px}
+    .btn{border:2px solid #dbd3f5;background:#fff;border-radius:15px;padding:11px 18px;font-weight:700;color:#4733a6;cursor:pointer}
+    .next{justify-self:end;background:linear-gradient(135deg,#ffd88b,#ffc586);border:0;color:#785d41}
+    .hidden{display:none!important}
+    .start{text-align:center;padding:65px 30px}.start p{font-size:19px;color:#687086}.start input{width:min(540px,100%);padding:15px 17px;border:2px solid #d8cff4;border-radius:16px}
+    .start .btn{margin-top:12px;background:linear-gradient(135deg,#5532cf,#7754e9);border:0;color:#fff}
+    @keyframes pop{50%{transform:scale(1.035)}}@keyframes shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+    @media(max-width:700px){.hud{grid-template-columns:1fr 1fr}.hud .pill:nth-child(2){grid-column:1/-1;grid-row:2}.content{padding:20px 14px}.answers{grid-template-columns:1fr}.controls{grid-template-columns:1fr 1fr}.controls .restart{display:none}}
+  
+    /* Template FX v2 — reduced-motion aware and dependency-free */
+    .fx-enter{animation:fx-enter .38s cubic-bezier(.2,.8,.2,1) both}
+    .answer{transition:transform .17s ease,border-color .2s ease,box-shadow .2s ease,background .2s ease}
+    .answer:active,.btn:active{transform:scale(.97)}
+    .answer:focus-visible,.btn:focus-visible{outline:4px solid #f7bb56;outline-offset:3px}
+    .answer.good{box-shadow:0 0 0 4px rgba(81,213,157,.13)}
+    .answer.bad{box-shadow:0 0 0 4px rgba(255,118,144,.13)}
+    .answer:disabled{cursor:default}
+    .pill.score-pulse,.score-pulse{animation:fx-pulse .35s ease}
+    .feedback.success{color:#10845c;animation:fx-pop .4s ease both}
+    .feedback.error{color:#b44453;animation:fx-shake .32s ease both}
+    .mid-actions{display:flex;gap:8px;align-items:center;justify-content:center}
+    .mid-actions .btn{white-space:nowrap}
+    .btn:disabled{opacity:.4;cursor:not-allowed;filter:grayscale(.25)}
+    .next.ready{animation:fx-glow 1.8s ease-in-out infinite}
+    .fx-particles{position:fixed;inset:0;z-index:100;pointer-events:none;overflow:hidden}
+    .fx-particles span{position:absolute;top:-24px;width:10px;height:16px;border-radius:3px;animation:fx-rain 1.15s cubic-bezier(.2,.7,.5,1) forwards}
+    .fx-round-toast{position:fixed;inset:0;z-index:90;pointer-events:none;display:flex;justify-content:center;align-items:center;background:rgba(45,29,122,.11)}
+    .fx-round-toast.hidden{display:none!important}
+    .fx-round-pill{
+      text-align:center;border:4px solid #fff;border-radius:28px;
+      background:linear-gradient(135deg,#5b36d6,#8b6cf0);color:white;
+      padding:24px 36px;box-shadow:0 20px 60px rgba(54,38,152,.25);
+      font-size:clamp(25px,4vw,42px);font-weight:700;animation:fx-toast .7s ease both
+    }
+    .fx-round-pill small{display:block;font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:#ffdf85;margin-bottom:4px}
+    .result-area{text-align:center;padding:56px 24px}
+    .result-area h1{font-size:clamp(40px,6vw,64px);margin:10px 0;color:#432cb5}
+    .result-area .result-score{font-size:clamp(60px,10vw,100px);color:#5b36d6;font-weight:700;line-height:1.12}
+    .result-area .result-sub{font-size:21px;margin:8px 0 28px}
+    .result-area .btn{background:#6040d7;color:#fff;border:0;padding:15px 30px;font-size:18px}
+    .result-area .result-stars{font-size:38px;letter-spacing:8px;animation:fx-float 2s ease-in-out infinite}
+    .picture{animation:fx-picture-in .55s cubic-bezier(.2,.8,.2,1) both;transition:transform .25s ease,box-shadow .25s ease}
+    .picture:hover{transform:translateY(-3px) rotate(-1deg);box-shadow:0 17px 34px rgba(82,58,173,.21)}
+    .picture img{width:100%;height:100%;object-fit:cover;display:block}
+    @keyframes fx-enter{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes fx-pop{0%{transform:scale(.83);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+    @keyframes fx-pulse{50%{transform:scale(1.09)}}
+    @keyframes fx-shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+    @keyframes fx-glow{50%{box-shadow:0 0 0 6px rgba(255,205,100,.22)}}
+    @keyframes fx-rain{0%{transform:translateY(-10vh) rotate(0deg);opacity:1}100%{transform:translateY(112vh) rotate(620deg);opacity:0}}
+    @keyframes fx-toast{0%{transform:scale(.7) translateY(25px);opacity:0}40%{transform:scale(1.05);opacity:1}100%{transform:scale(1);opacity:1}}
+    @keyframes fx-float{50%{transform:translateY(-9px)}}
+    @keyframes fx-picture-in{from{opacity:0;transform:scale(.91) rotate(-2deg)}to{opacity:1;transform:scale(1) rotate(0)}}
+    @media(max-width:700px){
+      .controls{grid-template-columns:1fr 1fr}
+      .controls .mid-actions{grid-column:1/-1;grid-row:2;justify-content:center}
+      .controls .restart{display:inline-flex}
+      .result-area{padding:42px 16px}
+      .mid-actions .btn{font-size:14px;padding:10px 12px}
+    }
+    @media(prefers-reduced-motion:reduce){
+      *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+    }
+
+    .shell{width:min(1180px,100%)}.content{padding:24px;min-height:560px}#gameScreen h1{font-size:40px;line-height:1.1}.quest-layout{max-width:900px;margin:auto;border:2px solid #ddd5f7;border-radius:22px;padding:22px;background:#fff}.quest-layout.with-map{max-width:1100px;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:22px}.map-panel{min-width:0;align-self:start;text-align:center;position:sticky;top:12px}.map-panel img{display:block;width:100%;height:auto;border-radius:18px}.map-name{font-size:17px;color:#69528d;margin-bottom:8px}.map-panel .btn{margin-top:10px;font-size:17px}.scene{color:#b13b7d;font-size:15px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}.dialogue{font-family:"Trebuchet MS",Arial,sans-serif;font-size:22px;line-height:1.5;background:#edf7ff;border:2px solid #d8eaf8;border-radius:17px;padding:16px}.dialogue p{margin:0}.dialogue strong{color:#5b36d6}.prompt{font-size:23px;line-height:1.25;margin:15px 0}.answers{grid-template-columns:1fr;width:100%;gap:10px}.answer{font-size:20px;line-height:1.35;text-align:left;min-height:54px;padding:14px}.feedback{font-size:18px;line-height:1.45;min-height:0;margin:15px 0}.speak{font-size:16px;line-height:1.4;color:#604c8c;background:#f7f3ff;padding:12px;border-radius:12px}.btn{min-height:46px}.start label{font-size:20px}.start input{font-size:20px}.fx-round-pill{max-width:90vw}dialog{width:min(1200px,96vw);max-width:96vw;max-height:94vh;border:3px solid #6948df;border-radius:20px;padding:16px;overflow:auto;background:#fff}dialog::backdrop{background:rgba(27,24,65,.65)}dialog img{display:block;width:min(100%,1000px);height:auto;margin:10px auto 0}dialog .btn{position:sticky;top:0;display:block;margin-left:auto;background:#6948df;color:#fff;z-index:2}@media(max-width:900px){.quest-layout.with-map{grid-template-columns:1fr}.map-panel{position:static}.map-panel img{max-width:660px;margin:auto}.content{padding:20px 12px}.quest-layout{padding:16px}.dialogue{font-size:21px}#gameScreen h1{font-size:32px}.hud{padding:16px 12px;gap:8px}.pill{font-size:14px;padding:9px}.answer{font-size:20px}}
+  </style>
+</head>
+<body>
+  <main class="shell" id="startScreen">
+    <section class="start">
+      <div class="kicker">Plan · Ask · Find your way</div>
+      <h1>Town Plans &amp; Directions Quest</h1>
+      <p>30 questions · 3 rounds · No timer<br>Practise be going to, follow clear maps and ask for directions.<br>On Map A, every route starts at the pink arrow facing north unless stated otherwise.</p>
+      <label for="nameInput">Student name</label><br><input id="nameInput" maxlength="80" autocomplete="name" placeholder="Enter your name"><p id="nameError" role="alert"></p>
+      <br><button class="btn" id="startBtn">Start Quest</button>
+    </section>
+  </main>
+
+  <main class="shell hidden" id="gameScreen">
+    <div class="hud">
+      <div class="pill" id="round">Round 1 / 3</div>
+      <div class="pill">⭐ <span id="score">0</span> / <span id="total">30</span> points</div>
+      <div class="pill" id="counter">Question 1 / 30</div>
+    </div>
+    <div class="track"><div class="bar" id="bar"></div></div>
+    <section class="content">
+      <div class="kicker" id="kicker">Making plans · 1 of 30</div>
+      <h1 id="title">Picture questions</h1>
+      <div class="instruction" id="instruction">Choose the best answer.</div>
+
+      <div class="quest-layout" id="questLayout">
+        <div class="map-panel hidden" id="mapPanel"><div class="map-name" id="mapName"></div><img id="mapImage" alt=""><button class="btn" id="enlargeMap">🔍 Larger map</button></div>
+        <div class="task-panel"><div class="scene" id="scene"></div><div class="dialogue" id="dialogue"></div><div class="prompt" id="question"></div><div class="answers" id="answers"></div><div class="feedback" id="feedback"></div><p class="speak hidden" id="speakPrompt"></p></div>
+      </div>
+
+      <div class="controls">
+        <button class="btn" id="backBtn">← Back</button>
+        <div class="mid-actions"><button class="btn" id="soundBtn" aria-pressed="true">🔊 Sound On</button><button class="btn restart" id="restartBtn">↻ Restart</button></div>
+        <button class="btn next" id="nextBtn">Next →</button>
+      </div>
+    </section>
+  </main>
+
+<main class="shell hidden" id="resultScreen">
+      <div class="result-area">
+        <div class="result-stars">🌟 🎉 🌟</div>
+        <h1>Quest Complete, <span id="playerResult"></span>!</h1>
+        <div class="result-score"><span id="finalPoints">0</span>/<span id="finalTotal">30</span></div>
+        <p class="result-sub" id="resultMessage"></p>
+        <p class="result-sub" id="recordStatus"></p>
+        <button class="btn" id="playAgainBtn">↻ Play Again</button>
+      </div>
+    </main>
+<div class="fx-particles" id="fxParticles" aria-hidden="true"></div>
+    <div class="fx-round-toast hidden" id="roundToast" aria-hidden="true"><div class="fx-round-pill"><small>LEVEL UP ✨</small><span id="roundToastText"></span></div></div>
+<dialog id="mapDialog"><button class="btn" id="closeMap">Close map ✕</button><img id="largeMap" alt="Enlarged version of the current question map"></dialog>
+<script src="/minigame/shared/teacher-records-config.js"></script>
+<script src="/minigame/shared/teacher-records.js"></script>
+<script>
+const QUESTIONS=[
+  {
+    "round": 1,
+    "type": "mc",
+    "scene": "A plan for after work",
+    "dialogue": [
+      [
+        "You",
+        "What are you going to do after work?"
+      ]
+    ],
+    "q": "Choose the best reply.",
+    "choices": [
+      "I’m going to visit the bank before it closes.",
+      "I going to visit the bank before it closes.",
+      "I’m going visit the bank before it closes."
+    ],
+    "a": 0,
+    "target": "I’m going to visit the bank before it closes.",
+    "ex": "Use am/is/are + going to + base verb: I am going to visit.",
+    "image": null,
+    "respondent": "Friend",
+    "speak": "Read the dialogue aloud with a partner. Then swap roles.",
+    "mapName": ""
+  },
+  {
+    "round": 1,
+    "type": "mc",
+    "scene": "A plan for Mia",
+    "dialogue": [
+      [
+        "You",
+        "Mia has already decided to take a taxi. Which sentence correctly describes her plan?"
+      ]
+    ],
+    "q": "Choose the best reply.",
+    "choices": [
+      "She is going to taking a taxi.",
+      "She are going to take a taxi.",
+      "She is going to take a taxi."
+    ],
+    "a": 2,
+    "target": "She is going to take a taxi.",
+    "ex": "With she, use is going to + base verb: take.",
+    "image": null,
+    "respondent": "Friend",
+    "speak": "Read the dialogue aloud with a partner. Then swap roles.",
+    "mapName": ""
+  },
+  {
+    "round": 1,
+    "type": "mc",
+    "scene": "Our weekend plan",
+    "dialogue": [
+      [
+        "You",
+        "We’ve decided to explore the town on Saturday. Which sentence is correct?"
+      ]
+    ],
+    "q": "Choose the best reply.",
+    "choices": [
+      "We are going explore the town.",
+      "We are going to explore the town.",
+      "We is going to explore the town."
+    ],
+    "a": 1,
+    "target": "We are going to explore the town.",
+    "ex": "With we, use are going to + base verb: explore.",
+    "image": null,
+    "respondent": "Friend",
+    "speak": "Read the dialogue aloud with a partner. Then swap roles.",
+    "mapName": ""
+  },
+  {
+    "round": 1,
+    "type": "mc",
+    "scene": "A change of transport",
+    "dialogue": [
+      [
+        "You",
+        "Are you going to drive to the museum? You have decided to walk instead."
+      ]
+    ],
+    "q": "Choose the best reply.",
+    "choices": [
+      "No, I isn’t. I’m going to walk.",
+      "No, I not going. I walk going to.",
+      "No, I’m not. I’m going to walk."
+    ],
+    "a": 2,
+    "target": "No, I’m not. I’m going to walk.",
+    "ex": "The short negative answer is No, I’m not. Then give the new plan: I’m going to walk.",
+    "image": null,
+    "respondent": "Friend",
+    "speak": "Read the dialogue aloud with a partner. Then swap roles.",
+    "mapName": ""
+  },
+  {
+    "round": 1,
+    "type": "mc",
+    "scene": "Making a question",
+    "dialogue": [
+      [
+        "You",
+        "You want to ask about your colleague’s plan. Which question is correct?"
+      ]
+    ],
+    "q": "Choose the best reply.",
+    "choices": [
+      "Do you going to meet the client?",
+      "Are you going to meet the client?",
+      "You going to meet the client?"
+    ],
+    "a": 1,
+    "target": "Are you going to meet the client?",
+    "ex": "For a standard yes/no question, put are before you: Are you going to meet…?",
+    "image": null,
+    "respondent": "Friend",
+    "speak": "Read the dialogue aloud with a partner. Then swap roles.",
+    "mapName": ""
+  },
+  {
+    "round": 1,
+    "type": "mc",
+    "scene": "Asking about the destination",
+    "dialogue": [
+      [
+        "You",
+        "Your friend says, “I’m going to go somewhere after lunch.” Ask which place they plan to go to."
+      ]
+    ],
+    "q": "Choose the best reply.",
+    "choices": [
+      "Where are you going to go?",
+      "Where you going to go?",
+      "Where do you going to go?"
+    ],
+    "a": 0,
+    "target": "Where are you going to go?",
+    "ex": "Use a question word + am/is/are + subject + going to + base verb.",
+    "image": null,
+    "respondent": "Friend",
+    "speak": "Read the dialogue aloud with a partner. Then swap roles.",
+    "mapName": ""
+  },
+  {
+    "round": 1,
+    "type": "mc",
+    "scene": "A negative plan",
+    "dialogue": [
+      [
+        "You",
+        "Sam has decided to stay at home tonight. Which sentence is correct?"
+      ]
+    ],
+    "q": "Choose the best reply.",
+    "choices": [
+      "He not is going to go out tonight.",
+      "He isn’t going to go out tonight.",
+      "He doesn’t going to go out tonight."
+    ],
+    "a": 1,
+    "target": "He isn’t going to go out tonight.",
+    "ex": "The negative form is is not / isn’t going to + base verb.",
+    "image": null,
+    "respondent": "Friend",
+    "speak": "Read the dialogue aloud with a partner. Then swap roles.",
+    "mapName": ""
+  },
+  {
+    "round": 1,
+    "type": "mc",
+    "scene": "Checking tomorrow’s plan",
+    "dialogue": [
+      [
+        "You",
+        "Are they going to visit the new café tomorrow? Their plan is confirmed."
+      ]
+    ],
+    "q": "Choose the best reply.",
+    "choices": [
+      "Yes, they are.",
+      "Yes, they do going.",
+      "Yes, they is."
+    ],
+    "a": 0,
+    "target": "Yes, they are.",
+    "ex": "Use the matching form of be in the short answer: Yes, they are.",
+    "image": null,
+    "respondent": "Friend",
+    "speak": "Read the dialogue aloud with a partner. Then swap roles.",
+    "mapName": ""
+  },
+  {
+    "round": 1,
+    "type": "mc",
+    "scene": "Look at those clouds",
+    "dialogue": [
+      [
+        "You",
+        "The sky is very dark. What prediction fits what you can see?"
+      ]
+    ],
+    "q": "Choose the best reply.",
+    "choices": [
+      "It are going to rain.",
+      "It is going rain.",
+      "It’s going to rain."
+    ],
+    "a": 2,
+    "target": "It’s going to rain.",
+    "ex": "Going to can make a prediction based on present evidence, such as dark clouds.",
+    "image": null,
+    "respondent": "Friend",
+    "speak": "Read the dialogue aloud with a partner. Then swap roles.",
+    "mapName": ""
+  },
+  {
+    "round": 1,
+    "type": "mc",
+    "scene": "Plans and purpose",
+    "dialogue": [
+      [
+        "You",
+        "Why are you going to the pharmacy after work?"
+      ]
+    ],
+    "q": "Choose the best reply.",
+    "choices": [
+      "I’m going to buy some toothpaste.",
+      "I’m going to bought some toothpaste.",
+      "I’m going buying some toothpaste."
+    ],
+    "a": 0,
+    "target": "I’m going to buy some toothpaste.",
+    "ex": "Use the base verb after going to: buy. This reply also gives the purpose of the trip.",
+    "image": null,
+    "respondent": "Friend",
+    "speak": "Read the dialogue aloud with a partner. Then swap roles.",
+    "mapName": ""
+  },
+  {
+    "round": 2,
+    "type": "mc",
+    "scene": "The first left",
+    "dialogue": [
+      [
+        "You",
+        "Start at the pink arrow on Map A, facing north. Go straight ahead and take the first left. Which street do you enter?"
+      ]
+    ],
+    "q": "Choose the street.",
+    "choices": [
+      "North Street.",
+      "Market Street.",
+      "Park Street."
+    ],
+    "a": 2,
+    "target": "Park Street.",
+    "ex": "From START, the first crossroads on Oak Street is Park Street. Turn left there.",
+    "image": "assets/town-map.svg",
+    "respondent": "Friend",
+    "speak": "Read the dialogue aloud with a partner. Then swap roles.",
+    "mapName": "Map A · Town routes"
+  },
+  {
+    "round": 2,
+    "type": "mc",
+    "scene": "The second right",
+    "dialogue": [
+      [
+        "You",
+        "Start at the pink arrow on Map A, facing north. Take the second right. Which street do you enter?"
+      ]
+    ],
+    "q": "Choose the street.",
+    "choices": [
+      "North Street.",
+      "Market Street.",
+      "Park Street."
+    ],
+    "a": 1,
+    "target": "Market Street.",
+    "ex": "Park Street is the first right. Market Street is the second right.",
+    "image": "assets/town-map.svg",
+    "respondent": "Friend",
+    "speak": "Read the dialogue aloud with a partner. Then swap roles.",
+    "mapName": "Map A · Town routes"
+  },
+  {
+    "round": 2,
+    "type": "mc",
+    "scene": "Go past and stop at",
+    "dialogue": [
+      [
+        "You",
+        "Go straight ahead along Oak Street. Go past Park Street and stop at the next intersection. Where are you?"
+      ]
+    ],
+    "q": "Choose the stopping point.",
+    "choices": [
+      "At the end of North Street by River Road.",
+      "At the first crossroads, Oak Street and Park Street.",
+      "At the intersection of Oak Street and Market Street."
+    ],
+    "a": 2,
+    "target": "At the intersection of Oak Street and Market Street.",
+    "ex": "After passing Park Street, the next intersection on Oak Street is Market Street.",
+    "image": "assets/town-map.svg",
+    "respondent": "Friend",
+    "speak": "Read the dialogue aloud with a partner. Then swap roles.",
+    "mapName": "Map A · Town routes"
+  },
+  {
+    "round": 2,
+    "type": "mc",
+    "scene": "At the end of the street",
+    "dialogue": [
+      [
+        "You",
+        "Follow Oak Street north to its end. What kind of junction is there?"
+      ]
+    ],
+    "q": "Choose the correct description.",
+    "choices": [
+      "A four-way crossroads: Oak Street continues north.",
+      "A T-junction: Oak Street ends at North Street.",
+      "A roundabout with a road in every direction."
+    ],
+    "a": 1,
+    "target": "A T-junction: Oak Street ends at North Street.",
+    "ex": "Oak Street ends at North Street. There are three road arms, making a T-junction.",
+    "image": "assets/town-map.svg",
+    "respondent": "Friend",
+    "speak": "Read the dialogue aloud with a partner. Then swap roles.",
+    "mapName": "Map A · Town routes"
+  },
+  {
+    "round": 2,
+    "type": "mc",
+    "scene": "Turn right, then look left",
+    "dialogue": [
+      [
+        "You",
+        "Start at the pink arrow, facing north. Turn right at the first crossroads. Which place is on your left just after the turn?"
+      ]
+    ],
+    "q": "Choose the destination.",
+    "choices": [
+      "The café.",
+      "The museum.",
+      "The bank."
+    ],
+    "a": 0,
+    "target": "The café.",
+    "ex": "Turn right into Park Street and travel east. Your left is the north side, where the café is.",
+    "image": "assets/town-map.svg",
+    "respondent": "Friend",
+    "speak": "Read the dialogue aloud with a partner. Then swap roles.",
+    "mapName": "Map A · Town routes"
+  },
+  {
+    "round": 2,
+    "type": "mc",
+    "scene": "The second left",
+    "dialogue": [
+      [
+        "You",
+        "Start at the pink arrow, facing north. Take the second left, passing the first crossroads without turning. Which place is on your left along that street?"
+      ]
+    ],
+    "q": "Choose the place.",
+    "choices": [
+      "The library.",
+      "The bank.",
+      "The pharmacy."
+    ],
+    "a": 1,
+    "target": "The bank.",
+    "ex": "The second left is Market Street. Travelling west, your left is the south side, where the bank is.",
+    "image": "assets/town-map.svg",
+    "respondent": "Friend",
+    "speak": "Read the dialogue aloud with a partner. Then swap roles.",
+    "mapName": "Map A · Town routes"
+  },
+  {
+    "round": 2,
+    "type": "mc",
+    "scene": "Turn left at the T-junction",
+    "dialogue": [
+      [
+        "You",
+        "From START, go straight ahead past two crossroads. Turn left at the T-junction. Which place is on your right?"
+      ]
+    ],
+    "q": "Choose the destination.",
+    "choices": [
+      "The museum.",
+      "The café.",
+      "The cinema."
+    ],
+    "a": 0,
+    "target": "The museum.",
+    "ex": "Pass Park Street and Market Street. At North Street, turn left. The museum is on the north side, on your right as you go west.",
+    "image": "assets/town-map.svg",
+    "respondent": "Friend",
+    "speak": "Read the dialogue aloud with a partner. Then swap roles.",
+    "mapName": "Map A · Town routes"
+  },
+  {
+    "round": 2,
+    "type": "mc",
+    "scene": "Crossroads or T-junction?",
+    "dialogue": [
+      [
+        "You",
+        "Look at Oak Street where it meets Market Street. Which description fits?"
+      ]
+    ],
+    "q": "Choose the correct description.",
+    "choices": [
+      "It is a dead end with no road ahead.",
+      "It is a T-junction with three road arms.",
+      "It is a crossroads with four road arms."
+    ],
+    "a": 2,
+    "target": "It is a crossroads with four road arms.",
+    "ex": "Two roads cross here, so it is a four-way intersection, commonly called a crossroads. A T-junction has three arms.",
+    "image": "assets/town-map.svg",
+    "respondent": "Friend",
+    "speak": "Read the dialogue aloud with a partner. Then swap roles.",
+    "mapName": "Map A · Town routes"
+  },
+  {
+    "round": 2,
+    "type": "mc",
+    "scene": "Between two places",
+    "dialogue": [
+      [
+        "You",
+        "On Map B, where is the library?"
+      ]
+    ],
+    "q": "Choose the best reply.",
+    "choices": [
+      "Between the museum and the cinema.",
+      "Between the pharmacy and the bakery.",
+      "Next to the bank on the bottom row."
+    ],
+    "a": 0,
+    "target": "Between the museum and the cinema.",
+    "ex": "The library is the middle building on the top row. The museum is on one side and the cinema on the other.",
+    "image": "assets/high-street.svg",
+    "respondent": "Friend",
+    "speak": "Read the dialogue aloud with a partner. Then swap roles.",
+    "mapName": "Map B · High Street"
+  },
+  {
+    "round": 2,
+    "type": "mc",
+    "scene": "Opposite",
+    "dialogue": [
+      [
+        "You",
+        "On Map B, which place is opposite the cinema?"
+      ]
+    ],
+    "q": "Choose the place.",
+    "choices": [
+      "The pharmacy.",
+      "The bakery.",
+      "The bank."
+    ],
+    "a": 2,
+    "target": "The bank.",
+    "ex": "The bank is directly across High Street from the cinema. Opposite means facing across the street.",
+    "image": "assets/high-street.svg",
+    "respondent": "Friend",
+    "speak": "Read the dialogue aloud with a partner. Then swap roles.",
+    "mapName": "Map B · High Street"
+  },
+  {
+    "round": 2,
+    "type": "mc",
+    "scene": "Next to",
+    "dialogue": [
+      [
+        "You",
+        "On Map B, which place is immediately next to the pharmacy on the same side of the street?"
+      ]
+    ],
+    "q": "Choose the place.",
+    "choices": [
+      "The cinema.",
+      "The bakery.",
+      "The library."
+    ],
+    "a": 1,
+    "target": "The bakery.",
+    "ex": "The bakery is beside the pharmacy on the bottom row. Next to means immediately beside.",
+    "image": "assets/high-street.svg",
+    "respondent": "Friend",
+    "speak": "Read the dialogue aloud with a partner. Then swap roles.",
+    "mapName": "Map B · High Street"
+  },
+  {
+    "round": 2,
+    "type": "mc",
+    "scene": "On a street",
+    "dialogue": [
+      [
+        "You",
+        "A visitor asks, “Which street is the bakery on?” Use Map B."
+      ]
+    ],
+    "q": "Choose the best reply.",
+    "choices": [
+      "It’s on River Road.",
+      "It’s on Oak Street.",
+      "It’s on High Street."
+    ],
+    "a": 2,
+    "target": "It’s on High Street.",
+    "ex": "Use on with a street name: on High Street. Map B is a different neighbourhood from Map A.",
+    "image": "assets/high-street.svg",
+    "respondent": "Friend",
+    "speak": "Read the dialogue aloud with a partner. Then swap roles.",
+    "mapName": "Map B · High Street"
+  },
+  {
+    "round": 3,
+    "type": "mc",
+    "scene": "Excuse me…",
+    "dialogue": [
+      [
+        "You",
+        "Excuse me, how can I get to the museum? I’m at START on Map A, facing north."
+      ]
+    ],
+    "q": "Choose the best reply.",
+    "choices": [
+      "Turn right at the first crossroads. The museum is the café on your left.",
+      "Go straight ahead past two crossroads. Turn left at the T-junction. The museum is on your right.",
+      "Take the second right into Market Street. The museum is the cinema on your left."
+    ],
+    "a": 1,
+    "target": "Go straight ahead past two crossroads. Turn left at the T-junction. The museum is on your right.",
+    "ex": "The museum is on North Street. From START, pass Park Street and Market Street, then turn left at the T-junction.",
+    "image": "assets/town-map.svg",
+    "respondent": "Passer-by",
+    "speak": "Read the dialogue aloud with a partner. Then swap roles.",
+    "mapName": "Map A · Town routes"
+  },
+  {
+    "round": 3,
+    "type": "mc",
+    "scene": "A polite indirect question",
+    "dialogue": [
+      [
+        "You",
+        "You want to ask a stranger where the station is. Which question is correct?"
+      ]
+    ],
+    "q": "Choose the polite, correct question.",
+    "choices": [
+      "Do you know where the station is?",
+      "Do you know where is the station?",
+      "Do you know where the station?"
+    ],
+    "a": 0,
+    "target": "Do you know where the station is?",
+    "ex": "After Do you know where…, use statement word order: the station is, not is the station.",
+    "image": null,
+    "respondent": "You",
+    "speak": "Read the dialogue aloud with a partner. Then swap roles.",
+    "mapName": ""
+  },
+  {
+    "round": 3,
+    "type": "mc",
+    "scene": "A plan and a landmark",
+    "dialogue": [
+      [
+        "You",
+        "I’m going to the bank on High Street. Which place is opposite it?"
+      ]
+    ],
+    "q": "Choose the best reply.",
+    "choices": [
+      "The library is opposite the bank.",
+      "The cinema is opposite the bank.",
+      "The museum is opposite the bank."
+    ],
+    "a": 1,
+    "target": "The cinema is opposite the bank.",
+    "ex": "On Map B, the bank is on the bottom right and the cinema is directly opposite it.",
+    "image": "assets/high-street.svg",
+    "respondent": "Passer-by",
+    "speak": "Read the dialogue aloud with a partner. Then swap roles.",
+    "mapName": "Map B · High Street"
+  },
+  {
+    "round": 3,
+    "type": "mc",
+    "scene": "Is there a bakery near here?",
+    "dialogue": [
+      [
+        "You",
+        "Excuse me, is there a bakery near here? I’m outside the library on Map B."
+      ]
+    ],
+    "q": "Choose the best reply.",
+    "choices": [
+      "Yes. It’s opposite the library, on High Street.",
+      "Yes. It’s between the museum and the cinema on the top row.",
+      "Yes. It’s on Oak Street, next to the library on the top row."
+    ],
+    "a": 0,
+    "target": "Yes. It’s opposite the library, on High Street.",
+    "ex": "The bakery is across High Street from the library, in the middle of the bottom row.",
+    "image": "assets/high-street.svg",
+    "respondent": "Passer-by",
+    "speak": "Read the dialogue aloud with a partner. Then swap roles.",
+    "mapName": "Map B · High Street"
+  },
+  {
+    "round": 3,
+    "type": "mc",
+    "scene": "Check a plan before turning",
+    "dialogue": [
+      [
+        "You",
+        "From START on Map A, are we going to take the first left to get to the bank?"
+      ]
+    ],
+    "q": "Choose the best reply.",
+    "choices": [
+      "Yes, we’re going to turn into Park Street. That’s where the bank is.",
+      "No. We’re going to take the first right to the café, then stop there.",
+      "No. We’re going to take the second left, into Market Street. The bank is on our left."
+    ],
+    "a": 2,
+    "target": "No. We’re going to take the second left, into Market Street. The bank is on our left.",
+    "ex": "The bank is on Market Street, which is the second left from START. Park Street is the first left.",
+    "image": "assets/town-map.svg",
+    "respondent": "Friend",
+    "speak": "Read the dialogue aloud with a partner. Then swap roles.",
+    "mapName": "Map A · Town routes"
+  },
+  {
+    "round": 3,
+    "type": "mc",
+    "scene": "Go ahead",
+    "dialogue": [
+      [
+        "You",
+        "You are heading north from START. Your friend says, “Go ahead to the end of Oak Street, then turn right.” Which place will be on your left?"
+      ]
+    ],
+    "q": "Choose the destination.",
+    "choices": [
+      "The library.",
+      "The museum.",
+      "The bank."
+    ],
+    "a": 0,
+    "target": "The library.",
+    "ex": "Here go ahead means keep moving forward. At the T-junction, turn right into North Street. Travelling east, the library is on your left.",
+    "image": "assets/town-map.svg",
+    "respondent": "Friend",
+    "speak": "Read the dialogue aloud with a partner. Then swap roles.",
+    "mapName": "Map A · Town routes"
+  },
+  {
+    "round": 3,
+    "type": "mc",
+    "scene": "Ask for clarification",
+    "dialogue": [
+      [
+        "You",
+        "Someone has just given you directions, but you’re not sure whether they said the first or second right. What should you say?"
+      ]
+    ],
+    "q": "Choose the most useful response.",
+    "choices": [
+      "I’m going to buy a notebook because it’s blue.",
+      "Thank you. I understood every word, so I don’t need to check.",
+      "Sorry, did you say the first right or the second right?"
+    ],
+    "a": 2,
+    "target": "Sorry, did you say the first right or the second right?",
+    "ex": "A short clarification question checks the exact turn before you continue.",
+    "image": null,
+    "respondent": "You",
+    "speak": "Read the dialogue aloud with a partner. Then swap roles.",
+    "mapName": ""
+  },
+  {
+    "round": 3,
+    "type": "mc",
+    "scene": "Put the plan together",
+    "dialogue": [
+      [
+        "You",
+        "We’re going to visit the café first, then buy bread. Use Map A. What is a sensible plan?"
+      ]
+    ],
+    "q": "Choose the best reply.",
+    "choices": [
+      "We’re going to turn into Market Street because both places are there.",
+      "We’re going to the café on Park Street, then to the bakery on the same street.",
+      "We’re going to visit the museum and call it the café."
+    ],
+    "a": 1,
+    "target": "We’re going to the café on Park Street, then to the bakery on the same street.",
+    "ex": "Both the café and the bakery are on the north side of Park Street. The café is east of Oak Street and the bakery is west of it.",
+    "image": "assets/town-map.svg",
+    "respondent": "Friend",
+    "speak": "Read the dialogue aloud with a partner. Then swap roles.",
+    "mapName": "Map A · Town routes"
+  }
+];
+const MODE = "picture";
+const $ = id => document.getElementById(id);
+const state = QUESTIONS.map(() => ({choice:null}));
+let pos = 0;
+let player = "";
+let soundOn = true;
+let audioCtx = null;
+let roundTimer = null;
+let startedAt = null;
+let attemptId="",finished=false;
+const ROUND_NAMES=["Be going to","Map detective","Ask & give directions"];
+function newAttempt(){attemptId=window.crypto&&crypto.randomUUID?crypto.randomUUID():Date.now()+"-"+Math.random();finished=false;}
+
+const totalRounds = Math.max(...QUESTIONS.map(q=>q.round));
+$("total").textContent = QUESTIONS.length;
+const roundElement = () => $(MODE === "present" ? "roundPill" : "round");
+const counterElement = () => $(MODE === "present" ? "questionPill" : "counter");
+
+function points() {
+  return state.reduce((n,s,idx)=>n+(s.choice === QUESTIONS[idx].a ? 1 : 0),0);
+}
+function chime(kind) {
+  if (!soundOn) return;
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    if (!audioCtx) audioCtx = new AC();
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    const melodies = {
+      correct:[[659,0,.11],[880,.11,.15],[1046,.23,.18]],
+      wrong:[[330,0,.13],[220,.11,.19]],
+      round:[[523,0,.1],[659,.11,.1],[784,.23,.19]],
+      finish:[[523,0,.14],[659,.15,.14],[784,.31,.15],[1046,.49,.28]]
+    };
+    const now = audioCtx.currentTime;
+    (melodies[kind] || melodies.correct).forEach(([hz,delay,len])=>{
+      const osc=audioCtx.createOscillator(),gain=audioCtx.createGain();
+      osc.type=kind==="wrong"?"triangle":"sine";
+      osc.frequency.setValueAtTime(hz,now+delay);
+      gain.gain.setValueAtTime(.0001,now+delay);
+      gain.gain.exponentialRampToValueAtTime(.095,now+delay+.018);
+      gain.gain.exponentialRampToValueAtTime(.0001,now+delay+len);
+      osc.connect(gain);gain.connect(audioCtx.destination);
+      osc.start(now+delay);osc.stop(now+delay+len+.01);
+    });
+  } catch (_) {}
+}
+function particles(count) {
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const box=$("fxParticles"), colors=["#ffc85b","#f65caf","#6de0b1","#77caff","#9e76f2","#ff9d78"];
+  for(let n=0;n<count;n++){
+    const p=document.createElement("span");
+    p.style.left=(Math.random()*100)+"%";
+    p.style.background=colors[n%colors.length];
+    p.style.animationDelay=(Math.random()*.27)+"s";
+    p.style.animationDuration=(.95+Math.random()*.7)+"s";
+    box.appendChild(p);
+    p.addEventListener("animationend",()=>p.remove(),{once:true});
+  }
+}
+function animateScore() {
+  const el=$("score");
+  el.textContent=points();
+  el.classList.remove("score-pulse");
+  void el.offsetWidth;
+  el.classList.add("score-pulse");
+}
+function toastRound(round){
+  if(roundTimer)clearTimeout(roundTimer);
+  $("roundToastText").textContent="Round "+round+" / "+totalRounds+" · "+ROUND_NAMES[round-1];
+  $("roundToast").classList.remove("hidden");
+  chime("round");
+  roundTimer=setTimeout(()=>$("roundToast").classList.add("hidden"),900);
+}
+function setScreen(id){
+  ["startScreen","gameScreen","resultScreen"].forEach(x=>$(x).classList.toggle("hidden",x!==id));
+}
+function start(){
+  const name=$("nameInput").value.trim();
+  if(!name){$("nameError").textContent="Please enter your name first.";$("nameInput").focus();return;}
+  $("nameError").textContent="";newAttempt();
+  player=name;
+  startedAt=Date.now();
+  pos=0;
+  state.forEach(s=>s.choice=null);
+  setScreen("gameScreen");
+  render();
+  toastRound(QUESTIONS[0].round);
+}
+function render(){
+  const q=QUESTIONS[pos],st=state[pos];
+  roundElement().textContent="Round "+q.round+" / "+totalRounds;
+  counterElement().textContent="Question "+(pos+1)+" / "+QUESTIONS.length;
+  $("bar").style.width=(state.filter(s=>s.choice!==null).length/QUESTIONS.length*100)+"%";
+  $("score").textContent=points();$("kicker").textContent=ROUND_NAMES[q.round-1]+" · "+(pos+1)+" of "+QUESTIONS.length;
+  $("title").textContent=["Make a plan","Follow the map","Let’s ask the way"][q.round-1];
+  $("instruction").textContent=q.image?"Read the situation. Use the labelled map to choose.":"Read the situation and choose the best English.";
+  $("scene").textContent=q.scene;$("question").textContent=q.q;
+  $("dialogue").replaceChildren();q.dialogue.forEach(([name,line])=>{const p=document.createElement("p"),b=document.createElement("strong");b.textContent=name+": ";p.append(b,document.createTextNode(line));$("dialogue").appendChild(p);});
+  $("mapPanel").classList.toggle("hidden",!q.image);$("questLayout").classList.toggle("with-map",!!q.image);
+  if(q.image){$("mapName").textContent=q.mapName;$("mapImage").src=q.image;$("mapImage").alt=q.mapName+". Read street and building labels. On Map A, START faces north; Park Street is the first junction, Market Street the second, and North Street is at the end.";}
+  $("answers").replaceChildren();q.choices.forEach((label,n)=>{const b=document.createElement("button");b.type="button";b.className="answer";b.textContent=label;
+    if(st.choice!==null){b.disabled=true;if(n===q.a)b.classList.add("good");if(n===st.choice&&n!==q.a)b.classList.add("bad");}else b.onclick=()=>answer(n);$("answers").appendChild(b);});
+  $("feedback").textContent=st.choice===null?"":(st.choice===q.a?"Correct! ⭐ ":"Incorrect. Check the highlighted answer. 💡 ")+q.ex;
+  $("feedback").className="feedback"+(st.choice===null?"":st.choice===q.a?" success":" error");$("feedback").setAttribute("aria-live","polite");
+  $("speakPrompt").classList.toggle("hidden",st.choice===null);$("speakPrompt").textContent="🗣️ Partner practice (not scored): "+q.speak;
+  $("nextBtn").disabled=st.choice===null;$("nextBtn").classList.toggle("ready",st.choice!==null);$("nextBtn").textContent=pos===QUESTIONS.length-1?"See Results →":"Next →";$("backBtn").disabled=pos===0;
+  const scene=$("gameScreen").querySelector(".content");scene.classList.remove("fx-enter");void scene.offsetWidth;scene.classList.add("fx-enter");
+}
+function answer(choice){
+  if(state[pos].choice!==null)return;
+  state[pos].choice=choice;
+  const correct=choice===QUESTIONS[pos].a;
+  chime(correct?"correct":"wrong");
+  if(correct)particles(24);
+  render();
+  animateScore();
+}
+function next(){
+  if(state[pos].choice===null)return;
+  if(pos===QUESTIONS.length-1){finish();return;}
+  const prevRound=QUESTIONS[pos].round;
+  pos++;
+  render();
+  if(QUESTIONS[pos].round!==prevRound)toastRound(QUESTIONS[pos].round);
+}
+function back(){if(pos>0){pos--;render();}}
+function restart(){
+  newAttempt();
+  startedAt=Date.now();
+  pos=0;state.forEach(s=>s.choice=null);setScreen("gameScreen");render();toastRound(QUESTIONS[0].round);
+}
+async function finish(){
+  if(finished||state.some(s=>s.choice===null))return;
+  finished=true;const thisAttempt=attemptId;
+  setScreen("resultScreen");const score=points(),pct=Math.round(score/QUESTIONS.length*100);
+  $("playerResult").textContent=player;$("finalPoints").textContent=score;$("finalTotal").textContent=QUESTIONS.length;
+  $("resultMessage").textContent=pct+"% · "+(pct>=85?"Amazing! You can plan and find your way!":pct>=60?"Good work! Keep practising!":"Every try helps. Read the situation and try again!");
+  chime("finish");particles(100);
+  const payload={studentName:player,gameTitle:document.title,score,total:QUESTIONS.length,percentage:pct,durationSeconds:Math.max(0,Math.round((Date.now()-startedAt)/1000)),completedAt:new Date().toISOString(),attemptId:thisAttempt,gameUrl:location.href};
+  if(/\/_templates?\//.test(location.pathname)){$("recordStatus").textContent="Preview — score not sent.";return;}
+  try{localStorage.setItem("townPlansDirectionsResult:"+thisAttempt,JSON.stringify(payload));}catch(_){}
+  $("recordStatus").textContent="Submitting score to your teacher…";
+  try{if(!window.TeacherRecords)throw Error("unavailable");const result=await TeacherRecords.submit(payload);
+    if(thisAttempt!==attemptId)return;
+    $("recordStatus").textContent=result.sent?"✅ Score submitted to your teacher.":"⚠️ Score saved on this device. Unable to send right now.";
+  }catch(_){if(thisAttempt===attemptId)$("recordStatus").textContent="⚠️ Score saved on this device. Unable to send right now.";}
+}
+function toggleSound(){
+  soundOn=!soundOn;
+  $("soundBtn").textContent=soundOn?"🔊 Sound On":"🔇 Sound Off";
+  $("soundBtn").setAttribute("aria-pressed",String(soundOn));
+}
+$("startBtn").addEventListener("click",start);
+$("nameInput").addEventListener("keydown",e=>{if(e.key==="Enter")start();});
+$("nextBtn").addEventListener("click",next);
+$("backBtn").addEventListener("click",back);
+$("restartBtn").addEventListener("click",restart);
+$("playAgainBtn").addEventListener("click",restart);
+$("soundBtn").addEventListener("click",toggleSound);
+
+
+$("enlargeMap").addEventListener("click",()=>{const q=QUESTIONS[pos];if(!q.image)return;$("largeMap").src=q.image;$("mapDialog").showModal();});
+$("closeMap").addEventListener("click",()=>$("mapDialog").close());
+$("mapDialog").addEventListener("click",e=>{if(e.target===$("mapDialog"))$("mapDialog").close();});
+</script>
+</body>
+</html>

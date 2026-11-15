@@ -196,5 +196,11 @@
     "description": "30 selected questions from all three worksheets: 7 picture adjectives, 12 gaps across all four complete family stories and 11 Flyers word clues. Original pictures, typed answers with accepted variants and explanations. No timer.",
     "level": "A1–A2 · Flyers",
     "path": "./family-words-quest/"
+  },
+  {
+    "title": "Town Plans & Directions Quest",
+    "description": "30 questions: 10 be going to choices, 12 map-reading challenges and 8 real-life direction conversations. Two clear labelled maps, larger-map view, route explanations and partner practice. No timer.",
+    "level": "A2–early B1",
+    "path": "./town-plans-directions/"
   }
 ]
