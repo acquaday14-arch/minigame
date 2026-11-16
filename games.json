@@ -208,5 +208,11 @@
     "description": "30 practical shopping conversations inspired by the supplied high street article: local shops, online shopping, closures, free parking, events and pop-up shops. Three reading excerpts with original images, reply choices, explanations and partner speaking prompts. No timer.",
     "level": "A2–early B1",
     "path": "./high-street-shopping/"
+  },
+  {
+    "title": "Heritage & Wish Quest — Grade 9",
+    "description": "15 questions: 5 opening verb-form choices, 5 typed verb gaps and 5 sentence-rewriting builders. Covers all 10 passage gaps and all 4 original rewrites, plus 1 transfer task. Past simple, past continuous and present wishes. No timer.",
+    "level": "Grade 9 · A2–B1",
+    "path": "./heritage-wish-quest/"
   }
 ]
