@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en" data-template-effects-version="2">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Heritage Vocabulary Quest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --purple:#5b36d6;--purple2:#7a57eb;--ink:#20285c;--pink:#ef5aa7;
+      --yellow:#ffd76a;--mint:#6be0b2;--sky:#74c7ff;--soft:#f8f6ff;--line:#d9cff8;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;min-height:100vh;padding:18px;
+      font-family:"Fredoka",ui-rounded,"Trebuchet MS",Arial,sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at 9% 12%,#ffe2f0 0 7%,transparent 7.5%),
+        radial-gradient(circle at 90% 14%,#dff5ff 0 8%,transparent 8.5%),
+        linear-gradient(180deg,#f8fbff,#f4efff);
+    }
+    button,input{font:inherit}
+    .app{width:min(1060px,100%);margin:1vh auto}
+    .frame{
+      background:#fff;border:4px solid #4b32bf;border-radius:32px;overflow:hidden;
+      box-shadow:0 14px 0 #ded5ff,0 24px 44px rgba(63,47,147,.14)
+    }
+    .top{
+      background:linear-gradient(135deg,var(--purple),#6541dc);
+      padding:18px 28px;color:#fff;display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:center
+    }
+    .pill{border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.12);padding:9px 15px;border-radius:999px;font-weight:700}
+    .top .pill:last-child{justify-self:end}
+    .progress{height:10px;background:#dacdfd}
+    .progress>div{height:100%;width:25%;background:linear-gradient(90deg,#ffd75f,#ffae73);transition:.25s}
+    .stage{padding:28px 34px 24px;min-height:650px;position:relative}
+    .kicker{text-align:center;color:var(--pink);font-size:14px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+    h1{text-align:center;font-size:clamp(38px,6vw,62px);margin:8px 0 8px;color:#432cb5;line-height:.98}
+    .instruction{text-align:center;font-size:20px;font-weight:600;margin-bottom:24px}
+    .card{
+      width:min(780px,100%);margin:0 auto;border:2px solid var(--line);border-radius:24px;padding:24px;
+      background:linear-gradient(180deg,#fff,#fcfbff)
+    }
+    .question{font-size:clamp(24px,4vw,36px);font-weight:700;text-align:center;margin:6px 0 22px}
+    .answers{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .answer{
+      border:3px solid #ded3fa;background:#fbf9ff;border-radius:18px;padding:15px 18px;color:var(--ink);
+      font-weight:700;font-size:18px;cursor:pointer;transition:.14s
+    }
+    .answer:hover{transform:translateY(-2px);border-color:#aa8df3}
+    .answer.good{border-color:#65d5a8;background:#ebfff6;color:#17734e;animation:pop .28s ease}
+    .answer.bad{border-color:#ff98a4;background:#fff0f2;color:#a63a47;animation:shake .28s ease}
+    .feedback{min-height:42px;text-align:center;margin:18px 0 4px;font-size:19px;font-weight:700}
+    .controls{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:14px;margin-top:28px}
+    .btn{border:2px solid #dbd2f8;border-radius:15px;background:#fff;color:#4734a9;padding:12px 18px;font-weight:700;cursor:pointer}
+    .controls .next{justify-self:end;background:linear-gradient(135deg,#ffd37c,#ffbd84);border:0;color:#76563b}
+    .center{text-align:center}
+    .hidden{display:none!important}
+    .start{padding:60px 32px;text-align:center}
+    .start p{font-size:19px;color:#667085}
+    .start input{width:min(560px,100%);padding:15px 17px;border:2px solid #d8cff4;border-radius:16px;font-size:18px}
+    .start .btn{margin-top:12px;background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;border:0}
+    .stars{font-size:26px;letter-spacing:5px}
+    .confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:20}
+    .confetti i{position:absolute;width:10px;height:16px;border-radius:3px;animation:fall 900ms linear forwards}
+    @keyframes pop{50%{transform:scale(1.035)}}
+    @keyframes shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+    @keyframes fall{from{transform:translateY(-10vh) rotate(0)}to{transform:translateY(110vh) rotate(500deg);opacity:.7}}
+    @media(max-width:700px){.top{grid-template-columns:1fr 1fr}.top>div:nth-child(2){grid-column:1/-1;grid-row:2;text-align:center}.stage{padding:22px 16px}.answers{grid-template-columns:1fr}.controls{grid-template-columns:1fr 1fr}.controls .restart{display:none}}
+  
+    /* Template FX v2 — reduced-motion aware and dependency-free */
+    .fx-enter{animation:fx-enter .38s cubic-bezier(.2,.8,.2,1) both}
+    .answer{transition:transform .17s ease,border-color .2s ease,box-shadow .2s ease,background .2s ease}
+    .answer:active,.btn:active{transform:scale(.97)}
+    .answer:focus-visible,.btn:focus-visible{outline:4px solid #f7bb56;outline-offset:3px}
+    .answer.good{box-shadow:0 0 0 4px rgba(81,213,157,.13)}
+    .answer.bad{box-shadow:0 0 0 4px rgba(255,118,144,.13)}
+    .answer:disabled{cursor:default}
+    .pill.score-pulse,.score-pulse{animation:fx-pulse .35s ease}
+    .feedback.success{color:#10845c;animation:fx-pop .4s ease both}
+    .feedback.error{color:#b44453;animation:fx-shake .32s ease both}
+    .mid-actions{display:flex;gap:8px;align-items:center;justify-content:center}
+    .mid-actions .btn{white-space:nowrap}
+    .btn:disabled{opacity:.4;cursor:not-allowed;filter:grayscale(.25)}
+    .next.ready{animation:fx-glow 1.8s ease-in-out infinite}
+    .fx-particles{position:fixed;inset:0;z-index:100;pointer-events:none;overflow:hidden}
+    .fx-particles span{position:absolute;top:-24px;width:10px;height:16px;border-radius:3px;animation:fx-rain 1.15s cubic-bezier(.2,.7,.5,1) forwards}
+    .fx-round-toast{position:fixed;inset:0;z-index:90;pointer-events:none;display:flex;justify-content:center;align-items:center;background:rgba(45,29,122,.11)}
+    .fx-round-toast.hidden{display:none!important}
+    .fx-round-pill{
+      text-align:center;border:4px solid #fff;border-radius:28px;
+      background:linear-gradient(135deg,#5b36d6,#8b6cf0);color:white;
+      padding:24px 36px;box-shadow:0 20px 60px rgba(54,38,152,.25);
+      font-size:clamp(25px,4vw,42px);font-weight:700;animation:fx-toast .7s ease both
+    }
+    .fx-round-pill small{display:block;font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:#ffdf85;margin-bottom:4px}
+    .result-area{text-align:center;padding:56px 24px}
+    .result-area h1{font-size:clamp(40px,6vw,64px);margin:10px 0;color:#432cb5}
+    .result-area .result-score{font-size:clamp(60px,10vw,100px);color:#5b36d6;font-weight:700;line-height:1.12}
+    .result-area .result-sub{font-size:21px;margin:8px 0 28px}
+    .result-area .btn{background:#6040d7;color:#fff;border:0;padding:15px 30px;font-size:18px}
+    .result-area .result-stars{font-size:38px;letter-spacing:8px;animation:fx-float 2s ease-in-out infinite}
+    .picture{animation:fx-picture-in .55s cubic-bezier(.2,.8,.2,1) both;transition:transform .25s ease,box-shadow .25s ease}
+    .picture:hover{transform:translateY(-3px) rotate(-1deg);box-shadow:0 17px 34px rgba(82,58,173,.21)}
+    .picture img{width:100%;height:100%;object-fit:cover;display:block}
+    @keyframes fx-enter{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes fx-pop{0%{transform:scale(.83);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+    @keyframes fx-pulse{50%{transform:scale(1.09)}}
+    @keyframes fx-shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+    @keyframes fx-glow{50%{box-shadow:0 0 0 6px rgba(255,205,100,.22)}}
+    @keyframes fx-rain{0%{transform:translateY(-10vh) rotate(0deg);opacity:1}100%{transform:translateY(112vh) rotate(620deg);opacity:0}}
+    @keyframes fx-toast{0%{transform:scale(.7) translateY(25px);opacity:0}40%{transform:scale(1.05);opacity:1}100%{transform:scale(1);opacity:1}}
+    @keyframes fx-float{50%{transform:translateY(-9px)}}
+    @keyframes fx-picture-in{from{opacity:0;transform:scale(.91) rotate(-2deg)}to{opacity:1;transform:scale(1) rotate(0)}}
+    @media(max-width:700px){
+      .controls{grid-template-columns:1fr 1fr}
+      .controls .mid-actions{grid-column:1/-1;grid-row:2;justify-content:center}
+      .controls .restart{display:inline-flex}
+      .result-area{padding:42px 16px}
+      .mid-actions .btn{font-size:14px;padding:10px 12px}
+    }
+    @media(prefers-reduced-motion:reduce){
+      *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+    }
+
+  
+.stage{min-height:500px}.question{white-space:pre-line;line-height:1.5;font-size:clamp(23px,3.5vw,32px)}.instruction{line-height:1.5}.answer{font-size:22px;min-height:62px}.btn{min-height:48px}.card{width:min(850px,100%)}h1{font-size:clamp(34px,5vw,52px);line-height:1.1}.feedback{line-height:1.6}.start label{display:block;margin:12px}.start input{font-size:22px}.word-zone,.built-zone{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;padding:12px}.built-zone{border:2px dashed #b7a1f0;border-radius:18px;min-height:80px;background:#f4f0ff}.word-zone .btn,.built-zone .btn{font-size:22px;background:#fff}.word-zone .btn:disabled{background:#e6e2ee;border-color:#c4bbd5;color:#8b819e;opacity:.45}.order-actions{grid-column:1/-1;display:flex;justify-content:center;gap:12px}.check{background:#5b36d6;color:white}.review{text-align:left;max-width:850px;margin:24px auto;padding:0 10px;font:19px/1.6 'Trebuchet MS',Arial,sans-serif}.review article{padding:14px 0;border-bottom:1px solid #ddd;white-space:pre-line}.review p{margin:8px 0}summary{cursor:pointer;color:#5234b6;font-weight:bold}button:focus-visible,input:focus-visible,summary:focus-visible{outline:4px solid #e9b52c;outline-offset:3px}.top{padding:18px;gap:8px}.pill{font-size:16px;padding:10px}.progress>div{width:0%}@media(max-width:700px){body{padding:8px}.stage{padding:20px 14px}.card{padding:15px}.start{padding:38px 18px}.word-zone .btn,.built-zone .btn{font-size:20px;padding:10px 12px}.controls{gap:8px}.controls .btn{padding:11px}.top{padding:12px}.pill{font-size:14px}}
+
+.source-reference{margin:0 auto 22px;max-width:100%;font:18px/1.6 'Trebuchet MS',Arial,sans-serif}.source-reference img{display:block;width:100%;height:auto;margin-top:12px;border:1px solid #ddd;border-radius:10px}.fill-box{grid-column:1/-1;display:grid;gap:12px;text-align:center}.fill-box label{font-size:20px;font-weight:600}.fill-box input{width:100%;min-width:0;border:3px solid #c9b8ef;border-radius:15px;padding:16px;font-size:25px;color:#20285c;background:#fff}.fill-box input.good{border-color:#259963;background:#ebfff5}.fill-box input.bad{border-color:#c25268;background:#fff0f4}.fill-box input:disabled{opacity:1;-webkit-text-fill-color:#20285c}.fill-box .btn{justify-self:center;background:#5b36d6;color:white;font-size:20px}.word-zone .btn,.built-zone .btn{font-size:21px;line-height:1.4;max-width:100%;white-space:normal}.built-zone{line-height:1.5}.question{font-size:clamp(22px,3vw,29px)}.start p{line-height:1.6}@media(max-width:700px){.word-zone .btn,.built-zone .btn{font-size:19px}.fill-box input{font-size:22px}.question{font-size:23px}}
+
+.word-heading{text-align:center;display:grid;gap:8px;margin:4px 0 20px;color:#5233ba}.word-heading strong{font-size:clamp(32px,5vw,44px)}.word-heading span{font-family:'Trebuchet MS',Arial,sans-serif;font-size:21px;color:#655776}.word-table-link{display:inline-block;margin:10px 0 22px;padding:12px 18px;border:2px solid #cbbaf3;border-radius:15px;color:#5233ba;font-size:19px;font-weight:bold}.source-reference img{max-width:655px;margin:12px auto 0}.answer{font-size:21px;line-height:1.5}.feedback{font-size:18px}.question{font-size:clamp(22px,3vw,28px)}
+</style>
+</head>
+<body>
+  <main class="app">
+    <section class="frame" id="startScreen">
+      <div class="start">
+        <div class="stars">⭐ ✨ ⭐</div>
+        <div class="kicker">Vocabulary · Meanings · Word use</div>
+        <h1>Heritage<br>Vocabulary Quest</h1>
+        <p>30 questions · 4 rounds · No timer<br>20 worksheet words · IPA &amp; bilingual feedback<br>20 choices · 5 word-form gaps · 5 sentence builders<br>Choose answers and tap words to build sentences. Each question earns 1 point.</p>
+        <label for="nameInput">Your name</label><br><input id="nameInput" placeholder="Enter your name" maxlength="80" autocomplete="name">
+        <br>
+        <button class="btn" id="startBtn">Start Challenge</button>
+      </div>
+    </section>
+
+    <section class="frame hidden" id="gameScreen">
+      <div class="top">
+        <div class="pill" id="roundPill">Round 1 / 4</div>
+        <div class="pill">⭐ <span id="score">0</span> / <span id="total">30</span> points</div>
+        <div class="pill" id="questionPill">Question 1 / 30</div>
+      </div>
+      <div class="progress"><div id="bar"></div></div>
+
+      <div class="stage">
+        <div class="kicker" id="kicker">Quick choice · 1 of 4</div>
+        <h1 id="title">Choose the best answer</h1>
+        <div class="instruction" id="instruction">Pick the sentence that sounds natural.</div>
+
+        <div class="card">
+          <div class="word-heading hidden" id="wordHeading"></div><div class="question" id="question"></div>
+          <details id="sourceDetails" class="source-reference hidden"><summary>View this word in the original worksheet</summary><img id="sourceImage" alt="Vocabulary word and IPA from the original worksheet"></details><div class="answers" id="answers"></div>
+          <div class="feedback" id="feedback" role="status" aria-live="polite"></div>
+        </div>
+
+        <div class="controls">
+          <button class="btn" id="backBtn">← Back</button>
+          <div class="mid-actions"><button class="btn" id="soundBtn" aria-pressed="true">🔊 Sound On</button><button class="btn restart" id="restartBtn">↻ Restart</button></div>
+          <button class="btn next" id="nextBtn">Next →</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="frame hidden" id="resultScreen">
+      <div class="result-area">
+        <div class="result-stars">🌟 🎉 🌟</div>
+        <h1>Great Job, <span id="playerResult"></span>!</h1>
+        <div class="result-score"><span id="finalPoints">0</span>/<span id="finalTotal">30</span></div>
+        <p class="result-sub" id="resultMessage"></p>
+        <p class="result-sub" id="recordStatus" role="status"></p><details class="review"><summary>Review my answers</summary><div id="review"></div></details>
+        <p><a class="word-table-link" href="vocabulary.html" target="_blank" rel="noopener">Open the completed vocabulary table ↗</a></p><button class="btn" id="playAgainBtn">↻ Play Again</button>
+      </div>
+    </section>
+  <div class="fx-particles" id="fxParticles" aria-hidden="true"></div>
+    <div class="fx-round-toast hidden" id="roundToast" aria-hidden="true"><div class="fx-round-pill"><small>LEVEL UP ✨</small><span id="roundToastText"></span></div></div>
+  </main>
+
+<script src="/minigame/shared/teacher-records-config.js"></script>
+<script src="/minigame/shared/teacher-records.js"></script>
+<script>
+
+
+const QUESTIONS=[{"round": 1, "type": "choice", "prompt": "What does “magnificent” mean?", "choices": ["very beautiful, impressive or grand", "ordinary and not impressive", "to establish or start an organisation", "people born and living at about the same time"], "a": 0, "why": "magnificent /mæɡˈnɪf.ɪ.sənt/ · tráng lệ; lộng lẫy; hùng vĩ. Example: The ancient temple is magnificent.", "source": "assets/word-01.webp", "wordIndex": 0}, {"round": 1, "type": "choice", "prompt": "What does “preserve” mean?", "choices": ["to damage or destroy something", "to protect something and keep it in good condition", "to encourage something or help make it better known", "physical or mental energy used to do something"], "a": 1, "why": "preserve /prɪˈzɜːv/ · bảo tồn; gìn giữ. Example: We must preserve our cultural heritage.", "source": "assets/word-02.webp", "wordIndex": 1}, {"round": 1, "type": "choice", "prompt": "What does “well-preserved” mean?", "choices": ["recently built from new materials", "to identify someone or something, or officially accept its importance", "kept in good condition despite being old", "strongly established and difficult to change"], "a": 2, "why": "well-preserved /ˌwel prɪˈzɜːvd/ · được bảo tồn tốt; còn nguyên vẹn. Example: The old house is still well-preserved.", "source": "assets/word-03.webp", "wordIndex": 2}, {"round": 1, "type": "choice", "prompt": "What does “heritage” mean?", "choices": ["a plan for next week’s weather", "to give time, money or help towards something", "to become visible; also, to seem", "traditions, buildings and other things passed down from the past"], "a": 3, "why": "heritage /ˈher.ɪ.tɪdʒ/ · di sản. Example: The village is proud of its cultural heritage.", "source": "assets/word-04.webp", "wordIndex": 3}, {"round": 1, "type": "choice", "prompt": "What does “thanks to” mean?", "choices": ["because of someone or something that helps produce a result", "although someone tried to stop it", "to watch carefully; also, to follow a rule or custom", "simple and most necessary or important"], "a": 0, "why": "thanks to /ˈθæŋks tə/ · nhờ vào. Example: Thanks to local people, the temple was saved.", "source": "assets/word-05.webp", "wordIndex": 4}, {"round": 1, "type": "choice", "prompt": "What does “ancient” mean?", "choices": ["built only a few days ago", "very old; belonging to a distant time in the past", "food bought from a restaurant to eat somewhere else", "to connect one person or thing with another in your mind"], "a": 1, "why": "ancient /ˈeɪn.ʃənt/ · cổ xưa; cổ đại. Example: Tourists visit the ancient city every year.", "source": "assets/word-06.webp", "wordIndex": 5}, {"round": 1, "type": "choice", "prompt": "What does “religious” mean?", "choices": ["connected only with buying and selling", "people born and living at about the same time", "connected with religion or religious beliefs", "a belief or custom passed down through generations"], "a": 2, "why": "religious /rɪˈlɪdʒ.əs/ · thuộc tôn giáo. Example: The temple is an important religious site.", "source": "assets/word-07.webp", "wordIndex": 6}, {"round": 1, "type": "choice", "prompt": "They hope to found a heritage club.\nWhat does “found” mean here?", "choices": ["to close an organisation permanently", "physical or mental energy used to do something", "very beautiful, impressive or grand", "to establish or start an organisation"], "a": 3, "why": "found /faʊnd/ · thành lập; cũng là dạng quá khứ của find: tìm thấy. Example: They hope to found a heritage club. Found (= establish): found–founded–founded. Find (= discover): find–found–found. Yesterday we found an old coin.", "source": "assets/word-08.webp", "wordIndex": 7}, {"round": 1, "type": "choice", "prompt": "What does “promote” mean?", "choices": ["to encourage something or help make it better known", "to make people forget something on purpose", "strongly established and difficult to change", "to protect something and keep it in good condition"], "a": 0, "why": "promote /prəˈməʊt/ · quảng bá; thúc đẩy. Example: The festival helps promote local culture.", "source": "assets/word-09.webp", "wordIndex": 8}, {"round": 1, "type": "choice", "prompt": "I recognize this building from an old photograph.\nWhat does “recognize” mean here?", "choices": ["to refuse to notice or accept anything", "to identify something you have seen before", "to become visible; also, to seem", "kept in good condition despite being old"], "a": 1, "why": "recognize /ˈrek.əɡ.naɪz/ · công nhận; nhận ra. Example: The award helps people recognize the site’s importance.", "source": "assets/word-10.webp", "wordIndex": 9}, {"round": 2, "type": "choice", "prompt": "What does “contribute” mean?", "choices": ["to take away all support from a project", "simple and most necessary or important", "to give time, money or help towards something", "traditions, buildings and other things passed down from the past"], "a": 2, "why": "contribute /kənˈtrɪb.juːt/ · đóng góp; góp phần. Example: Local people contribute time to heritage projects.", "source": "assets/word-11.webp", "wordIndex": 10}, {"round": 2, "type": "choice", "prompt": "Students observe the weavers at work.\nWhat does “observe” mean here?", "choices": ["to invent a story without looking", "to connect one person or thing with another in your mind", "because of someone or something that helps produce a result", "to watch someone or something carefully"], "a": 3, "why": "observe /əbˈzɜːv/ · quan sát; tuân thủ, thực hành (luật lệ, phong tục). Example: Students observe the weavers at work. Observe can mean watch carefully, follow a rule, or mark/celebrate a custom or special occasion.", "source": "assets/word-12.webp", "wordIndex": 11}, {"round": 2, "type": "choice", "prompt": "We ordered a takeaway after the trip.\nWhat does “takeaway” mean here?", "choices": ["food bought from a restaurant to eat somewhere else", "a ticket for entry to a museum", "a belief or custom passed down through generations", "very old; belonging to a distant time in the past"], "a": 0, "why": "takeaway /ˈteɪk.ə.weɪ/ · đồ ăn mang về; điều rút ra, thông điệp chính. Example: We ordered a takeaway after the trip. Takeaway can also mean the main lesson or message: The main takeaway is to respect local traditions.", "source": "assets/word-13.webp", "wordIndex": 12}, {"round": 2, "type": "choice", "prompt": "What does “generation” mean?", "choices": ["a short break between two lessons", "people born and living at about the same time", "very beautiful, impressive or grand", "connected with religion or religious beliefs"], "a": 1, "why": "generation /ˌdʒen.əˈreɪ.ʃən/ · thế hệ. Example: Each generation passes traditions to the next.", "source": "assets/word-14.webp", "wordIndex": 13}, {"round": 2, "type": "choice", "prompt": "What does “effort” mean?", "choices": ["a result achieved without trying", "to protect something and keep it in good condition", "physical or mental energy used to do something", "to establish or start an organisation"], "a": 2, "why": "effort /ˈef.ət/ · sự nỗ lực; cố gắng. Example: Preserving heritage takes time and effort.", "source": "assets/word-15.webp", "wordIndex": 14}, {"round": 2, "type": "choice", "prompt": "What does “deep-rooted” mean?", "choices": ["temporary and easy to forget", "kept in good condition despite being old", "to encourage something or help make it better known", "strongly established and difficult to change"], "a": 3, "why": "deep-rooted /ˌdiːpˈruː.tɪd/ · ăn sâu; bám rễ lâu đời. Example: Respect for older people is deep-rooted in the community.", "source": "assets/word-16.webp", "wordIndex": 15}, {"round": 2, "type": "choice", "prompt": "What does “appear” mean?", "choices": ["to become visible; also, to seem", "to disappear from view", "traditions, buildings and other things passed down from the past", "to identify someone or something, or officially accept its importance"], "a": 0, "why": "appear /əˈpɪə(r)/ · xuất hiện; có vẻ. Example: Stars appear in the sky after sunset.", "source": "assets/word-17.webp", "wordIndex": 16}, {"round": 2, "type": "choice", "prompt": "What does “basic” mean?", "choices": ["highly complicated and advanced", "simple and most necessary or important", "because of someone or something that helps produce a result", "to give time, money or help towards something"], "a": 1, "why": "basic /ˈbeɪ.sɪk/ · cơ bản. Example: Students learn the basic skills of weaving.", "source": "assets/word-18.webp", "wordIndex": 17}, {"round": 2, "type": "choice", "prompt": "What does “associate” mean?", "choices": ["to separate two things so they have no connection", "very old; belonging to a distant time in the past", "to connect one person or thing with another in your mind", "to watch carefully; also, to follow a rule or custom"], "a": 2, "why": "associate /əˈsəʊ.si.eɪt/ · liên hệ; liên tưởng; gắn liền. Example: People associate this village with silk.", "source": "assets/word-19.webp", "wordIndex": 18}, {"round": 2, "type": "choice", "prompt": "What does “tradition” mean?", "choices": ["a new rule invented this morning", "connected with religion or religious beliefs", "food bought from a restaurant to eat somewhere else", "a belief or custom passed down through generations"], "a": 3, "why": "tradition /trəˈdɪʃ.ən/ · truyền thống; phong tục. Example: Making traditional cakes is a family tradition.", "source": "assets/word-20.webp", "wordIndex": 19}, {"round": 3, "type": "fill", "prompt": "The heritage society was _____ in 1990. (found = establish)", "accepted": ["founded"], "why": "Found meaning establish is a regular verb: found–founded–founded."}, {"round": 3, "type": "fill", "prompt": "Yesterday, we _____ an old coin near the temple. (find)", "accepted": ["found"], "why": "Find meaning discover is irregular: find–found–found. Do not use founded here."}, {"round": 3, "type": "fill", "prompt": "The festival helps _____ local culture to foreign visitors. (promote)", "accepted": ["promote"], "why": "Help can be followed by the base verb. Promote local culture = help make it better known."}, {"round": 3, "type": "fill", "prompt": "Many families _____ time and money to heritage projects. (contribute)", "accepted": ["contribute"], "why": "Contribute time/money to a project = đóng góp thời gian/tiền bạc cho dự án."}, {"round": 3, "type": "fill", "prompt": "People often _____ this village with traditional weaving. (associate)", "accepted": ["associate"], "why": "Associate A with B = liên hệ hoặc gắn A với B."}, {"round": 4, "type": "order", "prompt": "Explain how the temple stayed in good condition.", "words": ["Thanks to", "their efforts,", "the temple", "is well-preserved."], "answer": "Thanks to their efforts, the temple is well-preserved.", "alternatives": ["The temple is well-preserved thanks to their efforts."], "why": "Thanks to = nhờ vào. Efforts = những nỗ lực. Well-preserved = được bảo tồn tốt."}, {"round": 4, "type": "order", "prompt": "Say why protection matters.", "words": ["We should", "preserve", "our cultural heritage."], "answer": "We should preserve our cultural heritage.", "alternatives": [], "why": "Preserve our cultural heritage = bảo tồn di sản văn hoá của chúng ta."}, {"round": 4, "type": "order", "prompt": "Describe traditions that have existed for a long time.", "words": ["These traditions", "are deep-rooted", "in our community."], "answer": "These traditions are deep-rooted in our community.", "alternatives": ["In our community these traditions are deep-rooted."], "why": "Deep-rooted describes something strongly established over a long period."}, {"round": 4, "type": "order", "prompt": "Say that your family follows a religious custom every spring.", "words": ["We observe", "a religious tradition", "every spring."], "answer": "We observe a religious tradition every spring.", "alternatives": ["Every spring we observe a religious tradition."], "why": "Observe a tradition = thực hành, giữ một phong tục. It does not only mean watch carefully."}, {"round": 4, "type": "order", "prompt": "Express the main lesson from a heritage trip.", "words": ["The main takeaway", "is to respect", "local traditions."], "answer": "The main takeaway is to respect local traditions.", "alternatives": [], "why": "Here takeaway means the key message or lesson, not food."}];
+const WORDS=[{"word": "magnificent", "ipa": "/mæɡˈnɪf.ɪ.sənt/", "pos": "adjective", "vi": "tráng lệ; lộng lẫy; hùng vĩ", "meaning": "very beautiful, impressive or grand", "example": "The ancient temple is magnificent."}, {"word": "preserve", "ipa": "/prɪˈzɜːv/", "pos": "verb", "vi": "bảo tồn; gìn giữ", "meaning": "to protect something and keep it in good condition", "example": "We must preserve our cultural heritage."}, {"word": "well-preserved", "ipa": "/ˌwel prɪˈzɜːvd/", "pos": "adjective", "vi": "được bảo tồn tốt; còn nguyên vẹn", "meaning": "kept in good condition despite being old", "example": "The old house is still well-preserved."}, {"word": "heritage", "ipa": "/ˈher.ɪ.tɪdʒ/", "pos": "noun", "vi": "di sản", "meaning": "traditions, buildings and other things passed down from the past", "example": "The village is proud of its cultural heritage."}, {"word": "thanks to", "ipa": "/ˈθæŋks tə/", "pos": "phrase", "vi": "nhờ vào", "meaning": "because of someone or something that helps produce a result", "example": "Thanks to local people, the temple was saved."}, {"word": "ancient", "ipa": "/ˈeɪn.ʃənt/", "pos": "adjective", "vi": "cổ xưa; cổ đại", "meaning": "very old; belonging to a distant time in the past", "example": "Tourists visit the ancient city every year."}, {"word": "religious", "ipa": "/rɪˈlɪdʒ.əs/", "pos": "adjective", "vi": "thuộc tôn giáo", "meaning": "connected with religion or religious beliefs", "example": "The temple is an important religious site."}, {"word": "found", "ipa": "/faʊnd/", "pos": "verb", "vi": "thành lập; cũng là dạng quá khứ của find: tìm thấy", "meaning": "to establish or start an organisation", "example": "They hope to found a heritage club.", "note": "Found (= establish): found–founded–founded. Find (= discover): find–found–found. Yesterday we found an old coin."}, {"word": "promote", "ipa": "/prəˈməʊt/", "pos": "verb", "vi": "quảng bá; thúc đẩy", "meaning": "to encourage something or help make it better known", "example": "The festival helps promote local culture."}, {"word": "recognize", "ipa": "/ˈrek.əɡ.naɪz/", "pos": "verb", "vi": "công nhận; nhận ra", "meaning": "to identify someone or something, or officially accept its importance", "example": "The award helps people recognize the site’s importance."}, {"word": "contribute", "ipa": "/kənˈtrɪb.juːt/", "pos": "verb", "vi": "đóng góp; góp phần", "meaning": "to give time, money or help towards something", "example": "Local people contribute time to heritage projects."}, {"word": "observe", "ipa": "/əbˈzɜːv/", "pos": "verb", "vi": "quan sát; tuân thủ, thực hành (luật lệ, phong tục)", "meaning": "to watch carefully; also, to follow a rule or custom", "example": "Students observe the weavers at work.", "note": "Observe can mean watch carefully, follow a rule, or mark/celebrate a custom or special occasion."}, {"word": "takeaway", "ipa": "/ˈteɪk.ə.weɪ/", "pos": "noun", "vi": "đồ ăn mang về; điều rút ra, thông điệp chính", "meaning": "food bought from a restaurant to eat somewhere else", "example": "We ordered a takeaway after the trip.", "note": "Takeaway can also mean the main lesson or message: The main takeaway is to respect local traditions."}, {"word": "generation", "ipa": "/ˌdʒen.əˈreɪ.ʃən/", "pos": "noun", "vi": "thế hệ", "meaning": "people born and living at about the same time", "example": "Each generation passes traditions to the next."}, {"word": "effort", "ipa": "/ˈef.ət/", "pos": "noun", "vi": "sự nỗ lực; cố gắng", "meaning": "physical or mental energy used to do something", "example": "Preserving heritage takes time and effort."}, {"word": "deep-rooted", "ipa": "/ˌdiːpˈruː.tɪd/", "pos": "adjective", "vi": "ăn sâu; bám rễ lâu đời", "meaning": "strongly established and difficult to change", "example": "Respect for older people is deep-rooted in the community."}, {"word": "appear", "ipa": "/əˈpɪə(r)/", "pos": "verb", "vi": "xuất hiện; có vẻ", "meaning": "to become visible; also, to seem", "example": "Stars appear in the sky after sunset."}, {"word": "basic", "ipa": "/ˈbeɪ.sɪk/", "pos": "adjective", "vi": "cơ bản", "meaning": "simple and most necessary or important", "example": "Students learn the basic skills of weaving."}, {"word": "associate", "ipa": "/əˈsəʊ.si.eɪt/", "pos": "verb", "vi": "liên hệ; liên tưởng; gắn liền", "meaning": "to connect one person or thing with another in your mind", "example": "People associate this village with silk."}, {"word": "tradition", "ipa": "/trəˈdɪʃ.ən/", "pos": "noun", "vi": "truyền thống; phong tục", "meaning": "a belief or custom passed down through generations", "example": "Making traditional cakes is a family tradition."}];
+const ROUNDS=['Discover the meanings','Words in context','Use the right form','Build your message'];
+const $=id=>document.getElementById(id);
+let state=[],pos=0,player='',soundOn=true,audioCtx=null,roundTimer=null,startedAt=0,attemptId='',finished=false;
+const totalRounds=4;
+const norm=s=>s.toLowerCase().replace(/[’‘]/g,"'").replace(/[.!?,]/g,'').replace(/\s+/g,' ').trim();
+function points(){return state.reduce((n,s)=>n+(s.correct===true?1:0),0)}
+function chime(kind) {
+  if (!soundOn) return;
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    if (!audioCtx) audioCtx = new AC();
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    const melodies = {
+      correct:[[659,0,.11],[880,.11,.15],[1046,.23,.18]],
+      wrong:[[330,0,.13],[220,.11,.19]],
+      round:[[523,0,.1],[659,.11,.1],[784,.23,.19]],
+      finish:[[523,0,.14],[659,.15,.14],[784,.31,.15],[1046,.49,.28]]
+    };
+    const now = audioCtx.currentTime;
+    (melodies[kind] || melodies.correct).forEach(([hz,delay,len])=>{
+      const osc=audioCtx.createOscillator(),gain=audioCtx.createGain();
+      osc.type=kind==="wrong"?"triangle":"sine";
+      osc.frequency.setValueAtTime(hz,now+delay);
+      gain.gain.setValueAtTime(.0001,now+delay);
+      gain.gain.exponentialRampToValueAtTime(.095,now+delay+.018);
+      gain.gain.exponentialRampToValueAtTime(.0001,now+delay+len);
+      osc.connect(gain);gain.connect(audioCtx.destination);
+      osc.start(now+delay);osc.stop(now+delay+len+.01);
+    });
+  } catch (_) {}
+}
+function particles(count) {
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const box=$("fxParticles"), colors=["#ffc85b","#f65caf","#6de0b1","#77caff","#9e76f2","#ff9d78"];
+  for(let n=0;n<count;n++){
+    const p=document.createElement("span");
+    p.style.left=(Math.random()*100)+"%";
+    p.style.background=colors[n%colors.length];
+    p.style.animationDelay=(Math.random()*.27)+"s";
+    p.style.animationDuration=(.95+Math.random()*.7)+"s";
+    box.appendChild(p);
+    p.addEventListener("animationend",()=>p.remove(),{once:true});
+  }
+}
+function animateScore() {
+  const el=$("score");
+  el.textContent=points();
+  el.classList.remove("score-pulse");
+  void el.offsetWidth;
+  el.classList.add("score-pulse");
+}
+function toastRound(round){
+  if(roundTimer)clearTimeout(roundTimer);
+  $("roundToastText").textContent="Round "+round+" / "+totalRounds;
+  $("roundToast").classList.remove("hidden");
+  chime("round");
+  roundTimer=setTimeout(()=>$("roundToast").classList.add("hidden"),900);
+}
+function setScreen(id){
+  ["startScreen","gameScreen","resultScreen"].forEach(x=>$(x).classList.toggle("hidden",x!==id));
+}
+
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function start(){const n=$('nameInput').value.trim();if(!n){$('nameInput').setCustomValidity('Please enter your name first.');$('nameInput').reportValidity();return}player=n;restart()}
+function restart(){attemptId=crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);finished=false;startedAt=Date.now();pos=0;state=QUESTIONS.map(q=>({choice:null,correct:null,text:'',built:[],bank:q.words?shuffle(q.words.map((_,i)=>i)):[]}));setScreen('gameScreen');render();toastRound(1)}
+function render(){const q=QUESTIONS[pos],s=state[pos];$('roundPill').textContent='Round '+q.round+' / 4';$('questionPill').textContent='Question '+(pos+1)+' / '+QUESTIONS.length;$('total').textContent=QUESTIONS.length;$('score').textContent=points();$('bar').style.width=state.filter(s=>s.correct!==null).length/QUESTIONS.length*100+'%';$('kicker').textContent='Your heritage word adventure';$('title').textContent=ROUNDS[q.round-1];$('instruction').textContent=q.type==='order'?'Tap words or phrases to build the sentence. Tap a selected part to remove it.':q.type==='fill'?'Complete the sentence. Change the form of the word if needed.':'Choose the best meaning for the word in this context.';
+$('question').textContent=q.prompt;const heading=$('wordHeading');heading.classList.toggle('hidden',q.wordIndex===undefined);heading.replaceChildren();if(q.wordIndex!==undefined){const w=WORDS[q.wordIndex];const title=document.createElement('strong');title.textContent=w.word;const phonetic=document.createElement('span');phonetic.textContent=w.ipa+' · '+w.pos;heading.append(title,phonetic)}
+const source=$('sourceDetails');source.classList.toggle('hidden',!q.source);const sourceImage=$('sourceImage');if(q.source){sourceImage.src=q.source}else{sourceImage.removeAttribute('src')}if(source.dataset.pos!==String(pos)){source.open=false;source.dataset.pos=String(pos)}
+
+const box=$('answers');box.replaceChildren();
+if(q.type==='choice'){q.choices.forEach((label,i)=>{const b=document.createElement('button');b.className='answer';b.textContent=label;b.disabled=s.correct!==null;if(s.correct!==null){if(i===q.a)b.classList.add('good');if(i===s.choice&&!s.correct)b.classList.add('bad')}b.onclick=()=>commit({choice:i,correct:i===q.a});box.append(b)})}
+else if(q.type==='fill'){
+ const wrap=document.createElement('div');wrap.className='fill-box';
+ const label=document.createElement('label');label.htmlFor='verbInput';label.textContent='Your word form';
+ const input=document.createElement('input');input.id='verbInput';input.type='text';input.autocomplete='off';input.autocapitalize='none';input.spellcheck=false;input.maxLength=80;input.placeholder='Type here';input.value=s.text||'';input.disabled=s.correct!==null;if(s.correct!==null)input.className=s.correct?'good':'bad';input.oninput=()=>{s.text=input.value};input.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();checkFill()}};
+ const check=document.createElement('button');check.id='checkFillBtn';check.className='btn';check.textContent='Check answer ✓';check.disabled=s.correct!==null;check.onclick=checkFill;
+ wrap.append(label,input,check);box.append(wrap);
+}
+else {const built=document.createElement('div');built.className='built-zone';built.setAttribute('aria-label','Your sentence');if(!s.built.length)built.textContent='Your sentence appears here';s.built.forEach((id,n)=>{const b=document.createElement('button');b.className='btn';b.textContent=q.words[id];b.disabled=s.correct!==null;b.onclick=()=>{s.built.splice(n,1);render()};built.append(b)});box.append(built);const bank=document.createElement('div');bank.className='word-zone';bank.setAttribute('aria-label','Word bank');s.bank.forEach(id=>{const b=document.createElement('button');b.className='btn';b.textContent=q.words[id];b.dataset.wordId=id;b.disabled=s.correct!==null||s.built.includes(id);b.onclick=()=>{s.built.push(id);render()};bank.append(b)});box.append(bank);const actions=document.createElement('div');actions.className='order-actions';const clear=document.createElement('button');clear.className='btn';clear.textContent='Clear';clear.disabled=s.correct!==null;clear.onclick=()=>{s.built=[];render()};const check=document.createElement('button');check.id='checkBtn';check.className='btn check';check.textContent='Check sentence ✓';check.disabled=s.correct!==null;check.onclick=()=>{if(s.built.length!==q.words.length){$('feedback').textContent='Use every word before checking.';return}const text=s.built.map(id=>q.words[id]).join(' ');commit({correct:[q.answer,...(q.alternatives||[])].some(a=>norm(text)===norm(a))})};actions.append(clear,check);box.append(actions)}
+const f=$('feedback');f.className='feedback'+(s.correct===null?'':s.correct?' success':' error');f.textContent=s.correct===null?'':(s.correct?'Correct! ⭐ ':'Incorrect. Correct answer: '+solution(q)+'. ')+q.why;
+$('backBtn').disabled=pos===0;$('nextBtn').disabled=s.correct===null;$('nextBtn').textContent=pos===QUESTIONS.length-1?'Finish →':'Next →';$('nextBtn').classList.toggle('ready',s.correct!==null);const scene=$('gameScreen').querySelector('.stage');scene.classList.remove('fx-enter');void scene.offsetWidth;scene.classList.add('fx-enter');}
+function solution(q){return q.type==='choice'?q.choices[q.a]:q.type==='fill'?q.accepted[0]:q.answer}
+function checkFill(){
+ const q=QUESTIONS[pos],s=state[pos];if(finished||s.correct!==null||q.type!=='fill')return;const input=$('verbInput'),text=input.value.trim();
+ if(!text){$('feedback').textContent='Please type a word before checking.';input.focus();return}
+ commit({text,correct:q.accepted.some(a=>norm(a)===norm(text))});
+}
+
+function commit(result){if(finished||state[pos].correct!==null)return;Object.assign(state[pos],result);chime(result.correct?'correct':'wrong');if(result.correct)particles(20);render();animateScore()}
+function next(){if(finished||state[pos].correct===null)return;if(pos===QUESTIONS.length-1){finish();return}const prev=QUESTIONS[pos].round;pos++;render();if(QUESTIONS[pos].round!==prev)toastRound(QUESTIONS[pos].round);$('title').scrollIntoView({block:'start',behavior:'instant'})}
+function back(){if(!finished&&pos>0){pos--;render()}}
+
+// Keep the central helper and its backup; add percentage to this game's one POST.
+// The helper creates its request synchronously before its first await.
+function submitTeacherRecord(payload){
+ const originalFetch=window.fetch;
+ window.fetch=function(resource,options){
+  if(String(resource)===(window.TEACHER_RECORDS_CONFIG||{}).endpoint && options && options.method==='POST'){
+   try{const body=JSON.parse(options.body);if(body.attemptId===payload.attemptId)options={...options,body:JSON.stringify({...body,percentage:payload.percentage})}}catch(_){}
+  }
+  return originalFetch.call(window,resource,options);
+ };
+ try{return TeacherRecords.submit(payload)}finally{window.fetch=originalFetch}
+}
+
+async function finish(){if(finished||state.some(s=>s.correct===null))return;finished=true;const id=attemptId,score=points(),percentage=Math.round(score/QUESTIONS.length*100);setScreen('resultScreen');$('playerResult').textContent=player;$('finalPoints').textContent=score;$('finalTotal').textContent=QUESTIONS.length;$('resultMessage').textContent=percentage+'% · '+(percentage>=80?'You’re a vocabulary superstar!':'Great effort! Review your answers and try again.');chime('finish');particles(100);
+$('review').replaceChildren();QUESTIONS.forEach((q,i)=>{const s=state[i],a=document.createElement('article');const h=document.createElement('strong');h.textContent=(s.correct?'✅ ':'❌ ')+(i+1)+'. '+q.prompt;const p=document.createElement('p');p.textContent='Your answer: '+(q.type==='choice'?q.choices[s.choice]:q.type==='fill'?s.text:s.built.map(id=>q.words[id]).join(' '))+'\nCorrect answer: '+solution(q)+'\n'+q.why;a.append(h,p);$('review').append(a)});
+const payload={studentName:player,gameTitle:document.title,score,total:QUESTIONS.length,percentage,durationSeconds:Math.round((Date.now()-startedAt)/1000),completedAt:new Date().toISOString(),attemptId:id,gameUrl:location.href};
+try{const k='heritageVocabularyAttemptBackup',rows=JSON.parse(localStorage.getItem(k)||'[]');if(!rows.some(r=>r.attemptId===id)){rows.unshift(payload);localStorage.setItem(k,JSON.stringify(rows.slice(0,50)))}}catch(_){}
+if(/\/_templates?\//.test(location.pathname)){$('recordStatus').textContent='Template preview — score not sent.';return}
+$('recordStatus').textContent='Sending score to your teacher…';try{const result=window.TeacherRecords?await submitTeacherRecord(payload):{sent:false};if(attemptId===id)$('recordStatus').textContent=result.sent?'✅ Score sent to your teacher.':'⚠️ Result saved on this device. Could not send the score right now.'}catch(_){if(attemptId===id)$('recordStatus').textContent='⚠️ Result saved on this device. Could not send the score right now.'}}
+function toggleSound(){soundOn=!soundOn;$('soundBtn').textContent=soundOn?'🔊 Sound On':'🔇 Sound Off';$('soundBtn').setAttribute('aria-pressed',String(soundOn))}
+$('startBtn').onclick=start;$('nameInput').oninput=()=>$('nameInput').setCustomValidity('');$('nameInput').onkeydown=e=>{if(e.key==='Enter')start()};$('backBtn').onclick=back;$('nextBtn').onclick=next;$('restartBtn').onclick=restart;$('playAgainBtn').onclick=restart;$('soundBtn').onclick=toggleSound;
+
+
+</script>
+</body>
+</html>

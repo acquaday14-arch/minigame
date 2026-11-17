@@ -214,5 +214,11 @@
     "description": "15 questions: 5 opening verb-form choices, 5 typed verb gaps and 5 sentence-rewriting builders. Covers all 10 passage gaps and all 4 original rewrites, plus 1 transfer task. Past simple, past continuous and present wishes. No timer.",
     "level": "Grade 9 · A2–B1",
     "path": "./heritage-wish-quest/"
+  },
+  {
+    "title": "Heritage Vocabulary Quest",
+    "description": "30 questions covering all 20 worksheet words: 20 meaning/context choices, 5 word-form gaps and 5 sentence builders. IPA, Vietnamese meanings, examples and a completed vocabulary table. Distinguishes found/find and two meanings of takeaway. No timer.",
+    "level": "Grade 9 · A2–B1",
+    "path": "./heritage-vocabulary-quest/"
   }
 ]
