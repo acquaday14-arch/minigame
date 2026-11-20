@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en" data-template-effects-version="2">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Local Shops Quest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --purple:#5b36d6;--purple2:#7a57eb;--ink:#20285c;--pink:#ef5aa7;
+      --yellow:#ffd76a;--mint:#6be0b2;--sky:#74c7ff;--soft:#f8f6ff;--line:#d9cff8;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;min-height:100vh;padding:18px;
+      font-family:"Fredoka",ui-rounded,"Trebuchet MS",Arial,sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at 9% 12%,#ffe2f0 0 7%,transparent 7.5%),
+        radial-gradient(circle at 90% 14%,#dff5ff 0 8%,transparent 8.5%),
+        linear-gradient(180deg,#f8fbff,#f4efff);
+    }
+    button,input{font:inherit}
+    .app{width:min(1060px,100%);margin:1vh auto}
+    .frame{
+      background:#fff;border:4px solid #4b32bf;border-radius:32px;overflow:hidden;
+      box-shadow:0 14px 0 #ded5ff,0 24px 44px rgba(63,47,147,.14)
+    }
+    .top{
+      background:linear-gradient(135deg,var(--purple),#6541dc);
+      padding:18px 28px;color:#fff;display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:center
+    }
+    .pill{border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.12);padding:9px 15px;border-radius:999px;font-weight:700}
+    .top .pill:last-child{justify-self:end}
+    .progress{height:10px;background:#dacdfd}
+    .progress>div{height:100%;width:25%;background:linear-gradient(90deg,#ffd75f,#ffae73);transition:.25s}
+    .stage{padding:28px 34px 24px;min-height:650px;position:relative}
+    .kicker{text-align:center;color:var(--pink);font-size:14px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+    h1{text-align:center;font-size:clamp(38px,6vw,62px);margin:8px 0 8px;color:#432cb5;line-height:.98}
+    .instruction{text-align:center;font-size:20px;font-weight:600;margin-bottom:24px}
+    .card{
+      width:min(780px,100%);margin:0 auto;border:2px solid var(--line);border-radius:24px;padding:24px;
+      background:linear-gradient(180deg,#fff,#fcfbff)
+    }
+    .question{font-size:clamp(24px,4vw,36px);font-weight:700;text-align:center;margin:6px 0 22px}
+    .answers{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .answer{
+      border:3px solid #ded3fa;background:#fbf9ff;border-radius:18px;padding:15px 18px;color:var(--ink);
+      font-weight:700;font-size:18px;cursor:pointer;transition:.14s
+    }
+    .answer:hover{transform:translateY(-2px);border-color:#aa8df3}
+    .answer.good{border-color:#65d5a8;background:#ebfff6;color:#17734e;animation:pop .28s ease}
+    .answer.bad{border-color:#ff98a4;background:#fff0f2;color:#a63a47;animation:shake .28s ease}
+    .feedback{min-height:42px;text-align:center;margin:18px 0 4px;font-size:19px;font-weight:700}
+    .controls{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:14px;margin-top:28px}
+    .btn{border:2px solid #dbd2f8;border-radius:15px;background:#fff;color:#4734a9;padding:12px 18px;font-weight:700;cursor:pointer}
+    .controls .next{justify-self:end;background:linear-gradient(135deg,#ffd37c,#ffbd84);border:0;color:#76563b}
+    .center{text-align:center}
+    .hidden{display:none!important}
+    .start{padding:60px 32px;text-align:center}
+    .start p{font-size:19px;color:#667085}
+    .start input{width:min(560px,100%);padding:15px 17px;border:2px solid #d8cff4;border-radius:16px;font-size:18px}
+    .start .btn{margin-top:12px;background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;border:0}
+    .stars{font-size:26px;letter-spacing:5px}
+    .confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:20}
+    .confetti i{position:absolute;width:10px;height:16px;border-radius:3px;animation:fall 900ms linear forwards}
+    @keyframes pop{50%{transform:scale(1.035)}}
+    @keyframes shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+    @keyframes fall{from{transform:translateY(-10vh) rotate(0)}to{transform:translateY(110vh) rotate(500deg);opacity:.7}}
+    @media(max-width:700px){.top{grid-template-columns:1fr 1fr}.top>div:nth-child(2){grid-column:1/-1;grid-row:2;text-align:center}.stage{padding:22px 16px}.answers{grid-template-columns:1fr}.controls{grid-template-columns:1fr 1fr}.controls .restart{display:none}}
+  
+    /* Template FX v2 — reduced-motion aware and dependency-free */
+    .fx-enter{animation:fx-enter .38s cubic-bezier(.2,.8,.2,1) both}
+    .answer{transition:transform .17s ease,border-color .2s ease,box-shadow .2s ease,background .2s ease}
+    .answer:active,.btn:active{transform:scale(.97)}
+    .answer:focus-visible,.btn:focus-visible{outline:4px solid #f7bb56;outline-offset:3px}
+    .answer.good{box-shadow:0 0 0 4px rgba(81,213,157,.13)}
+    .answer.bad{box-shadow:0 0 0 4px rgba(255,118,144,.13)}
+    .answer:disabled{cursor:default}
+    .pill.score-pulse,.score-pulse{animation:fx-pulse .35s ease}
+    .feedback.success{color:#10845c;animation:fx-pop .4s ease both}
+    .feedback.error{color:#b44453;animation:fx-shake .32s ease both}
+    .mid-actions{display:flex;gap:8px;align-items:center;justify-content:center}
+    .mid-actions .btn{white-space:nowrap}
+    .btn:disabled{opacity:.4;cursor:not-allowed;filter:grayscale(.25)}
+    .next.ready{animation:fx-glow 1.8s ease-in-out infinite}
+    .fx-particles{position:fixed;inset:0;z-index:100;pointer-events:none;overflow:hidden}
+    .fx-particles span{position:absolute;top:-24px;width:10px;height:16px;border-radius:3px;animation:fx-rain 1.15s cubic-bezier(.2,.7,.5,1) forwards}
+    .fx-round-toast{position:fixed;inset:0;z-index:90;pointer-events:none;display:flex;justify-content:center;align-items:center;background:rgba(45,29,122,.11)}
+    .fx-round-toast.hidden{display:none!important}
+    .fx-round-pill{
+      text-align:center;border:4px solid #fff;border-radius:28px;
+      background:linear-gradient(135deg,#5b36d6,#8b6cf0);color:white;
+      padding:24px 36px;box-shadow:0 20px 60px rgba(54,38,152,.25);
+      font-size:clamp(25px,4vw,42px);font-weight:700;animation:fx-toast .7s ease both
+    }
+    .fx-round-pill small{display:block;font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:#ffdf85;margin-bottom:4px}
+    .result-area{text-align:center;padding:56px 24px}
+    .result-area h1{font-size:clamp(40px,6vw,64px);margin:10px 0;color:#432cb5}
+    .result-area .result-score{font-size:clamp(60px,10vw,100px);color:#5b36d6;font-weight:700;line-height:1.12}
+    .result-area .result-sub{font-size:21px;margin:8px 0 28px}
+    .result-area .btn{background:#6040d7;color:#fff;border:0;padding:15px 30px;font-size:18px}
+    .result-area .result-stars{font-size:38px;letter-spacing:8px;animation:fx-float 2s ease-in-out infinite}
+    .picture{animation:fx-picture-in .55s cubic-bezier(.2,.8,.2,1) both;transition:transform .25s ease,box-shadow .25s ease}
+    .picture:hover{transform:translateY(-3px) rotate(-1deg);box-shadow:0 17px 34px rgba(82,58,173,.21)}
+    .picture img{width:100%;height:100%;object-fit:cover;display:block}
+    @keyframes fx-enter{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes fx-pop{0%{transform:scale(.83);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+    @keyframes fx-pulse{50%{transform:scale(1.09)}}
+    @keyframes fx-shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+    @keyframes fx-glow{50%{box-shadow:0 0 0 6px rgba(255,205,100,.22)}}
+    @keyframes fx-rain{0%{transform:translateY(-10vh) rotate(0deg);opacity:1}100%{transform:translateY(112vh) rotate(620deg);opacity:0}}
+    @keyframes fx-toast{0%{transform:scale(.7) translateY(25px);opacity:0}40%{transform:scale(1.05);opacity:1}100%{transform:scale(1);opacity:1}}
+    @keyframes fx-float{50%{transform:translateY(-9px)}}
+    @keyframes fx-picture-in{from{opacity:0;transform:scale(.91) rotate(-2deg)}to{opacity:1;transform:scale(1) rotate(0)}}
+    @media(max-width:700px){
+      .controls{grid-template-columns:1fr 1fr}
+      .controls .mid-actions{grid-column:1/-1;grid-row:2;justify-content:center}
+      .controls .restart{display:inline-flex}
+      .result-area{padding:42px 16px}
+      .mid-actions .btn{font-size:14px;padding:10px 12px}
+    }
+    @media(prefers-reduced-motion:reduce){
+      *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+    }
+
+  
+.stage{min-height:500px}.question{white-space:pre-line;line-height:1.5;font-size:clamp(23px,3.5vw,32px)}.instruction{line-height:1.5}.answer{font-size:22px;min-height:62px}.btn{min-height:48px}.card{width:min(850px,100%)}h1{font-size:clamp(34px,5vw,52px);line-height:1.1}.feedback{line-height:1.6}.start label{display:block;margin:12px}.start input{font-size:22px}.word-zone,.built-zone{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;padding:12px}.built-zone{border:2px dashed #b7a1f0;border-radius:18px;min-height:80px;background:#f4f0ff}.word-zone .btn,.built-zone .btn{font-size:22px;background:#fff}.word-zone .btn:disabled{background:#e6e2ee;border-color:#c4bbd5;color:#8b819e;opacity:.45}.order-actions{grid-column:1/-1;display:flex;justify-content:center;gap:12px}.check{background:#5b36d6;color:white}.review{text-align:left;max-width:850px;margin:24px auto;padding:0 10px;font:19px/1.6 'Trebuchet MS',Arial,sans-serif}.review article{padding:14px 0;border-bottom:1px solid #ddd;white-space:pre-line}.review p{margin:8px 0}summary{cursor:pointer;color:#5234b6;font-weight:bold}button:focus-visible,input:focus-visible,summary:focus-visible{outline:4px solid #e9b52c;outline-offset:3px}.top{padding:18px;gap:8px}.pill{font-size:16px;padding:10px}.progress>div{width:0%}@media(max-width:700px){body{padding:8px}.stage{padding:20px 14px}.card{padding:15px}.start{padding:38px 18px}.word-zone .btn,.built-zone .btn{font-size:20px;padding:10px 12px}.controls{gap:8px}.controls .btn{padding:11px}.top{padding:12px}.pill{font-size:14px}}
+
+.source-reference{margin:0 auto 22px;max-width:100%;font:18px/1.6 'Trebuchet MS',Arial,sans-serif}.source-reference img{display:block;width:100%;height:auto;margin-top:12px;border:1px solid #ddd;border-radius:10px}.fill-box{grid-column:1/-1;display:grid;gap:12px;text-align:center}.fill-box label{font-size:20px;font-weight:600}.fill-box input{width:100%;min-width:0;border:3px solid #c9b8ef;border-radius:15px;padding:16px;font-size:25px;color:#20285c;background:#fff}.fill-box input.good{border-color:#259963;background:#ebfff5}.fill-box input.bad{border-color:#c25268;background:#fff0f4}.fill-box input:disabled{opacity:1;-webkit-text-fill-color:#20285c}.fill-box .btn{justify-self:center;background:#5b36d6;color:white;font-size:20px}.word-zone .btn,.built-zone .btn{font-size:21px;line-height:1.4;max-width:100%;white-space:normal}.built-zone{line-height:1.5}.question{font-size:clamp(22px,3vw,29px)}.start p{line-height:1.6}@media(max-width:700px){.word-zone .btn,.built-zone .btn{font-size:19px}.fill-box input{font-size:22px}.question{font-size:23px}}
+
+.word-heading{text-align:center;display:grid;gap:8px;margin:4px 0 20px;color:#5233ba}.word-heading strong{font-size:clamp(32px,5vw,44px)}.word-heading span{font-family:'Trebuchet MS',Arial,sans-serif;font-size:21px;color:#655776}.word-table-link{display:inline-block;margin:10px 0 22px;padding:12px 18px;border:2px solid #cbbaf3;border-radius:15px;color:#5233ba;font-size:19px;font-weight:bold}.source-reference img{max-width:100%;margin:12px auto 0}.answer{font-size:clamp(24px,2.5vw,29px);line-height:1.5}.feedback{font-size:22px;white-space:pre-line}.question{font-size:clamp(22px,3vw,28px)}
+
+.source-reference{font-size:20px}.source-reference p{font-size:23px;line-height:1.5}.question{font-size:clamp(26px,3vw,34px)}.app{width:min(1200px,100%)}.card{width:min(1000px,100%)}.answer{text-align:left} .start p{font-size:23px} @media(max-width:700px){.answer{font-size:23px}.question{font-size:25px}.feedback{font-size:21px}}
+</style>
+</head>
+<body>
+  <main class="app">
+    <section class="frame" id="startScreen">
+      <div class="start">
+        <div class="stars">⭐ ✨ ⭐</div>
+        <div class="kicker">Local shops · Real-life replies · Opinions</div>
+        <h1>My Local<br>Shops Quest</h1>
+        <p>30 questions · 6 topics · No timer<br>24 choices · 6 sentence builders<br>Explore nearby shops, shopping habits, new businesses, markets, chain stores and community support.<br>Each question earns 1 point. Personal discussion prompts are optional and unscored.</p>
+        <label for="nameInput">Your name</label><br><input id="nameInput" placeholder="Enter your name" maxlength="80" autocomplete="name">
+        <br>
+        <button class="btn" id="startBtn">Start Challenge</button>
+      </div>
+    </section>
+
+    <section class="frame hidden" id="gameScreen">
+      <div class="top">
+        <div class="pill" id="roundPill">Round 1 / 6</div>
+        <div class="pill">⭐ <span id="score">0</span> / <span id="total">30</span> points</div>
+        <div class="pill" id="questionPill">Question 1 / 30</div>
+      </div>
+      <div class="progress"><div id="bar"></div></div>
+
+      <div class="stage">
+        <div class="kicker" id="kicker">Quick choice · 1 of 4</div>
+        <h1 id="title">Choose the best answer</h1>
+        <div class="instruction" id="instruction">Pick the sentence that sounds natural.</div>
+
+        <div class="card">
+          <div class="question" id="question"></div>
+          <details id="sourceDetails" class="source-reference hidden"><summary>View the worksheet topic</summary><p id="sourceText"></p><img id="sourceImage" alt="Discussion topic from the original worksheet"></details><div class="answers" id="answers"></div>
+          <div class="feedback" id="feedback" role="status" aria-live="polite"></div>
+        </div>
+
+        <div class="controls">
+          <button class="btn" id="backBtn">← Back</button>
+          <div class="mid-actions"><button class="btn" id="soundBtn" aria-pressed="true">🔊 Sound On</button><button class="btn restart" id="restartBtn">↻ Restart</button></div>
+          <button class="btn next" id="nextBtn">Next →</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="frame hidden" id="resultScreen">
+      <div class="result-area">
+        <div class="result-stars">🌟 🎉 🌟</div>
+        <h1>Great Job, <span id="playerResult"></span>!</h1>
+        <div class="result-score"><span id="finalPoints">0</span>/<span id="finalTotal">30</span></div>
+        <p class="result-sub" id="resultMessage"></p>
+        <p class="result-sub" id="recordStatus" role="status"></p><details class="review"><summary>Review my answers</summary><div id="review"></div></details>
+        <button class="btn" id="playAgainBtn">↻ Play Again</button>
+      </div>
+    </section>
+  <div class="fx-particles" id="fxParticles" aria-hidden="true"></div>
+    <div class="fx-round-toast hidden" id="roundToast" aria-hidden="true"><div class="fx-round-pill"><small>LEVEL UP ✨</small><span id="roundToastText"></span></div></div>
+  </main>
+
+<script src="/minigame/shared/teacher-records-config.js"></script>
+<script src="/minigame/shared/teacher-records.js"></script>
+<script>
+
+
+const QUESTIONS=[{"round": 1, "type": "choice", "prompt": "You want fresh bread for breakfast. Where should you go?", "choices": ["A bakery.", "A pharmacy.", "A bookshop.", "A shoe shop."], "a": 0, "why": "A bakery sells bread and often cakes.", "source": "assets/topic-1.webp", "sourceText": "What kinds of shops are there near where you live?"}, {"round": 1, "type": "choice", "prompt": "A shop is local. What does this mean?", "choices": ["It sells only expensive products.", "It is in the area near you.", "It has branches in every country.", "It is always open all night."], "a": 1, "why": "Local describes something in a particular area or neighbourhood.", "source": "assets/topic-1.webp", "sourceText": "What kinds of shops are there near where you live?"}, {"round": 1, "type": "choice", "prompt": "Alex: What kinds of shops are there near your home?\nChoose the reply that describes the area.", "choices": ["I buy bread twice a week.", "The bakery opens at seven.", "There\u2019s a bakery and a small supermarket.", "I paid by card yesterday."], "a": 2, "why": "There is / there are introduces places or things in an area.", "source": "assets/topic-1.webp", "sourceText": "What kinds of shops are there near where you live?"}, {"round": 1, "type": "choice", "prompt": "Jo: Is there a pharmacy within walking distance?\nChoose the reply that answers the location question.", "choices": ["Yes, I need some medicine.", "Yes, it sells shampoo too.", "Yes, I went there yesterday.", "Yes, there\u2019s one next to the bakery."], "a": 3, "why": "Next to the bakery explains where the pharmacy is.", "source": "assets/topic-1.webp", "sourceText": "What kinds of shops are there near where you live?"}, {"round": 1, "type": "order", "prompt": "Describe a place near your home.", "words": ["There is", "a bakery", "near my home."], "answer": "There is a bakery near my home.", "alternatives": [], "why": "There is + a singular place. Near my home describes its location.", "reflect": "What kinds of shops are there near where you live?", "source": "assets/topic-1.webp", "sourceText": "What kinds of shops are there near where you live?"}, {"round": 2, "type": "choice", "prompt": "Mia visits her local supermarket twice a week. How often does she go?", "choices": ["Every two weeks.", "Two times each week.", "Two times each day.", "Only once a month."], "a": 1, "why": "Twice a week means two times each week.", "source": "assets/topic-2.webp", "sourceText": "Do you go to them much? If not, where do you buy things?"}, {"round": 2, "type": "choice", "prompt": "Which phrase means buying products using a website or an app?", "choices": ["Window-shopping.", "Closing down.", "Shopping online.", "Standing in a queue."], "a": 2, "why": "Shopping online means buying things over the internet.", "source": "assets/topic-2.webp", "sourceText": "Do you go to them much? If not, where do you buy things?"}, {"round": 2, "type": "choice", "prompt": "Ben: Do you go to the local shops much?\nChoose the reply that explains how often.", "choices": ["The nearest one sells bread.", "They\u2019re beside the station.", "The shop assistant was helpful.", "Not very often. I usually shop online."], "a": 3, "why": "Much in this question means often. Not very often answers the frequency question.", "source": "assets/topic-2.webp", "sourceText": "Do you go to them much? If not, where do you buy things?"}, {"round": 2, "type": "choice", "prompt": "Eva: Where do you buy things if you don\u2019t use the local shops?\nChoose the reply that names another place or method.", "choices": ["I usually order from an online supermarket.", "Only on Saturday mornings.", "Because the prices are lower.", "I prefer paying by card."], "a": 0, "why": "An online supermarket is an alternative place to buy things.", "source": "assets/topic-2.webp", "sourceText": "Do you go to them much? If not, where do you buy things?"}, {"round": 2, "type": "order", "prompt": "Say how often you buy food.", "words": ["I usually", "buy food", "at the local market."], "answer": "I usually buy food at the local market.", "alternatives": [], "why": "Usually describes a habit and normally goes before the main verb.", "reflect": "Do you go to them much? If not, where do you buy things?", "source": "assets/topic-2.webp", "sourceText": "Do you go to them much? If not, where do you buy things?"}, {"round": 3, "type": "choice", "prompt": "A caf\u00e9 has opened up near your house. What has happened?", "choices": ["It has stopped doing business permanently.", "It has reduced all its prices.", "It has started doing business.", "It has moved into your house."], "a": 2, "why": "Open up can mean start operating as a business.", "source": "assets/topic-3.webp", "sourceText": "What shops have opened up or closed down near you? Are you pleased or sorry about it?"}, {"round": 3, "type": "choice", "prompt": "A shop is closing down permanently. What does this mean?", "choices": ["It is shutting for the evening only.", "It is opening a second branch.", "It is taking a short lunch break.", "The business will stop operating."], "a": 3, "why": "Close down means stop operating, rather than simply close at the end of a day.", "source": "assets/topic-3.webp", "sourceText": "What shops have opened up or closed down near you? Are you pleased or sorry about it?"}, {"round": 3, "type": "choice", "prompt": "The old bookshop has closed down.\nChoose the reply that expresses regret and gives a reason.", "choices": ["That\u2019s a shame. It had a great selection.", "That\u2019s excellent. I disliked its selection.", "It closes at six every evening.", "I\u2019ll buy some bread there tomorrow."], "a": 0, "why": "That\u2019s a shame expresses regret. The second sentence explains why the speaker is sorry.", "source": "assets/topic-3.webp", "sourceText": "What shops have opened up or closed down near you? Are you pleased or sorry about it?"}, {"round": 3, "type": "choice", "prompt": "A new greengrocer\u2019s has opened nearby.\nChoose the reply that expresses pleasure and gives a reason.", "choices": ["I\u2019m sorry. It\u2019s a place I really needed.", "I\u2019m pleased. Now I can buy fresh vegetables nearby.", "It closed down three years ago.", "I don\u2019t know when the bus leaves."], "a": 1, "why": "I\u2019m pleased expresses a positive feeling, followed by a reason.", "source": "assets/topic-3.webp", "sourceText": "What shops have opened up or closed down near you? Are you pleased or sorry about it?"}, {"round": 3, "type": "order", "prompt": "Report a recent change in your neighbourhood.", "words": ["A new caf\u00e9", "has opened up", "near the station."], "answer": "A new caf\u00e9 has opened up near the station.", "alternatives": [], "why": "Has opened up describes a recent change with a result now.", "reflect": "What shops have opened up or closed down near you? Are you pleased or sorry about it?", "source": "assets/topic-3.webp", "sourceText": "What shops have opened up or closed down near you? Are you pleased or sorry about it?"}, {"round": 4, "type": "choice", "prompt": "At a market, what is a stall?", "choices": ["A large company with many branches.", "A receipt showing what you paid.", "A room where you try on clothes.", "A small stand or area where someone sells goods."], "a": 3, "why": "A market stall is a stand or selling area, often inside or outside a market.", "source": "assets/topic-4.webp", "sourceText": "Are there any markets near you? Do you ever go to them? Do you have a favourite stall?"}, {"round": 4, "type": "choice", "prompt": "Fruit at this stall is good value. What does that mean?", "choices": ["Its quality is good for the price.", "It is always completely free.", "It must be the cheapest fruit in town.", "It can only be bought in large amounts."], "a": 0, "why": "Good value means worth the money. It does not necessarily mean the cheapest.", "source": "assets/topic-4.webp", "sourceText": "Are there any markets near you? Do you ever go to them? Do you have a favourite stall?"}, {"round": 4, "type": "choice", "prompt": "Sam: Do you have a favourite stall at the market?\nChoose the reply that identifies one and explains why.", "choices": ["Yes, the market opens on Sundays.", "Yes, the fruit stall. The peaches are always fresh.", "Yes, there is a bus stop nearby.", "Yes, I usually carry a shopping bag."], "a": 1, "why": "The fruit stall identifies the favourite; fresh peaches explain the preference.", "source": "assets/topic-4.webp", "sourceText": "Are there any markets near you? Do you ever go to them? Do you have a favourite stall?"}, {"round": 4, "type": "choice", "prompt": "Customer: Excuse me, how much are these tomatoes?\nChoose the reply that gives their price.", "choices": ["They\u2019re grown on a local farm.", "They arrived this morning.", "They\u2019re two pounds a kilo.", "They\u2019re beside the potatoes."], "a": 2, "why": "Two pounds a kilo gives the price per kilogram.", "source": "assets/topic-4.webp", "sourceText": "Are there any markets near you? Do you ever go to them? Do you have a favourite stall?"}, {"round": 4, "type": "order", "prompt": "Explain your preference at a market.", "words": ["My favourite stall", "sells fresh fruit", "at reasonable prices."], "answer": "My favourite stall sells fresh fruit at reasonable prices.", "alternatives": [], "why": "Reasonable prices are fair and not too high.", "reflect": "Are there any markets near you? Do you ever go to them? Do you have a favourite stall?", "source": "assets/topic-4.webp", "sourceText": "Are there any markets near you? Do you ever go to them? Do you have a favourite stall?"}, {"round": 5, "type": "choice", "prompt": "What is a chain store?", "choices": ["A shop that belongs to a business with several branches.", "A stall that sells metal chains only.", "Any shop that opens for one day.", "A website where customers exchange products."], "a": 0, "why": "Chain stores share a business name and belong to the same company or group.", "source": "assets/topic-5.webp", "sourceText": "What chain stores are there near you? Do you shop there? How do you feel about them? Are they in competition with local shops?"}, {"round": 5, "type": "choice", "prompt": "A chain store and a local shop are in competition. What does this mean?", "choices": ["They must have the same owner.", "They are trying to attract the same customers.", "They always sell identical products at identical prices.", "They have agreed to stop selling goods."], "a": 1, "why": "In competition means competing for customers or business.", "source": "assets/topic-5.webp", "sourceText": "What chain stores are there near you? Do you shop there? How do you feel about them? Are they in competition with local shops?"}, {"round": 5, "type": "choice", "prompt": "Lea: How do you feel about the new chain store?\nChoose a balanced opinion with an advantage and a drawback.", "choices": ["It opened on Monday morning.", "It is next to the railway station.", "It has plenty of choice, but it can get very crowded.", "It sells clothes for men and women."], "a": 2, "why": "A balanced opinion considers both a benefit and a drawback.", "source": "assets/topic-5.webp", "sourceText": "What chain stores are there near you? Do you shop there? How do you feel about them? Are they in competition with local shops?"}, {"round": 5, "type": "choice", "prompt": "The chain store sells the same kind of clothes as the local shop.\nWhich statement is a possibility, rather than an unsupported certainty?", "choices": ["The local shop will definitely close tomorrow.", "Everyone will stop shopping locally immediately.", "The two shops must belong to the same owner.", "They may compete for some of the same customers."], "a": 3, "why": "May expresses a possibility. The information does not prove closure or shared ownership.", "source": "assets/topic-5.webp", "sourceText": "What chain stores are there near you? Do you shop there? How do you feel about them? Are they in competition with local shops?"}, {"round": 5, "type": "order", "prompt": "Compare a chain store with a local shop.", "words": ["The chain store", "has more choice,", "but the local shop", "offers personal service."], "answer": "The chain store has more choice, but the local shop offers personal service.", "alternatives": [], "why": "But contrasts the chain store\u2019s range with the local shop\u2019s personal service.", "reflect": "What chain stores are there near you? Do you shop there? How do you feel about them? Are they in competition with local shops?", "source": "assets/topic-5.webp", "sourceText": "What chain stores are there near you? Do you shop there? How do you feel about them? Are they in competition with local shops?"}, {"round": 6, "type": "choice", "prompt": "A small shop is struggling because its sales are low. What does struggling mean here?", "choices": ["Expanding very quickly.", "Having difficulty staying successful.", "Selling everything for free.", "Opening earlier every morning."], "a": 1, "why": "Struggling describes having serious difficulties, here in running the business.", "source": "assets/topic-6.webp", "sourceText": "Are small shops in your country struggling? Do you think it\u2019s important to support them? Why or why not?"}, {"round": 6, "type": "choice", "prompt": "Which action directly supports a local business financially?", "choices": ["Taking a photo without buying anything.", "Walking past its door every day.", "Buying something you need from that shop.", "Looking at its opening times online."], "a": 2, "why": "A purchase brings money to the business. Other actions may help indirectly, but do not directly pay the shop.", "source": "assets/topic-6.webp", "sourceText": "Are small shops in your country struggling? Do you think it\u2019s important to support them? Why or why not?"}, {"round": 6, "type": "choice", "prompt": "Kim: Why do you think supporting small shops matters?\nChoose a reason connected to the community.", "choices": ["All small shops are always cheaper than every chain.", "Online shopping has no benefits for anyone.", "Every chain store sells poor-quality goods.", "They can provide local jobs and useful services."], "a": 3, "why": "Local jobs and services are reasonable benefits. Avoid unsupported claims using all, always or every.", "source": "assets/topic-6.webp", "sourceText": "Are small shops in your country struggling? Do you think it\u2019s important to support them? Why or why not?"}, {"round": 6, "type": "choice", "prompt": "Your local shop is useful, but some products cost more than you can afford.\nChoose a practical plan that considers your budget.", "choices": ["Buy affordable essentials there when possible and compare prices.", "Spend all your savings there immediately.", "Buy things you do not need to increase its sales.", "Assume every product there is more expensive."], "a": 0, "why": "A realistic plan can support local shops while respecting your own budget.", "source": "assets/topic-6.webp", "sourceText": "Are small shops in your country struggling? Do you think it\u2019s important to support them? Why or why not?"}, {"round": 6, "type": "order", "prompt": "Give a reason for supporting small businesses.", "words": ["We should support", "local shops", "because they provide", "jobs in our community."], "answer": "We should support local shops because they provide jobs in our community.", "alternatives": [], "why": "Because introduces a reason. This is one possible opinion; other well-supported personal views are valid.", "reflect": "Are small shops in your country struggling? Do you think it\u2019s important to support them? Why or why not?", "source": "assets/topic-6.webp", "sourceText": "Are small shops in your country struggling? Do you think it\u2019s important to support them? Why or why not?"}];
+const ROUNDS=["Near my home", "Shopping habits", "Opening and closing", "Markets and stalls", "Chain stores", "Support local shops"];
+const $=id=>document.getElementById(id);
+let state=[],pos=0,player='',soundOn=true,audioCtx=null,roundTimer=null,startedAt=0,attemptId='',finished=false;
+const totalRounds=6;
+const norm=s=>s.toLowerCase().replace(/[’‘]/g,"'").replace(/[.!?,]/g,'').replace(/\s+/g,' ').trim();
+function points(){return state.reduce((n,s)=>n+(s.correct===true?1:0),0)}
+function chime(kind) {
+  if (!soundOn) return;
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    if (!audioCtx) audioCtx = new AC();
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    const melodies = {
+      correct:[[659,0,.11],[880,.11,.15],[1046,.23,.18]],
+      wrong:[[330,0,.13],[220,.11,.19]],
+      round:[[523,0,.1],[659,.11,.1],[784,.23,.19]],
+      finish:[[523,0,.14],[659,.15,.14],[784,.31,.15],[1046,.49,.28]]
+    };
+    const now = audioCtx.currentTime;
+    (melodies[kind] || melodies.correct).forEach(([hz,delay,len])=>{
+      const osc=audioCtx.createOscillator(),gain=audioCtx.createGain();
+      osc.type=kind==="wrong"?"triangle":"sine";
+      osc.frequency.setValueAtTime(hz,now+delay);
+      gain.gain.setValueAtTime(.0001,now+delay);
+      gain.gain.exponentialRampToValueAtTime(.095,now+delay+.018);
+      gain.gain.exponentialRampToValueAtTime(.0001,now+delay+len);
+      osc.connect(gain);gain.connect(audioCtx.destination);
+      osc.start(now+delay);osc.stop(now+delay+len+.01);
+    });
+  } catch (_) {}
+}
+function particles(count) {
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const box=$("fxParticles"), colors=["#ffc85b","#f65caf","#6de0b1","#77caff","#9e76f2","#ff9d78"];
+  for(let n=0;n<count;n++){
+    const p=document.createElement("span");
+    p.style.left=(Math.random()*100)+"%";
+    p.style.background=colors[n%colors.length];
+    p.style.animationDelay=(Math.random()*.27)+"s";
+    p.style.animationDuration=(.95+Math.random()*.7)+"s";
+    box.appendChild(p);
+    p.addEventListener("animationend",()=>p.remove(),{once:true});
+  }
+}
+function animateScore() {
+  const el=$("score");
+  el.textContent=points();
+  el.classList.remove("score-pulse");
+  void el.offsetWidth;
+  el.classList.add("score-pulse");
+}
+function toastRound(round){
+  if(roundTimer)clearTimeout(roundTimer);
+  $("roundToastText").textContent="Round "+round+" / "+totalRounds;
+  $("roundToast").classList.remove("hidden");
+  chime("round");
+  roundTimer=setTimeout(()=>$("roundToast").classList.add("hidden"),900);
+}
+function setScreen(id){
+  ["startScreen","gameScreen","resultScreen"].forEach(x=>$(x).classList.toggle("hidden",x!==id));
+}
+
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function start(){const n=$('nameInput').value.trim();if(!n){$('nameInput').setCustomValidity('Please enter your name first.');$('nameInput').reportValidity();return}player=n;restart()}
+function restart(){attemptId=crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);finished=false;startedAt=Date.now();pos=0;state=QUESTIONS.map(q=>({choice:null,correct:null,text:'',built:[],bank:q.words?shuffle(q.words.map((_,i)=>i)):[]}));setScreen('gameScreen');render();toastRound(1)}
+function render(){const q=QUESTIONS[pos],s=state[pos];$('roundPill').textContent='Round '+q.round+' / 6';$('questionPill').textContent='Question '+(pos+1)+' / '+QUESTIONS.length;$('total').textContent=QUESTIONS.length;$('score').textContent=points();$('bar').style.width=state.filter(s=>s.correct!==null).length/QUESTIONS.length*100+'%';$('kicker').textContent='Your local shopping adventure';$('title').textContent=ROUNDS[q.round-1];$('instruction').textContent=q.type==='order'?'Tap words or phrases to build the sentence. Tap a selected part to remove it.':q.type==='fill'?'Complete the sentence. Change the form of the word if needed.':'Choose the best answer for this situation.';
+$('question').textContent=q.prompt;
+const source=$('sourceDetails');source.classList.toggle('hidden',!q.source);const sourceImage=$('sourceImage');$('sourceText').textContent=q.sourceText||'';if(q.source){sourceImage.src=q.source}else{sourceImage.removeAttribute('src')}if(source.dataset.pos!==String(pos)){source.open=false;source.dataset.pos=String(pos)}
+
+const box=$('answers');box.replaceChildren();
+if(q.type==='choice'){q.choices.forEach((label,i)=>{const b=document.createElement('button');b.className='answer';b.textContent=label;b.disabled=s.correct!==null;if(s.correct!==null){if(i===q.a)b.classList.add('good');if(i===s.choice&&!s.correct)b.classList.add('bad')}b.onclick=()=>commit({choice:i,correct:i===q.a});box.append(b)})}
+else if(q.type==='fill'){
+ const wrap=document.createElement('div');wrap.className='fill-box';
+ const label=document.createElement('label');label.htmlFor='verbInput';label.textContent='Your word form';
+ const input=document.createElement('input');input.id='verbInput';input.type='text';input.autocomplete='off';input.autocapitalize='none';input.spellcheck=false;input.maxLength=80;input.placeholder='Type here';input.value=s.text||'';input.disabled=s.correct!==null;if(s.correct!==null)input.className=s.correct?'good':'bad';input.oninput=()=>{s.text=input.value};input.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();checkFill()}};
+ const check=document.createElement('button');check.id='checkFillBtn';check.className='btn';check.textContent='Check answer ✓';check.disabled=s.correct!==null;check.onclick=checkFill;
+ wrap.append(label,input,check);box.append(wrap);
+}
+else {const built=document.createElement('div');built.className='built-zone';built.setAttribute('aria-label','Your sentence');if(!s.built.length)built.textContent='Your sentence appears here';s.built.forEach((id,n)=>{const b=document.createElement('button');b.className='btn';b.textContent=q.words[id];b.disabled=s.correct!==null;b.onclick=()=>{s.built.splice(n,1);render()};built.append(b)});box.append(built);const bank=document.createElement('div');bank.className='word-zone';bank.setAttribute('aria-label','Word bank');s.bank.forEach(id=>{const b=document.createElement('button');b.className='btn';b.textContent=q.words[id];b.dataset.wordId=id;b.disabled=s.correct!==null||s.built.includes(id);b.onclick=()=>{s.built.push(id);render()};bank.append(b)});box.append(bank);const actions=document.createElement('div');actions.className='order-actions';const clear=document.createElement('button');clear.className='btn';clear.textContent='Clear';clear.disabled=s.correct!==null;clear.onclick=()=>{s.built=[];render()};const check=document.createElement('button');check.id='checkBtn';check.className='btn check';check.textContent='Check sentence ✓';check.disabled=s.correct!==null;check.onclick=()=>{if(s.built.length!==q.words.length){$('feedback').textContent='Use every word before checking.';return}const text=s.built.map(id=>q.words[id]).join(' ');commit({correct:[q.answer,...(q.alternatives||[])].some(a=>norm(text)===norm(a))})};actions.append(clear,check);box.append(actions)}
+const f=$('feedback');f.className='feedback'+(s.correct===null?'':s.correct?' success':' error');f.textContent=s.correct===null?'':(s.correct?'Correct! ⭐ ':'Incorrect. Correct answer: '+solution(q)+'. ')+q.why+(s.correct!==null&&q.reflect?'\n\nYour turn — optional, unscored: '+q.reflect:'');
+$('backBtn').disabled=pos===0;$('nextBtn').disabled=s.correct===null;$('nextBtn').textContent=pos===QUESTIONS.length-1?'Finish →':'Next →';$('nextBtn').classList.toggle('ready',s.correct!==null);const scene=$('gameScreen').querySelector('.stage');scene.classList.remove('fx-enter');void scene.offsetWidth;scene.classList.add('fx-enter');}
+function solution(q){return q.type==='choice'?q.choices[q.a]:q.type==='fill'?q.accepted[0]:q.answer}
+function checkFill(){
+ const q=QUESTIONS[pos],s=state[pos];if(finished||s.correct!==null||q.type!=='fill')return;const input=$('verbInput'),text=input.value.trim();
+ if(!text){$('feedback').textContent='Please type a word before checking.';input.focus();return}
+ commit({text,correct:q.accepted.some(a=>norm(a)===norm(text))});
+}
+
+function commit(result){if(finished||state[pos].correct!==null)return;Object.assign(state[pos],result);chime(result.correct?'correct':'wrong');if(result.correct)particles(20);render();animateScore()}
+function next(){if(finished||state[pos].correct===null)return;if(pos===QUESTIONS.length-1){finish();return}const prev=QUESTIONS[pos].round;pos++;render();if(QUESTIONS[pos].round!==prev)toastRound(QUESTIONS[pos].round);$('title').scrollIntoView({block:'start',behavior:'instant'})}
+function back(){if(!finished&&pos>0){pos--;render()}}
+
+// Keep the central helper and its backup; add percentage to this game's one POST.
+// The helper creates its request synchronously before its first await.
+function submitTeacherRecord(payload){
+ const originalFetch=window.fetch;
+ window.fetch=function(resource,options){
+  if(String(resource)===(window.TEACHER_RECORDS_CONFIG||{}).endpoint && options && options.method==='POST'){
+   try{const body=JSON.parse(options.body);if(body.attemptId===payload.attemptId)options={...options,body:JSON.stringify({...body,percentage:payload.percentage})}}catch(_){}
+  }
+  return originalFetch.call(window,resource,options);
+ };
+ try{return TeacherRecords.submit(payload)}finally{window.fetch=originalFetch}
+}
+
+async function finish(){if(finished||state.some(s=>s.correct===null))return;finished=true;const id=attemptId,score=points(),percentage=Math.round(score/QUESTIONS.length*100);setScreen('resultScreen');$('playerResult').textContent=player;$('finalPoints').textContent=score;$('finalTotal').textContent=QUESTIONS.length;$('resultMessage').textContent=percentage+'% · '+(percentage>=80?'You’re a shopping talk superstar!':'Great effort! Review your answers and try again.');chime('finish');particles(100);
+$('review').replaceChildren();QUESTIONS.forEach((q,i)=>{const s=state[i],a=document.createElement('article');const h=document.createElement('strong');h.textContent=(s.correct?'✅ ':'❌ ')+(i+1)+'. '+q.prompt;const p=document.createElement('p');p.textContent='Your answer: '+(q.type==='choice'?q.choices[s.choice]:q.type==='fill'?s.text:s.built.map(id=>q.words[id]).join(' '))+'\nCorrect answer: '+solution(q)+'\n'+q.why;a.append(h,p);$('review').append(a)});
+const payload={studentName:player,gameTitle:document.title,score,total:QUESTIONS.length,percentage,durationSeconds:Math.round((Date.now()-startedAt)/1000),completedAt:new Date().toISOString(),attemptId:id,gameUrl:location.href};
+try{const k='localShopsAttemptBackup',rows=JSON.parse(localStorage.getItem(k)||'[]');if(!rows.some(r=>r.attemptId===id)){rows.unshift(payload);localStorage.setItem(k,JSON.stringify(rows.slice(0,50)))}}catch(_){}
+if(/\/_templates?\//.test(location.pathname)){$('recordStatus').textContent='Template preview — score not sent.';return}
+$('recordStatus').textContent='Sending score to your teacher…';try{const result=window.TeacherRecords?await submitTeacherRecord(payload):{sent:false};if(attemptId===id)$('recordStatus').textContent=result.sent?'✅ Score sent to your teacher.':'⚠️ Result saved on this device. Could not send the score right now.'}catch(_){if(attemptId===id)$('recordStatus').textContent='⚠️ Result saved on this device. Could not send the score right now.'}}
+function toggleSound(){soundOn=!soundOn;$('soundBtn').textContent=soundOn?'🔊 Sound On':'🔇 Sound Off';$('soundBtn').setAttribute('aria-pressed',String(soundOn))}
+$('startBtn').onclick=start;$('nameInput').oninput=()=>$('nameInput').setCustomValidity('');$('nameInput').onkeydown=e=>{if(e.key==='Enter')start()};$('backBtn').onclick=back;$('nextBtn').onclick=next;$('restartBtn').onclick=restart;$('playAgainBtn').onclick=restart;$('soundBtn').onclick=toggleSound;
+
+
+</script>
+</body>
+</html>

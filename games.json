@@ -220,5 +220,11 @@
     "description": "30 questions covering all 20 worksheet words: 20 meaning/context choices, 5 word-form gaps and 5 sentence builders. IPA, Vietnamese meanings, examples and a completed vocabulary table. Distinguishes found/find and two meanings of takeaway. No timer.",
     "level": "Grade 9 · A2–B1",
     "path": "./heritage-vocabulary-quest/"
+  },
+  {
+    "title": "My Local Shops Quest",
+    "description": "30 questions across all 6 worksheet topics: 24 vocabulary and real-life reply choices, 6 sentence builders and optional unscored personal discussion prompts. Original worksheet excerpts. No timer.",
+    "level": "A2–B1",
+    "path": "./my-local-shops/"
   }
 ]
