@@ -226,5 +226,11 @@
     "description": "30 questions across all 6 worksheet topics: 24 vocabulary and real-life reply choices, 6 sentence builders and optional unscored personal discussion prompts. Original worksheet excerpts. No timer.",
     "level": "A2–B1",
     "path": "./my-local-shops/"
+  },
+  {
+    "title": "Possessive Power Quest",
+    "description": "30 questions: 16 choices, 8 typed possessives and 6 sentence builders. Singular and plural owners, irregular plurals, names ending in s, omitted house, and shared versus separate ownership. Original grammar rules appear after answers. No timer.",
+    "level": "A2–B1",
+    "path": "./possessive-quest/"
   }
 ]
