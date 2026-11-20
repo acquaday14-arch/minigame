@@ -232,5 +232,11 @@
     "description": "30 questions: 16 choices, 8 typed possessives and 6 sentence builders. Singular and plural owners, irregular plurals, names ending in s, omitted house, and shared versus separate ownership. Original grammar rules appear after answers. No timer.",
     "level": "A2–B1",
     "path": "./possessive-quest/"
+  },
+  {
+    "title": "Movers Compare & Speak Quest",
+    "description": "30 activities: 18 comparative/superlative grammar tasks, 6 picture-difference choices for Speaking Part 1 and 6 illustrated odd-one-out sets for Speaking Part 3. Teacher-led oral practice, model answers, larger-picture view and original AI illustrations. No timer.",
+    "level": "A1–A2 · Movers",
+    "path": "./movers-compare-speak/"
   }
 ]
