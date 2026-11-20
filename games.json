@@ -238,5 +238,11 @@
     "description": "18 comparative and superlative activities: 10 choices, 4 typed adjective forms and 4 sentence builders. Two grammar rounds. No timer.",
     "level": "A1–A2 · Movers",
     "path": "./movers-compare-speak/"
+  },
+  {
+    "title": "Words & Pets Quest",
+    "description": "24 worksheet activities: all 8 picture words, all 5 reading clues, the Fred–Vicky example and all 6 pet replies, plus 4 sentence builders. Original pictures without answer labels, larger-picture view and answer explanations. No timer.",
+    "level": "A1–A2 · Movers",
+    "path": "./words-pets-quest/"
   }
 ]
