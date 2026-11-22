@@ -244,5 +244,11 @@
     "description": "24 worksheet activities: all 8 picture words, all 5 reading clues, the Fred–Vicky example and all 6 pet replies, plus 4 sentence builders. Original pictures without answer labels, larger-picture view and answer explanations. No timer.",
     "level": "A1–A2 · Movers",
     "path": "./words-pets-quest/"
+  },
+  {
+    "title": "Comparison Duel",
+    "description": "Two-player competition: 16 grammar questions, 16 unique speaking cards, teacher/partner speaking checklist and optional mystery-box rewards or penalties. Learning and luck tracked separately.",
+    "level": "A2–B1 · 2 players",
+    "path": "./comparison-duel/"
   }
 ]
