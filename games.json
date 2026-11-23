@@ -268,5 +268,11 @@
     "description": "30 multiple-choice questions covering all 21 business terms from the three worksheets: 21 meanings and 9 workplace situations. Includes trade fair and technology fair separately, corrected headquarters, source word rows and answer review. No timer.",
     "level": "A2–B1",
     "path": "./business-vocabulary-test/"
+  },
+  {
+    "title": "Travel Vocabulary Test",
+    "description": "30 multiple-choice questions covering all 23 travel terms from the worksheets: 23 meanings and 7 travel situations. Separate bus/train stations, luggage vs suitcase, schedule vs itinerary, direct flights, source word rows and answer review. No timer.",
+    "level": "A2–B1",
+    "path": "./travel-vocabulary-test/"
   }
 ]
