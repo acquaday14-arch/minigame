@@ -250,5 +250,11 @@
     "description": "Two-player competition: 16 grammar questions, 16 unique speaking cards, teacher/partner speaking checklist and optional mystery-box rewards or penalties. Learning and luck tracked separately.",
     "level": "A2–B1 · 2 players",
     "path": "./comparison-duel/"
+  },
+  {
+    "title": "Comparison Power Quest",
+    "description": "30 grammar activities: 18 choices, 6 typed answers and 6 sentence builders. Comparatives, superlatives, short and long adjectives, spelling changes, good/bad/far, and common mistakes. Clear contexts and flexible valid answers. No timer.",
+    "level": "A2–B1",
+    "path": "./comparison-power-quest/"
   }
 ]
