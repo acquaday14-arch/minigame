@@ -256,5 +256,11 @@
     "description": "30 grammar activities plus 2 illustrated typing cards for comparatives and superlatives. Open the full 32-task game or just the 2 picture cards. Three transparent checks cover sentence form, target grammar and picture facts; revise before saving. No timer.",
     "level": "A2–B1",
     "path": "./comparison-power-quest/"
+  },
+  {
+    "title": "Office Vocabulary Test",
+    "description": "30 multiple-choice questions covering all 15 worksheet words: departments, job titles and workplace roles. Vietnamese meanings, workplace situations, source word rows and answer review. No timer.",
+    "level": "A2–B1",
+    "path": "./office-vocabulary-test/"
   }
 ]
