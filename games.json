@@ -280,5 +280,11 @@
     "description": "30 multiple-choice questions covering all 21 shopping terms: 21 meanings and 9 shopping situations. In stock vs out of stock, purchase vs order, exchange vs refund, source word images and answer review. No timer.",
     "level": "A2–B1",
     "path": "./shopping-vocabulary-test/"
+  },
+  {
+    "title": "Healthcare Vocabulary Test",
+    "description": "30 multiple-choice questions covering all 21 worksheet healthcare words: 21 meanings and 9 clinic conversation or language situations. Prescription vs medicine, appointments, recovery, allergic to and dietary requirements. Source word images and answer review. No timer.",
+    "level": "A2–B1",
+    "path": "./healthcare-vocabulary-test/"
   }
 ]
