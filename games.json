@@ -298,5 +298,11 @@
     "description": "30 multiple-choice questions covering all 21 worksheet words: 21 meanings and 9 entertainment or sports situations. Cinematography vs photography, rehearsal, compilation, cheerleader, coach, referee and gaming console. Source word images and answer review. No timer.",
     "level": "A2–B1",
     "path": "./entertainment-sports-test/"
+  },
+  {
+    "title": "Place & Time Expressions Test",
+    "description": "30 multiple-choice questions covering all 20 worksheet expressions: 20 meanings and 10 place/time situations. Across vs opposite, by vs until, already, for now, soon and any minute. First-floor dialect clarified. Source word images and answer review. No timer.",
+    "level": "A2–B1",
+    "path": "./place-time-expressions-test/"
   }
 ]
