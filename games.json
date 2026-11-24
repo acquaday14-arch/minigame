@@ -274,5 +274,11 @@
     "description": "30 multiple-choice questions covering all 23 travel terms from the worksheets: 23 meanings and 7 travel situations. Separate bus/train stations, luggage vs suitcase, schedule vs itinerary, direct flights, source word rows and answer review. No timer.",
     "level": "A2–B1",
     "path": "./travel-vocabulary-test/"
+  },
+  {
+    "title": "Shopping Vocabulary Test",
+    "description": "30 multiple-choice questions covering all 21 shopping terms: 21 meanings and 9 shopping situations. In stock vs out of stock, purchase vs order, exchange vs refund, source word images and answer review. No timer.",
+    "level": "A2–B1",
+    "path": "./shopping-vocabulary-test/"
   }
 ]

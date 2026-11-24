@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="en" data-template-effects-version="2">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Shopping Vocabulary Test</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --purple:#5b36d6;--purple2:#7a57eb;--ink:#20285c;--pink:#ef5aa7;
+      --yellow:#ffd76a;--mint:#6be0b2;--sky:#74c7ff;--soft:#f8f6ff;--line:#d9cff8;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;min-height:100vh;padding:18px;
+      font-family:"Fredoka",ui-rounded,"Trebuchet MS",Arial,sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at 9% 12%,#ffe2f0 0 7%,transparent 7.5%),
+        radial-gradient(circle at 90% 14%,#dff5ff 0 8%,transparent 8.5%),
+        linear-gradient(180deg,#f8fbff,#f4efff);
+    }
+    button,input{font:inherit}
+    .app{width:min(1060px,100%);margin:1vh auto}
+    .frame{
+      background:#fff;border:4px solid #4b32bf;border-radius:32px;overflow:hidden;
+      box-shadow:0 14px 0 #ded5ff,0 24px 44px rgba(63,47,147,.14)
+    }
+    .top{
+      background:linear-gradient(135deg,var(--purple),#6541dc);
+      padding:18px 28px;color:#fff;display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:center
+    }
+    .pill{border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.12);padding:9px 15px;border-radius:999px;font-weight:700}
+    .top .pill:last-child{justify-self:end}
+    .progress{height:10px;background:#dacdfd}
+    .progress>div{height:100%;width:25%;background:linear-gradient(90deg,#ffd75f,#ffae73);transition:.25s}
+    .stage{padding:28px 34px 24px;min-height:650px;position:relative}
+    .kicker{text-align:center;color:var(--pink);font-size:14px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+    h1{text-align:center;font-size:clamp(38px,6vw,62px);margin:8px 0 8px;color:#432cb5;line-height:.98}
+    .instruction{text-align:center;font-size:20px;font-weight:600;margin-bottom:24px}
+    .card{
+      width:min(780px,100%);margin:0 auto;border:2px solid var(--line);border-radius:24px;padding:24px;
+      background:linear-gradient(180deg,#fff,#fcfbff)
+    }
+    .question{font-size:clamp(24px,4vw,36px);font-weight:700;text-align:center;margin:6px 0 22px}
+    .answers{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .answer{
+      border:3px solid #ded3fa;background:#fbf9ff;border-radius:18px;padding:15px 18px;color:var(--ink);
+      font-weight:700;font-size:18px;cursor:pointer;transition:.14s
+    }
+    .answer:hover{transform:translateY(-2px);border-color:#aa8df3}
+    .answer.good{border-color:#65d5a8;background:#ebfff6;color:#17734e;animation:pop .28s ease}
+    .answer.bad{border-color:#ff98a4;background:#fff0f2;color:#a63a47;animation:shake .28s ease}
+    .feedback{min-height:42px;text-align:center;margin:18px 0 4px;font-size:19px;font-weight:700}
+    .controls{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:14px;margin-top:28px}
+    .btn{border:2px solid #dbd2f8;border-radius:15px;background:#fff;color:#4734a9;padding:12px 18px;font-weight:700;cursor:pointer}
+    .controls .next{justify-self:end;background:linear-gradient(135deg,#ffd37c,#ffbd84);border:0;color:#76563b}
+    .center{text-align:center}
+    .hidden{display:none!important}
+    .start{padding:60px 32px;text-align:center}
+    .start p{font-size:19px;color:#667085}
+    .start input{width:min(560px,100%);padding:15px 17px;border:2px solid #d8cff4;border-radius:16px;font-size:18px}
+    .start .btn{margin-top:12px;background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;border:0}
+    .stars{font-size:26px;letter-spacing:5px}
+    .confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:20}
+    .confetti i{position:absolute;width:10px;height:16px;border-radius:3px;animation:fall 900ms linear forwards}
+    @keyframes pop{50%{transform:scale(1.035)}}
+    @keyframes shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+    @keyframes fall{from{transform:translateY(-10vh) rotate(0)}to{transform:translateY(110vh) rotate(500deg);opacity:.7}}
+    @media(max-width:700px){.top{grid-template-columns:1fr 1fr}.top>div:nth-child(2){grid-column:1/-1;grid-row:2;text-align:center}.stage{padding:22px 16px}.answers{grid-template-columns:1fr}.controls{grid-template-columns:1fr 1fr}.controls .restart{display:none}}
+  
+    /* Template FX v2 — reduced-motion aware and dependency-free */
+    .fx-enter{animation:fx-enter .38s cubic-bezier(.2,.8,.2,1) both}
+    .answer{transition:transform .17s ease,border-color .2s ease,box-shadow .2s ease,background .2s ease}
+    .answer:active,.btn:active{transform:scale(.97)}
+    .answer:focus-visible,.btn:focus-visible{outline:4px solid #f7bb56;outline-offset:3px}
+    .answer.good{box-shadow:0 0 0 4px rgba(81,213,157,.13)}
+    .answer.bad{box-shadow:0 0 0 4px rgba(255,118,144,.13)}
+    .answer:disabled{cursor:default}
+    .pill.score-pulse,.score-pulse{animation:fx-pulse .35s ease}
+    .feedback.success{color:#10845c;animation:fx-pop .4s ease both}
+    .feedback.error{color:#b44453;animation:fx-shake .32s ease both}
+    .mid-actions{display:flex;gap:8px;align-items:center;justify-content:center}
+    .mid-actions .btn{white-space:nowrap}
+    .btn:disabled{opacity:.4;cursor:not-allowed;filter:grayscale(.25)}
+    .next.ready{animation:fx-glow 1.8s ease-in-out infinite}
+    .fx-particles{position:fixed;inset:0;z-index:100;pointer-events:none;overflow:hidden}
+    .fx-particles span{position:absolute;top:-24px;width:10px;height:16px;border-radius:3px;animation:fx-rain 1.15s cubic-bezier(.2,.7,.5,1) forwards}
+    .fx-round-toast{position:fixed;inset:0;z-index:90;pointer-events:none;display:flex;justify-content:center;align-items:center;background:rgba(45,29,122,.11)}
+    .fx-round-toast.hidden{display:none!important}
+    .fx-round-pill{
+      text-align:center;border:4px solid #fff;border-radius:28px;
+      background:linear-gradient(135deg,#5b36d6,#8b6cf0);color:white;
+      padding:24px 36px;box-shadow:0 20px 60px rgba(54,38,152,.25);
+      font-size:clamp(25px,4vw,42px);font-weight:700;animation:fx-toast .7s ease both
+    }
+    .fx-round-pill small{display:block;font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:#ffdf85;margin-bottom:4px}
+    .result-area{text-align:center;padding:56px 24px}
+    .result-area h1{font-size:clamp(40px,6vw,64px);margin:10px 0;color:#432cb5}
+    .result-area .result-score{font-size:clamp(60px,10vw,100px);color:#5b36d6;font-weight:700;line-height:1.12}
+    .result-area .result-sub{font-size:21px;margin:8px 0 28px}
+    .result-area .btn{background:#6040d7;color:#fff;border:0;padding:15px 30px;font-size:18px}
+    .result-area .result-stars{font-size:38px;letter-spacing:8px;animation:fx-float 2s ease-in-out infinite}
+    .picture{animation:fx-picture-in .55s cubic-bezier(.2,.8,.2,1) both;transition:transform .25s ease,box-shadow .25s ease}
+    .picture:hover{transform:translateY(-3px) rotate(-1deg);box-shadow:0 17px 34px rgba(82,58,173,.21)}
+    .picture img{width:100%;height:100%;object-fit:cover;display:block}
+    @keyframes fx-enter{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes fx-pop{0%{transform:scale(.83);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+    @keyframes fx-pulse{50%{transform:scale(1.09)}}
+    @keyframes fx-shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+    @keyframes fx-glow{50%{box-shadow:0 0 0 6px rgba(255,205,100,.22)}}
+    @keyframes fx-rain{0%{transform:translateY(-10vh) rotate(0deg);opacity:1}100%{transform:translateY(112vh) rotate(620deg);opacity:0}}
+    @keyframes fx-toast{0%{transform:scale(.7) translateY(25px);opacity:0}40%{transform:scale(1.05);opacity:1}100%{transform:scale(1);opacity:1}}
+    @keyframes fx-float{50%{transform:translateY(-9px)}}
+    @keyframes fx-picture-in{from{opacity:0;transform:scale(.91) rotate(-2deg)}to{opacity:1;transform:scale(1) rotate(0)}}
+    @media(max-width:700px){
+      .controls{grid-template-columns:1fr 1fr}
+      .controls .mid-actions{grid-column:1/-1;grid-row:2;justify-content:center}
+      .controls .restart{display:inline-flex}
+      .result-area{padding:42px 16px}
+      .mid-actions .btn{font-size:14px;padding:10px 12px}
+    }
+    @media(prefers-reduced-motion:reduce){
+      *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+    }
+
+  
+.answer{font-size:clamp(23px,2.6vw,29px);line-height:1.35;min-height:85px}.question{line-height:1.35}.instruction{line-height:1.5}.feedback{line-height:1.6;font-size:22px}.start label{font-size:22px}.start input{font-size:24px}details{margin:22px auto;text-align:left;max-width:780px;font-family:Arial,sans-serif;line-height:1.6}summary{cursor:pointer;color:#4734a9;font-weight:700;padding:12px;border-radius:12px;background:#f3efff}#sourceImage{display:block;max-width:100%;max-height:240px;margin:16px auto}#sourceNote{font-size:18px}#review article{padding:18px;border-bottom:2px solid #ddd}#review article p{margin:8px 0}.btn{min-height:48px}.progress>div{width:0}@media(max-width:500px){body{padding:8px}.app{width:100%}.top{padding:14px 10px;gap:8px}.pill{padding:8px;font-size:14px}.card{padding:18px 12px}.start{padding:40px 18px}.answer{font-size:23px}.controls{gap:8px}.stage{min-height:0}.question{font-size:27px}.feedback{font-size:20px}}
+</style>
+</head>
+<body>
+  <main class="app">
+    <section class="frame" id="startScreen">
+      <div class="start">
+        <div class="stars">⭐ ✨ ⭐</div>
+        <div class="kicker">Shopping vocabulary · A2–B1</div>
+        <h1>Shopping Vocabulary Test</h1>
+        <p>30 câu trắc nghiệm · 21 từ vựng mua sắm<br>21 câu chọn nghĩa + 9 câu tình huống · Không giới hạn thời gian</p>
+        <label for="nameInput">Student name / Tên học sinh</label><br><input id="nameInput" maxlength="80" autocomplete="name" placeholder="Enter your name"><p id="nameError" role="alert"></p>
+        <br>
+        <button class="btn" id="startBtn">Start Challenge</button>
+      </div>
+    </section>
+
+    <section class="frame hidden" id="gameScreen">
+      <div class="top">
+        <div class="pill" id="roundPill">Round 1 / 2</div>
+        <div class="pill">⭐ <span id="score">0</span> / <span id="total">30</span> points</div>
+        <div class="pill" id="questionPill">Question 1 / 30</div>
+      </div>
+      <div class="progress"><div id="bar"></div></div>
+
+      <div class="stage">
+        <div class="kicker" id="kicker">Meaning check · 1 of 30</div>
+        <h1 id="title">Choose the best answer</h1>
+        <div class="instruction" id="instruction">Pick the sentence that sounds natural.</div>
+
+        <div class="card">
+          <div class="question" id="question"></div>
+          <div class="answers" id="answers"></div>
+          <div class="feedback" id="feedback" role="status"></div><details id="sourceRow" class="hidden"><summary>View source word / Xem từ trong ảnh gốc</summary><img id="sourceImage" alt="Word cropped from the worksheet"><p id="sourceNote"></p></details>
+        </div>
+
+        <div class="controls">
+          <button class="btn" id="backBtn">← Back</button>
+          <div class="mid-actions"><button class="btn" id="soundBtn" aria-pressed="true">🔊 Sound On</button><button class="btn restart" id="restartBtn">↻ Restart</button></div>
+          <button class="btn next" id="nextBtn">Next →</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="frame hidden" id="resultScreen">
+      <div class="result-area">
+        <div class="result-stars">🌟 🎉 🌟</div>
+        <h1>Great Job, <span id="playerResult"></span>!</h1>
+        <div class="result-score"><span id="finalPoints">0</span>/<span id="finalTotal">30</span></div>
+        <p class="result-sub" id="resultMessage"></p>
+        <p class="result-sub" id="recordStatus"></p>
+        <details id="review"><summary>Review answers / Xem lại bài</summary><div id="reviewItems"></div></details><button class="btn" id="playAgainBtn">↻ Play Again</button>
+      </div>
+    </section>
+  <div class="fx-particles" id="fxParticles" aria-hidden="true"></div>
+    <div class="fx-round-toast hidden" id="roundToast" aria-hidden="true"><div class="fx-round-pill"><small>LEVEL UP ✨</small><span id="roundToastText"></span></div></div>
+  </main>
+
+<script src="/minigame/shared/teacher-records-config.js"></script>
+<script src="/minigame/shared/teacher-records.js"></script>
+<script>
+
+const QUESTIONS=[{"round": 1, "kicker": "Meaning check", "title": "Choose the meaning", "instruction": "Chọn MỘT đáp án phù hợp. Mỗi câu được tính điểm một lần.", "q": "What does “Mall” mean in a shopping context?", "choices": ["Trung tâm thương mại", "Cửa hàng tạp hóa", "Cái kệ", "Danh mục giới thiệu sản phẩm"], "a": 0, "ex": "Mall = Trung tâm thương mại.", "image": "assets/word-01.webp", "term": "Mall"}, {"round": 1, "kicker": "Meaning check", "title": "Choose the meaning", "instruction": "Chọn MỘT đáp án phù hợp. Mỗi câu được tính điểm một lần.", "q": "What does “Merchandise” mean in a shopping context?", "choices": ["Chất lượng", "Hàng hóa", "Hàng tồn kho", "Mẫu / hàng mẫu"], "a": 1, "ex": "Merchandise = Hàng hóa. Merchandise is a noun for goods sold in a shop. Noun pronunciation: /ˈmɜːrtʃəndaɪs/.", "image": "assets/word-02.webp", "term": "Merchandise"}, {"round": 1, "kicker": "Meaning check", "title": "Choose the meaning", "instruction": "Chọn MỘT đáp án phù hợp. Mỗi câu được tính điểm một lần.", "q": "What does “Quality” mean in a shopping context?", "choices": ["Hàng hóa", "Hàng tồn kho", "Chất lượng", "Thương hiệu"], "a": 2, "ex": "Quality = Chất lượng.", "image": "assets/word-03.webp", "term": "Quality"}, {"round": 1, "kicker": "Meaning check", "title": "Choose the meaning", "instruction": "Chọn MỘT đáp án phù hợp. Mỗi câu được tính điểm một lần.", "q": "What does “On sale” mean in a shopping context?", "choices": ["Còn hàng", "Hết hàng", "Chính sách trả hàng", "Đang được giảm giá"], "a": 3, "ex": "On sale = Đang được giảm giá. In this shopping context, on sale means sold at a reduced price. For sale means available to buy.", "image": "assets/word-04.webp", "term": "On sale"}, {"round": 1, "kicker": "Meaning check", "title": "Choose the meaning", "instruction": "Chọn MỘT đáp án phù hợp. Mỗi câu được tính điểm một lần.", "q": "What does “Receipt” mean in a shopping context?", "choices": ["Biên lai / hóa đơn xác nhận thanh toán", "Đơn hàng / đặt hàng", "Khoản tiền hoàn lại / hoàn tiền", "Danh mục giới thiệu sản phẩm"], "a": 0, "ex": "Receipt = Biên lai / hóa đơn xác nhận thanh toán.", "image": "assets/word-05.webp", "term": "Receipt"}, {"round": 1, "kicker": "Meaning check", "title": "Choose the meaning", "instruction": "Chọn MỘT đáp án phù hợp. Mỗi câu được tính điểm một lần.", "q": "What does “Purchase” mean in a shopping context?", "choices": ["Giao hàng", "Mua / sự mua hàng / món hàng đã mua", "Đơn hàng / đặt hàng", "Khoản tiền hoàn lại / hoàn tiền"], "a": 1, "ex": "Purchase = Mua / sự mua hàng / món hàng đã mua. As a verb, purchase means buy. As a noun, it can mean the act of buying or an item bought. An order is a request to buy goods.", "image": "assets/word-06.webp", "term": "Purchase"}, {"round": 1, "kicker": "Meaning check", "title": "Choose the meaning", "instruction": "Chọn MỘT đáp án phù hợp. Mỗi câu được tính điểm một lần.", "q": "What does “Brand” mean in a shopping context?", "choices": ["Hàng hóa", "Danh mục giới thiệu sản phẩm", "Thương hiệu", "Chất lượng"], "a": 2, "ex": "Brand = Thương hiệu. Brand is used as a noun meaning thương hiệu here. As a verb, it can mean mark or label a product.", "image": "assets/word-07.webp", "term": "Brand"}, {"round": 1, "kicker": "Meaning check", "title": "Choose the meaning", "instruction": "Chọn MỘT đáp án phù hợp. Mỗi câu được tính điểm một lần.", "q": "What does “Shelf” mean in a shopping context?", "choices": ["Xe đẩy mua hàng", "Trung tâm thương mại", "Cửa hàng tạp hóa", "Cái kệ"], "a": 3, "ex": "Shelf = Cái kệ.", "image": "assets/word-08.webp", "term": "Shelf"}, {"round": 1, "kicker": "Meaning check", "title": "Choose the meaning", "instruction": "Chọn MỘT đáp án phù hợp. Mỗi câu được tính điểm một lần.", "q": "What does “Cart” mean in a shopping context?", "choices": ["Xe đẩy mua hàng", "Cái kệ", "Cửa hàng tạp hóa", "Trung tâm thương mại"], "a": 0, "ex": "Cart = Xe đẩy mua hàng.", "image": "assets/word-09.webp", "term": "Cart"}, {"round": 1, "kicker": "Meaning check", "title": "Choose the meaning", "instruction": "Chọn MỘT đáp án phù hợp. Mỗi câu được tính điểm một lần.", "q": "What does “Return policy” mean in a shopping context?", "choices": ["Thương hiệu", "Chính sách trả hàng", "Khảo sát sự hài lòng của khách hàng", "Danh mục giới thiệu sản phẩm"], "a": 1, "ex": "Return policy = Chính sách trả hàng.", "image": "assets/word-10.webp", "term": "Return policy"}, {"round": 1, "kicker": "Meaning check", "title": "Choose the meaning", "instruction": "Chọn MỘT đáp án phù hợp. Mỗi câu được tính điểm một lần.", "q": "What does “Exchange” mean in a shopping context?", "choices": ["Giao hàng", "Đơn hàng / đặt hàng", "Đổi hàng", "Khoản tiền hoàn lại / hoàn tiền"], "a": 2, "ex": "Exchange = Đổi hàng. Exchange an item for a different size or item. A refund gives the money back.", "image": "assets/word-11.webp", "term": "Exchange"}, {"round": 1, "kicker": "Meaning check", "title": "Choose the meaning", "instruction": "Chọn MỘT đáp án phù hợp. Mỗi câu được tính điểm một lần.", "q": "What does “Inventory” mean in a shopping context?", "choices": ["Hàng hóa", "Mẫu / hàng mẫu", "Chất lượng", "Hàng tồn kho"], "a": 3, "ex": "Inventory = Hàng tồn kho. Inventory means goods held in stock here; it can also mean a stock list or the process of checking stock.", "image": "assets/word-12.webp", "term": "Inventory"}, {"round": 1, "kicker": "Meaning check", "title": "Choose the meaning", "instruction": "Chọn MỘT đáp án phù hợp. Mỗi câu được tính điểm một lần.", "q": "What does “In stock” mean in a shopping context?", "choices": ["Còn hàng", "Hết hàng", "Đang được giảm giá", "Chính sách trả hàng"], "a": 0, "ex": "In stock = Còn hàng.", "image": "assets/word-13.webp", "term": "In stock"}, {"round": 1, "kicker": "Meaning check", "title": "Choose the meaning", "instruction": "Chọn MỘT đáp án phù hợp. Mỗi câu được tính điểm một lần.", "q": "What does “Out of stock” mean in a shopping context?", "choices": ["Chính sách trả hàng", "Hết hàng", "Còn hàng", "Đang được giảm giá"], "a": 1, "ex": "Out of stock = Hết hàng.", "image": "assets/word-13.webp", "term": "Out of stock"}, {"round": 1, "kicker": "Meaning check", "title": "Choose the meaning", "instruction": "Chọn MỘT đáp án phù hợp. Mỗi câu được tính điểm một lần.", "q": "What does “Order” mean in a shopping context?", "choices": ["Biên lai / hóa đơn xác nhận thanh toán", "Danh mục giới thiệu sản phẩm", "Đơn hàng / đặt hàng", "Mua / sự mua hàng / món hàng đã mua"], "a": 2, "ex": "Order = Đơn hàng / đặt hàng. Order is a noun (an order) or a verb (order a product).", "image": "assets/word-14.webp", "term": "Order"}, {"round": 1, "kicker": "Meaning check", "title": "Choose the meaning", "instruction": "Chọn MỘT đáp án phù hợp. Mỗi câu được tính điểm một lần.", "q": "What does “Sample” mean in a shopping context?", "choices": ["Hàng hóa", "Hàng tồn kho", "Chất lượng", "Mẫu / hàng mẫu"], "a": 3, "ex": "Sample = Mẫu / hàng mẫu.", "image": "assets/word-15.webp", "term": "Sample"}, {"round": 1, "kicker": "Meaning check", "title": "Choose the meaning", "instruction": "Chọn MỘT đáp án phù hợp. Mỗi câu được tính điểm một lần.", "q": "What does “Grocery store” mean in a shopping context?", "choices": ["Cửa hàng tạp hóa", "Trung tâm thương mại", "Cái kệ", "Xe đẩy mua hàng"], "a": 0, "ex": "Grocery store = Cửa hàng tạp hóa.", "image": "assets/word-16.webp", "term": "Grocery store"}, {"round": 1, "kicker": "Meaning check", "title": "Choose the meaning", "instruction": "Chọn MỘT đáp án phù hợp. Mỗi câu được tính điểm một lần.", "q": "What does “Catalog” mean in a shopping context?", "choices": ["Chính sách trả hàng", "Danh mục giới thiệu sản phẩm", "Biên lai / hóa đơn xác nhận thanh toán", "Đơn hàng / đặt hàng"], "a": 1, "ex": "Catalog = Danh mục giới thiệu sản phẩm.", "image": "assets/word-17.webp", "term": "Catalog"}, {"round": 1, "kicker": "Meaning check", "title": "Choose the meaning", "instruction": "Chọn MỘT đáp án phù hợp. Mỗi câu được tính điểm một lần.", "q": "What does “Refund” mean in a shopping context?", "choices": ["Mua / sự mua hàng / món hàng đã mua", "Đơn hàng / đặt hàng", "Khoản tiền hoàn lại / hoàn tiền", "Đổi hàng"], "a": 2, "ex": "Refund = Khoản tiền hoàn lại / hoàn tiền. A refund returns money; an exchange replaces an item.", "image": "assets/word-18.webp", "term": "Refund"}, {"round": 1, "kicker": "Meaning check", "title": "Choose the meaning", "instruction": "Chọn MỘT đáp án phù hợp. Mỗi câu được tính điểm một lần.", "q": "What does “Deliver” mean in a shopping context?", "choices": ["Đổi hàng", "Khoản tiền hoàn lại / hoàn tiền", "Mua / sự mua hàng / món hàng đã mua", "Giao hàng"], "a": 3, "ex": "Deliver = Giao hàng.", "image": "assets/word-19.webp", "term": "Deliver"}, {"round": 1, "kicker": "Meaning check", "title": "Choose the meaning", "instruction": "Chọn MỘT đáp án phù hợp. Mỗi câu được tính điểm một lần.", "q": "What does “Customer satisfaction survey” mean in a shopping context?", "choices": ["Khảo sát sự hài lòng của khách hàng", "Chính sách trả hàng", "Danh mục giới thiệu sản phẩm", "Chất lượng"], "a": 0, "ex": "Customer satisfaction survey = Khảo sát sự hài lòng của khách hàng. Corrected US pronunciation: /ˈkʌstəmər ˌsætɪsˈfækʃən ˈsɜːrveɪ/. The IPA printed in the worksheet belongs to a different word.", "image": "assets/word-20.webp", "term": "Customer satisfaction survey"}, {"round": 2, "kicker": "Shopping situations", "title": "Choose the right answer", "instruction": "Chọn đáp án phù hợp với tình huống mua sắm.", "q": "A shop sells clothes, bags and shoes. Together, these goods are its _____.", "choices": ["receipt", "merchandise", "quality", "brand"], "a": 1, "ex": "Merchandise = Hàng hóa. Merchandise is a noun for goods sold in a shop. Noun pronunciation: /ˈmɜːrtʃəndaɪs/.", "image": "assets/word-02.webp", "term": "Merchandise"}, {"round": 2, "kicker": "Shopping situations", "title": "Choose the right answer", "instruction": "Chọn đáp án phù hợp với tình huống mua sắm.", "q": "A jacket normally costs £80. This week it costs £60 as part of a promotion. It is _____.", "choices": ["on order", "full price", "on sale", "out of stock"], "a": 2, "ex": "On sale = Đang được giảm giá. In this shopping context, on sale means sold at a reduced price. For sale means available to buy.", "image": "assets/word-04.webp", "term": "On sale"}, {"round": 2, "kicker": "Shopping situations", "title": "Choose the right answer", "instruction": "Chọn đáp án phù hợp với tình huống mua sắm.", "q": "You have paid for your shopping. The cashier gives you a document showing the items and the amount paid. What is it?", "choices": ["catalog", "refund", "return policy", "receipt"], "a": 3, "ex": "Receipt = Biên lai / hóa đơn xác nhận thanh toán.", "image": "assets/word-05.webp", "term": "Receipt"}, {"round": 2, "kicker": "Shopping situations", "title": "Choose the right answer", "instruction": "Chọn đáp án phù hợp với tình huống mua sắm.", "q": "Before buying a jacket, you want to know how many days you have to bring it back. What should you read?", "choices": ["return policy", "catalog", "customer satisfaction survey", "brand label"], "a": 0, "ex": "Return policy = Chính sách trả hàng.", "image": "assets/word-10.webp", "term": "Return policy"}, {"round": 2, "kicker": "Shopping situations", "title": "Choose the right answer", "instruction": "Chọn đáp án phù hợp với tình huống mua sắm.", "q": "The shoes are too small. You want a larger pair of the same shoes instead of getting your money back. What do you want to do?", "choices": ["purchase them again", "exchange them", "get a refund", "deliver them"], "a": 1, "ex": "Exchange = Đổi hàng. Exchange an item for a different size or item. A refund gives the money back.", "image": "assets/word-11.webp", "term": "Exchange"}, {"round": 2, "kicker": "Shopping situations", "title": "Choose the right answer", "instruction": "Chọn đáp án phù hợp với tình huống mua sắm.", "q": "The shop has five of these laptops available to buy right now. They are _____.", "choices": ["on sale", "already delivered", "in stock", "out of stock"], "a": 2, "ex": "In stock = Còn hàng.", "image": "assets/word-13.webp", "term": "In stock"}, {"round": 2, "kicker": "Shopping situations", "title": "Choose the right answer", "instruction": "Chọn đáp án phù hợp với tình huống mua sắm.", "q": "The last phone has been sold, and the next delivery arrives tomorrow. The phone is currently _____.", "choices": ["in stock", "on sale", "in your cart", "out of stock"], "a": 3, "ex": "Out of stock = Hết hàng.", "image": "assets/word-13.webp", "term": "Out of stock"}, {"round": 2, "kicker": "Shopping situations", "title": "Choose the right answer", "instruction": "Chọn đáp án phù hợp với tình huống mua sắm.", "q": "You returned a faulty product. The shop puts the money back into your bank account. What did you receive?", "choices": ["a refund", "an exchange", "a sample", "a catalog"], "a": 0, "ex": "Refund = Khoản tiền hoàn lại / hoàn tiền. A refund returns money; an exchange replaces an item.", "image": "assets/word-18.webp", "term": "Refund"}, {"round": 2, "kicker": "Shopping situations", "title": "Choose the right answer", "instruction": "Chọn đáp án phù hợp với tình huống mua sắm.", "q": "After your purchase, the store asks you to rate its service and say how happy you were. What are you completing?", "choices": ["an inventory list", "a customer satisfaction survey", "a return policy", "a catalog"], "a": 1, "ex": "Customer satisfaction survey = Khảo sát sự hài lòng của khách hàng. Corrected US pronunciation: /ˈkʌstəmər ˌsætɪsˈfækʃən ˈsɜːrveɪ/. The IPA printed in the worksheet belongs to a different word.", "image": "assets/word-20.webp", "term": "Customer satisfaction survey"}];
+const MODE = "present";
+const $ = id => document.getElementById(id);
+const state = QUESTIONS.map(() => ({choice:null}));
+let pos = 0;
+let player = "";
+let soundOn = true;
+let audioCtx = null;
+let roundTimer = null;
+let startedAt = null;
+let attemptId="", submitted=false;
+const makeId=()=>crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);
+const totalRounds = Math.max(...QUESTIONS.map(q=>q.round));
+$("total").textContent = QUESTIONS.length;
+const roundElement = () => $(MODE === "present" ? "roundPill" : "round");
+const counterElement = () => $(MODE === "present" ? "questionPill" : "counter");
+
+function points() {
+  return state.reduce((n,s,idx)=>n+(s.choice === QUESTIONS[idx].a ? 1 : 0),0);
+}
+function chime(kind) {
+  if (!soundOn) return;
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    if (!audioCtx) audioCtx = new AC();
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    const melodies = {
+      correct:[[659,0,.11],[880,.11,.15],[1046,.23,.18]],
+      wrong:[[330,0,.13],[220,.11,.19]],
+      round:[[523,0,.1],[659,.11,.1],[784,.23,.19]],
+      finish:[[523,0,.14],[659,.15,.14],[784,.31,.15],[1046,.49,.28]]
+    };
+    const now = audioCtx.currentTime;
+    (melodies[kind] || melodies.correct).forEach(([hz,delay,len])=>{
+      const osc=audioCtx.createOscillator(),gain=audioCtx.createGain();
+      osc.type=kind==="wrong"?"triangle":"sine";
+      osc.frequency.setValueAtTime(hz,now+delay);
+      gain.gain.setValueAtTime(.0001,now+delay);
+      gain.gain.exponentialRampToValueAtTime(.095,now+delay+.018);
+      gain.gain.exponentialRampToValueAtTime(.0001,now+delay+len);
+      osc.connect(gain);gain.connect(audioCtx.destination);
+      osc.start(now+delay);osc.stop(now+delay+len+.01);
+    });
+  } catch (_) {}
+}
+function particles(count) {
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const box=$("fxParticles"), colors=["#ffc85b","#f65caf","#6de0b1","#77caff","#9e76f2","#ff9d78"];
+  for(let n=0;n<count;n++){
+    const p=document.createElement("span");
+    p.style.left=(Math.random()*100)+"%";
+    p.style.background=colors[n%colors.length];
+    p.style.animationDelay=(Math.random()*.27)+"s";
+    p.style.animationDuration=(.95+Math.random()*.7)+"s";
+    box.appendChild(p);
+    p.addEventListener("animationend",()=>p.remove(),{once:true});
+  }
+}
+function animateScore() {
+  const el=$("score");
+  el.textContent=points();
+  el.classList.remove("score-pulse");
+  void el.offsetWidth;
+  el.classList.add("score-pulse");
+}
+function toastRound(round){
+  if(roundTimer)clearTimeout(roundTimer);
+  $("roundToastText").textContent="Round "+round+" / "+totalRounds;
+  $("roundToast").classList.remove("hidden");
+  chime("round");
+  roundTimer=setTimeout(()=>$("roundToast").classList.add("hidden"),900);
+}
+function setScreen(id){
+  ["startScreen","gameScreen","resultScreen"].forEach(x=>$(x).classList.toggle("hidden",x!==id));
+}
+function start(){
+  const name=$("nameInput").value.trim();
+  if(!name){$("nameError").textContent="Please enter your name / Vui lòng nhập tên.";$("nameInput").focus();return;}
+  $("nameError").textContent="";
+  player=name;
+  startedAt=Date.now();attemptId=makeId();submitted=false;$("recordStatus").textContent="";
+  pos=0;
+  state.forEach(s=>s.choice=null);
+  setScreen("gameScreen");
+  render();
+  toastRound(QUESTIONS[0].round);
+}
+function render(){
+  const q=QUESTIONS[pos], st=state[pos];
+  roundElement().textContent="Round "+q.round+" / "+totalRounds+(MODE==="picture"?" · Picture questions":"");
+  counterElement().textContent="Question "+(pos+1)+" / "+QUESTIONS.length;
+  $("bar").style.width=((state.filter(s=>s.choice!==null).length/QUESTIONS.length)*100)+"%";
+  $("score").textContent=points();
+  $("kicker").textContent=(q.kicker||"Picture questions")+" · "+(pos+1)+" of "+QUESTIONS.length;
+  if(MODE==="present"){
+    $("title").textContent=q.title;
+    $("instruction").textContent=q.instruction;
+    $("question").textContent=q.q;
+  }else{
+    $("prompt").textContent=q.prompt;
+    const photo=$("picture");
+    photo.innerHTML="";
+    if(q.image){
+      const img=document.createElement("img");img.src=q.image;img.alt=q.alt||q.picture||"Question picture";
+      photo.appendChild(img);
+    }else{photo.innerHTML=placeholder(q.picture||"Picture prompt");}
+    photo.style.animation="none";
+    void photo.offsetWidth;
+    photo.style.animation="";
+  }
+  const answerBox=$("answers");
+  answerBox.innerHTML="";
+  q.choices.forEach((label,n)=>{
+    const b=document.createElement("button");
+    b.type="button";b.className="answer";b.textContent=label;
+    if(st.choice!==null){
+      b.disabled=true;
+      if(n===q.a)b.classList.add("good");
+      if(n===st.choice && n!==q.a)b.classList.add("bad");
+    }else{b.onclick=()=>answer(n);}
+    answerBox.appendChild(b);
+  });
+  const feedback=$("feedback");
+  feedback.textContent=st.choice===null ? "" : (st.choice===q.a ? "Correct! ⭐ " : "Incorrect. 💡 ")+q.ex;
+  $("sourceRow").classList.toggle("hidden",st.choice===null);$("sourceRow").open=false;
+  if(st.choice!==null){$("sourceImage").src=q.image;$("sourceImage").alt="Source row: "+q.term;$("sourceNote").textContent=q.ex;}else{$("sourceImage").removeAttribute("src");$("sourceNote").textContent="";}
+  feedback.className="feedback"+(st.choice===null?"":st.choice===q.a?" success":" error");
+  feedback.setAttribute("aria-live","polite");
+  $("nextBtn").disabled=st.choice===null;
+  $("nextBtn").classList.toggle("ready",st.choice!==null);
+  $("nextBtn").textContent=pos===QUESTIONS.length-1?"See Results →":"Next →";
+  $("backBtn").disabled=pos===0;
+  const scene=$("gameScreen").querySelector(MODE==="present"?".stage":".content");
+  scene.classList.remove("fx-enter");
+  void scene.offsetWidth;
+  scene.classList.add("fx-enter");
+}
+function answer(choice){
+  if(state[pos].choice!==null)return;
+  state[pos].choice=choice;
+  const correct=choice===QUESTIONS[pos].a;
+  chime(correct?"correct":"wrong");
+  if(correct)particles(24);
+  render();
+  animateScore();
+}
+function next(){
+  if(state[pos].choice===null)return;
+  if(pos===QUESTIONS.length-1){finish();return;}
+  const prevRound=QUESTIONS[pos].round;
+  pos++;
+  render();
+  if(QUESTIONS[pos].round!==prevRound)toastRound(QUESTIONS[pos].round);
+}
+function back(){if(pos>0){pos--;render();}}
+function restart(){
+  startedAt=Date.now();attemptId=makeId();submitted=false;$("recordStatus").textContent="";
+  pos=0;state.forEach(s=>s.choice=null);setScreen("gameScreen");render();toastRound(QUESTIONS[0].round);
+}
+async function finish(){
+  if(submitted || state.some(s=>s.choice===null))return;
+  submitted=true;
+  setScreen("resultScreen");
+  const score=points(),pct=Math.round(score/QUESTIONS.length*100),currentId=attemptId;
+  $("playerResult").textContent=player;$("finalPoints").textContent=score;$("finalTotal").textContent=QUESTIONS.length;
+  $("resultMessage").textContent=pct+"% · "+(pct>=85?"Excellent vocabulary knowledge!":pct>=60?"Good effort! Review the words you missed.":"Keep practising — review the answers below.");
+  $("review").open=false;$("reviewItems").replaceChildren();
+  QUESTIONS.forEach((q,i)=>{
+    const row=document.createElement("article"),heading=document.createElement("strong"),response=document.createElement("p"),ex=document.createElement("p");
+    heading.textContent=(i+1)+". "+q.q;response.textContent=(state[i].choice===q.a?"✅ ":"❌ ")+"Your answer: "+q.choices[state[i].choice];ex.textContent="Correct answer: "+q.choices[q.a]+" — "+q.ex;
+    row.append(heading,response,ex);$("reviewItems").append(row);
+  });
+  chime("finish");particles(100);
+  if(/\/_templates?\//.test(location.pathname)){$("recordStatus").textContent="Template preview — score not sent.";return;}
+  const payload={studentName:player,gameTitle:document.title,score,total:QUESTIONS.length,percentage:pct,durationSeconds:Math.max(0,Math.round((Date.now()-startedAt)/1000)),completedAt:new Date().toISOString(),attemptId:currentId,gameUrl:location.href};
+  try{const saved=JSON.parse(localStorage.getItem("shoppingVocabularyAttempts")||"[]");saved.unshift(payload);localStorage.setItem("shoppingVocabularyAttempts",JSON.stringify(saved.slice(0,100)));}catch(_){}
+  $("recordStatus").textContent="Sending score to your teacher…";
+  try{
+    // Shared helper assembles its payload synchronously; add percentage without editing shared files.
+    let job;const originalFetch=window.fetch;
+    window.fetch=function(url,options){
+      if(String(url)===(window.TEACHER_RECORDS_CONFIG||{}).endpoint && options?.method==="POST"){
+        const data=JSON.parse(options.body);data.percentage=pct;options={...options,body:JSON.stringify(data)};
+      }
+      return originalFetch.call(window,url,options);
+    };
+    try{job=window.TeacherRecords?TeacherRecords.submit(payload):Promise.resolve({sent:false});}finally{window.fetch=originalFetch;}
+    const result=await job;
+    if(currentId===attemptId)$("recordStatus").textContent=result.sent?"✅ Score sent to your teacher.":"⚠️ Result saved on this device. Could not send right now.";
+  }catch(_){if(currentId===attemptId)$("recordStatus").textContent="⚠️ Result saved on this device. Could not send right now.";}
+}
+function toggleSound(){
+  soundOn=!soundOn;
+  $("soundBtn").textContent=soundOn?"🔊 Sound On":"🔇 Sound Off";
+  $("soundBtn").setAttribute("aria-pressed",String(soundOn));
+}
+$("startBtn").addEventListener("click",start);
+$("nameInput").addEventListener("keydown",e=>{if(e.key==="Enter")start();});
+$("nextBtn").addEventListener("click",next);
+$("backBtn").addEventListener("click",back);
+$("restartBtn").addEventListener("click",restart);
+$("playAgainBtn").addEventListener("click",restart);
+$("soundBtn").addEventListener("click",toggleSound);
+
+</script>
+</body>
+</html>
+
+
+
