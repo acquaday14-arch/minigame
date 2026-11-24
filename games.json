@@ -286,5 +286,11 @@
     "description": "30 multiple-choice questions covering all 21 worksheet healthcare words: 21 meanings and 9 clinic conversation or language situations. Prescription vs medicine, appointments, recovery, allergic to and dietary requirements. Source word images and answer review. No timer.",
     "level": "A2–B1",
     "path": "./healthcare-vocabulary-test/"
+  },
+  {
+    "title": "Education Vocabulary Test",
+    "description": "30 multiple-choice questions covering all 20 worksheet education terms: 20 meanings and 10 education situations. Curriculum vs syllabus, qualifications, scholarships, tutorials and turnout. Corrected research paper pronunciation, source word images and answer review. No timer.",
+    "level": "A2–B1",
+    "path": "./education-vocabulary-test/"
   }
 ]
