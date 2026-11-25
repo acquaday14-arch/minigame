@@ -322,5 +322,11 @@
     "description": "30 multiple-choice questions covering all 21 worksheet entries, including both paired expressions: 21 meanings and 9 situations. Nephew vs niece, look after vs take after, bring up, family types and celebrations. Source word images and answer review. No timer.",
     "level": "A2–B1",
     "path": "./family-relationships-vocabulary-test/"
+  },
+  {
+    "title": "Weather Vocabulary Test",
+    "description": "30 multiple-choice questions covering all 21 worksheet weather entries: 21 meanings and 9 situations. Rain expressions, wind, cloudy skies, temperature, humid vs muggy and chilly vs bitterly cold. Noun/verb use of downpour and pour down, source word images and answer review. No timer.",
+    "level": "A2–B1",
+    "path": "./weather-vocabulary-test/"
   }
 ]
