@@ -316,5 +316,11 @@
     "description": "30 multiple-choice questions covering all 20 worksheet terms: 20 meanings and 10 housing situations. Lease, landlord, tenant, security deposit vs down payment, utilities, maintenance, plumbing and occupancy. Source word images and answer review. No timer.",
     "level": "A2–B1",
     "path": "./housing-property-vocabulary-test/"
+  },
+  {
+    "title": "Family & Relationships Vocabulary Test",
+    "description": "30 multiple-choice questions covering all 21 worksheet entries, including both paired expressions: 21 meanings and 9 situations. Nephew vs niece, look after vs take after, bring up, family types and celebrations. Source word images and answer review. No timer.",
+    "level": "A2–B1",
+    "path": "./family-relationships-vocabulary-test/"
   }
 ]
