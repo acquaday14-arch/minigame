@@ -304,5 +304,11 @@
     "description": "30 multiple-choice questions covering all 20 worksheet expressions: 20 meanings and 10 place/time situations. Across vs opposite, by vs until, already, for now, soon and any minute. First-floor dialect clarified. Source word images and answer review. No timer.",
     "level": "A2–B1",
     "path": "./place-time-expressions-test/"
+  },
+  {
+    "title": "Food & Dining Vocabulary Test",
+    "description": "30 multiple-choice questions covering all 21 food and dining terms: 21 meanings and 9 situations. Recipe, ingredients, dietary requirements, catering, reservations, orders, specials, specialties, waiter and waitress. Source word images and answer review. No timer.",
+    "level": "A2–B1",
+    "path": "./food-dining-vocabulary-test/"
   }
 ]
