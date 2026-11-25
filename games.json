@@ -310,5 +310,11 @@
     "description": "30 multiple-choice questions covering all 21 food and dining terms: 21 meanings and 9 situations. Recipe, ingredients, dietary requirements, catering, reservations, orders, specials, specialties, waiter and waitress. Source word images and answer review. No timer.",
     "level": "A2–B1",
     "path": "./food-dining-vocabulary-test/"
+  },
+  {
+    "title": "Housing & Property Vocabulary Test",
+    "description": "30 multiple-choice questions covering all 20 worksheet terms: 20 meanings and 10 housing situations. Lease, landlord, tenant, security deposit vs down payment, utilities, maintenance, plumbing and occupancy. Source word images and answer review. No timer.",
+    "level": "A2–B1",
+    "path": "./housing-property-vocabulary-test/"
   }
 ]
