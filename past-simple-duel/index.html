@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en" data-template-effects-version="2">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Past Simple Duel · Movers</title><meta name="description" content="A two-player Movers game: past simple grammar, unique speaking cards and surprise reward boxes.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --purple:#5b36d6;--purple2:#7a57eb;--ink:#20285c;--pink:#ef5aa7;
+      --yellow:#ffd76a;--mint:#6be0b2;--sky:#74c7ff;--soft:#f8f6ff;--line:#d9cff8;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;min-height:100vh;padding:18px;
+      font-family:"Fredoka",ui-rounded,"Trebuchet MS",Arial,sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at 9% 12%,#ffe2f0 0 7%,transparent 7.5%),
+        radial-gradient(circle at 90% 14%,#dff5ff 0 8%,transparent 8.5%),
+        linear-gradient(180deg,#f8fbff,#f4efff);
+    }
+    button,input{font:inherit}
+    .app{width:min(1060px,98vw);margin:1vh auto}
+    .frame{
+      background:#fff;border:4px solid #4b32bf;border-radius:32px;overflow:hidden;
+      box-shadow:0 14px 0 #ded5ff,0 24px 44px rgba(63,47,147,.14)
+    }
+    .top{
+      background:linear-gradient(135deg,var(--purple),#6541dc);
+      padding:18px 28px;color:#fff;display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:center
+    }
+    .pill{border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.12);padding:9px 15px;border-radius:999px;font-weight:700}
+    .top .pill:last-child{justify-self:end}
+    .progress{height:10px;background:#dacdfd}
+    .progress>div{height:100%;width:25%;background:linear-gradient(90deg,#ffd75f,#ffae73);transition:.25s}
+    .stage{padding:28px 34px 24px;min-height:650px;position:relative}
+    .kicker{text-align:center;color:var(--pink);font-size:14px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+    h1{text-align:center;font-size:clamp(38px,6vw,62px);margin:8px 0 8px;color:#432cb5;line-height:.98}
+    .instruction{text-align:center;font-size:20px;font-weight:600;margin-bottom:24px}
+    .card{
+      width:min(780px,100%);margin:0 auto;border:2px solid var(--line);border-radius:24px;padding:24px;
+      background:linear-gradient(180deg,#fff,#fcfbff)
+    }
+    .question{font-size:clamp(24px,4vw,36px);font-weight:700;text-align:center;margin:6px 0 22px}
+    .answers{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .answer{
+      border:3px solid #ded3fa;background:#fbf9ff;border-radius:18px;padding:15px 18px;color:var(--ink);
+      font-weight:700;font-size:18px;cursor:pointer;transition:.14s
+    }
+    .answer:hover{transform:translateY(-2px);border-color:#aa8df3}
+    .answer.good{border-color:#65d5a8;background:#ebfff6;color:#17734e;animation:pop .28s ease}
+    .answer.bad{border-color:#ff98a4;background:#fff0f2;color:#a63a47;animation:shake .28s ease}
+    .feedback{min-height:42px;text-align:center;margin:18px 0 4px;font-size:19px;font-weight:700}
+    .controls{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:14px;margin-top:28px}
+    .btn{border:2px solid #dbd2f8;border-radius:15px;background:#fff;color:#4734a9;padding:12px 18px;font-weight:700;cursor:pointer}
+    .controls .next{justify-self:end;background:linear-gradient(135deg,#ffd37c,#ffbd84);border:0;color:#76563b}
+    .center{text-align:center}
+    .hidden{display:none!important}
+    .start{padding:60px 32px;text-align:center}
+    .start p{font-size:19px;color:#667085}
+    .start input{width:min(560px,100%);padding:15px 17px;border:2px solid #d8cff4;border-radius:16px;font-size:18px}
+    .start .btn{margin-top:12px;background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;border:0}
+    .stars{font-size:26px;letter-spacing:5px}
+    .confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:20}
+    .confetti i{position:absolute;width:10px;height:16px;border-radius:3px;animation:fall 900ms linear forwards}
+    @keyframes pop{50%{transform:scale(1.035)}}
+    @keyframes shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+    @keyframes fall{from{transform:translateY(-10vh) rotate(0)}to{transform:translateY(110vh) rotate(500deg);opacity:.7}}
+    @media(max-width:700px){.top{grid-template-columns:1fr 1fr}.top>div:nth-child(2){grid-column:1/-1;grid-row:2;text-align:center}.stage{padding:22px 16px}.answers{grid-template-columns:1fr}.controls{grid-template-columns:1fr 1fr}.controls .restart{display:none}}
+  
+    /* Template FX v2 — reduced-motion aware and dependency-free */
+    .fx-enter{animation:fx-enter .38s cubic-bezier(.2,.8,.2,1) both}
+    .answer{transition:transform .17s ease,border-color .2s ease,box-shadow .2s ease,background .2s ease}
+    .answer:active,.btn:active{transform:scale(.97)}
+    .answer:focus-visible,.btn:focus-visible{outline:4px solid #f7bb56;outline-offset:3px}
+    .answer.good{box-shadow:0 0 0 4px rgba(81,213,157,.13)}
+    .answer.bad{box-shadow:0 0 0 4px rgba(255,118,144,.13)}
+    .answer:disabled{cursor:default}
+    .pill.score-pulse,.score-pulse{animation:fx-pulse .35s ease}
+    .feedback.success{color:#10845c;animation:fx-pop .4s ease both}
+    .feedback.error{color:#b44453;animation:fx-shake .32s ease both}
+    .mid-actions{display:flex;gap:8px;align-items:center;justify-content:center}
+    .mid-actions .btn{white-space:nowrap}
+    .btn:disabled{opacity:.4;cursor:not-allowed;filter:grayscale(.25)}
+    .next.ready{animation:fx-glow 1.8s ease-in-out infinite}
+    .fx-particles{position:fixed;inset:0;z-index:100;pointer-events:none;overflow:hidden}
+    .fx-particles span{position:absolute;top:-24px;width:10px;height:16px;border-radius:3px;animation:fx-rain 1.15s cubic-bezier(.2,.7,.5,1) forwards}
+    .fx-round-toast{position:fixed;inset:0;z-index:90;pointer-events:none;display:flex;justify-content:center;align-items:center;background:rgba(45,29,122,.11)}
+    .fx-round-toast.hidden{display:none!important}
+    .fx-round-pill{
+      text-align:center;border:4px solid #fff;border-radius:28px;
+      background:linear-gradient(135deg,#5b36d6,#8b6cf0);color:white;
+      padding:24px 36px;box-shadow:0 20px 60px rgba(54,38,152,.25);
+      font-size:clamp(25px,4vw,42px);font-weight:700;animation:fx-toast .7s ease both
+    }
+    .fx-round-pill small{display:block;font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:#ffdf85;margin-bottom:4px}
+    .result-area{text-align:center;padding:56px 24px}
+    .result-area h1{font-size:clamp(40px,6vw,64px);margin:10px 0;color:#432cb5}
+    .result-area .result-score{font-size:clamp(60px,10vw,100px);color:#5b36d6;font-weight:700;line-height:1.12}
+    .result-area .result-sub{font-size:21px;margin:8px 0 28px}
+    .result-area .btn{background:#6040d7;color:#fff;border:0;padding:15px 30px;font-size:18px}
+    .result-area .result-stars{font-size:38px;letter-spacing:8px;animation:fx-float 2s ease-in-out infinite}
+    .picture{animation:fx-picture-in .55s cubic-bezier(.2,.8,.2,1) both;transition:transform .25s ease,box-shadow .25s ease}
+    .picture:hover{transform:translateY(-3px) rotate(-1deg);box-shadow:0 17px 34px rgba(82,58,173,.21)}
+    .picture img{width:100%;height:100%;object-fit:cover;display:block}
+    @keyframes fx-enter{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes fx-pop{0%{transform:scale(.83);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+    @keyframes fx-pulse{50%{transform:scale(1.09)}}
+    @keyframes fx-shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+    @keyframes fx-glow{50%{box-shadow:0 0 0 6px rgba(255,205,100,.22)}}
+    @keyframes fx-rain{0%{transform:translateY(-10vh) rotate(0deg);opacity:1}100%{transform:translateY(112vh) rotate(620deg);opacity:0}}
+    @keyframes fx-toast{0%{transform:scale(.7) translateY(25px);opacity:0}40%{transform:scale(1.05);opacity:1}100%{transform:scale(1);opacity:1}}
+    @keyframes fx-float{50%{transform:translateY(-9px)}}
+    @keyframes fx-picture-in{from{opacity:0;transform:scale(.91) rotate(-2deg)}to{opacity:1;transform:scale(1) rotate(0)}}
+    @media(max-width:700px){
+      .controls{grid-template-columns:1fr 1fr}
+      .controls .mid-actions{grid-column:1/-1;grid-row:2;justify-content:center}
+      .controls .restart{display:inline-flex}
+      .result-area{padding:42px 16px}
+      .mid-actions .btn{font-size:14px;padding:10px 12px}
+    }
+    @media(prefers-reduced-motion:reduce){
+      *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+    }
+
+  </style>
+<style>
+body{padding:18px 12px} .app{width:min(1180px,100%)} .stage{min-height:0;padding:26px} h1{font-size:clamp(36px,5vw,58px);line-height:1.1}.top{grid-template-columns:1fr auto 1fr}.player{padding:14px 20px;border:3px solid transparent;border-radius:20px;background:#ffffff16;overflow-wrap:anywhere}.player.active{border-color:#ffdc74;background:#ffffff30}.player:last-child{text-align:right}.player strong{font-size:clamp(28px,4vw,44px);display:block}.player small{font-size:16px}.question{font-size:clamp(28px,3.6vw,44px);line-height:1.3}.answer{font-size:clamp(24px,3vw,34px);padding:20px}.instruction,p{font-size:21px;line-height:1.5}.btn{font-size:19px;min-height:48px}.primary{background:#5b36d6;color:white;border-color:#5b36d6}.gold{background:#ffda74;color:#48332b;border-color:#f2bd42}.card{width:100%;max-width:940px}.fields{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:24px auto;max-width:800px;text-align:left}label{font-size:20px}input[type=text]{width:100%;margin-top:8px}.start{padding:32px}.rules{max-width:820px;margin:22px auto;text-align:left;background:#f5f1ff;border-radius:20px;padding:20px}.checks{display:grid;gap:12px;text-align:left;margin:20px 0}.checks label{border:2px solid #dfd4fa;padding:14px;border-radius:14px;background:#faf7ff;font-size:22px;cursor:pointer}input[type=checkbox]{width:24px;height:24px;vertical-align:middle;accent-color:#5b36d6;margin-right:10px}.feedback{font-size:24px;line-height:1.4}.boxrow{display:flex;justify-content:center;gap:18px;margin:20px 0}.box{font-size:48px;border:3px solid #ddc9fc;border-radius:22px;background:#fbf4ff;min-width:100px;min-height:110px;cursor:pointer}.award{font-size:38px;color:#6037c9}.controls{display:flex;justify-content:space-between;flex-wrap:wrap}.mid-actions{flex-wrap:wrap}.hint{background:#eef8ff;padding:18px;border-radius:16px;font-size:22px;text-align:left}.eyebrow{font-size:17px;text-transform:uppercase;letter-spacing:.1em;color:#6c53ae;text-align:center;margin-bottom:14px}.statgrid{display:grid;grid-template-columns:1fr 1fr;gap:20px;text-align:center}.stat{background:#f4f0ff;border-radius:22px;padding:22px}.stat h2{font-size:28px;overflow-wrap:anywhere}.stat strong{font-size:54px;color:#5b36d6}details{text-align:left;margin-top:24px}summary{cursor:pointer;font-size:21px}li{font-size:18px;line-height:1.5;margin:8px 0}button:focus-visible,input:focus-visible{outline:4px solid #f2b434;outline-offset:3px}.hidden{display:none!important}.error{color:#a62848} .center{text-align:center}.badge{display:inline-block;border-radius:99px;padding:8px 18px;background:#fff1bb;color:#694920;font-size:19px}.stage:focus{outline:none}
+@media(max-width:700px){.top{grid-template-columns:1fr 1fr;padding:14px;gap:8px}.top .middle{grid-column:1/-1;grid-row:2}.top .player:nth-child(3){grid-column:2;grid-row:1}.top>div:nth-child(2){grid-column:1/-1}.fields,.statgrid{grid-template-columns:1fr}.stage{padding:20px 14px}.player{padding:10px}.box{min-width:75px}.start{padding:26px 18px}.card{padding:18px}.controls .restart{display:block}}
+</style></head><body><main class="app"><section class="frame" id="setup"><div class="start"><div class="badge">2 PLAYERS · MOVERS · A1 · 20–30 MINUTES</div><h1>Past Simple Duel</h1><p>Tell yesterday’s stories. Collect points. Open a surprise!</p><form id="setupForm"><div class="fields"><label>Player 1<input id="p1" type="text" maxlength="30" placeholder="Enter a name" required></label><label>Player 2<input id="p2" type="text" maxlength="30" placeholder="Enter a different name" required></label></div><label><input id="luck" type="checkbox" checked>Mystery boxes: surprise bonus points and penalties</label><div class="rules"><b>How to play</b><p>Take turns on one screen. Each player gets 8 grammar questions and 8 unique speaking cards. Practise was/were, regular and irregular verbs, negatives and questions. Cards never repeat within a match.</p><p>Grammar: +10 for a correct answer. Speaking: up to +15, awarded by the teacher using three checks: past forms, task details and clear sentences. Each check earns +5. Real or invented stories are welcome. No microphone is needed.</p><p>After each speaking card, open one mystery box: +5, +10, +15, +20, +35, −5, −10 or −15. Each player has the same set, shuffled separately. Scores may go below zero. Highest total wins; equal totals are a draw.</p><p>Learning points and correct answers are recorded separately from luck. No timer—take time to speak.</p></div><p id="setupError" class="error" role="alert"></p><button class="btn primary" type="submit">Start the duel</button><button class="btn" id="resume" type="button" hidden>Resume saved match</button></form></div></section>
+<section class="frame hidden" id="play"><header class="top"><div class="player" id="player0"></div><div class="middle center"><b>PAST SIMPLE DUEL</b><div id="progressText"></div></div><div class="player" id="player1"></div></header><div class="progress"><div id="bar"></div></div><div class="stage" id="stage" tabindex="-1"><div class="eyebrow" id="turn"></div><h1 id="heading"></h1><p class="instruction" id="instruction"></p><div class="card" id="activity"></div><div class="controls"><button class="btn" id="back">Review previous</button><div class="mid-actions"><button class="btn" id="sound" aria-pressed="true">Sound On</button><button class="btn" id="restart">Restart</button></div><button class="btn gold" id="next">Next turn</button></div></div></section>
+<section class="frame hidden" id="results"><div class="start"><div class="stars">🏆 ✨ 🏆</div><h1 id="winner"></h1><p>Final standings · learning + luck = total</p><div id="stats" class="statgrid"></div><p id="recordStatus" aria-live="polite"></p><button class="btn primary" id="again">New match</button> <button class="btn" id="download">Download results</button><details><summary>Review all cards and answers</summary><ol id="history"></ol></details></div></section><div class="fx-particles" id="fxParticles" aria-hidden="true"></div></main><script src="../shared/teacher-records-config.js"></script><script src="../shared/teacher-records.js"></script><script src="game.js"></script></body></html>
