@@ -340,5 +340,11 @@
     "description": "Individual Movers practice: 30 activities covering was/were, regular and irregular verbs, negatives and questions. 21 choices and 9 sentence builders, instant explanations and answer review. No timer.",
     "level": "A1 · Movers",
     "path": "./past-simple-solo/"
+  },
+  {
+    "title": "Possessives Detective Quest",
+    "description": "30 individual activities based on the supplied possessives pages: all 8 original checks, correction choices, singular/plural owners, omitted house, my/mine, shared/separate ownership and 6 sentence builders. Accepts both film’s beginning and beginning of the film.",
+    "level": "A2–B1",
+    "path": "./possessives-detective/"
   }
 ]
