@@ -334,5 +334,11 @@
     "description": "Two-player competition: 16 past simple grammar questions, 16 unique speaking cards, teacher speaking checklist and optional surprise rewards or penalties. Learning and luck tracked separately. No timer.",
     "level": "A1 · Movers · 2 players",
     "path": "./past-simple-duel/"
+  },
+  {
+    "title": "Past Simple Solo Quest",
+    "description": "Individual Movers practice: 30 activities covering was/were, regular and irregular verbs, negatives and questions. 21 choices and 9 sentence builders, instant explanations and answer review. No timer.",
+    "level": "A1 · Movers",
+    "path": "./past-simple-solo/"
   }
 ]
