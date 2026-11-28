@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang="en" data-template-effects-version="2">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Town Directions Quest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --purple:#5b36d6;--purple2:#7a57eb;--ink:#20285c;--pink:#ef5aa7;
+      --yellow:#ffd76a;--mint:#6be0b2;--sky:#74c7ff;--soft:#f8f6ff;--line:#d9cff8;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;min-height:100vh;padding:18px;
+      font-family:"Fredoka",ui-rounded,"Trebuchet MS",Arial,sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at 9% 12%,#ffe2f0 0 7%,transparent 7.5%),
+        radial-gradient(circle at 90% 14%,#dff5ff 0 8%,transparent 8.5%),
+        linear-gradient(180deg,#f8fbff,#f4efff);
+    }
+    button,input{font:inherit}
+    .app{width:min(1060px,98vw);margin:1vh auto}
+    .frame{
+      background:#fff;border:4px solid #4b32bf;border-radius:32px;overflow:hidden;
+      box-shadow:0 14px 0 #ded5ff,0 24px 44px rgba(63,47,147,.14)
+    }
+    .top{
+      background:linear-gradient(135deg,var(--purple),#6541dc);
+      padding:18px 28px;color:#fff;display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:center
+    }
+    .pill{border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.12);padding:9px 15px;border-radius:999px;font-weight:700}
+    .top .pill:last-child{justify-self:end}
+    .progress{height:10px;background:#dacdfd}
+    .progress>div{height:100%;width:25%;background:linear-gradient(90deg,#ffd75f,#ffae73);transition:.25s}
+    .stage{padding:28px 34px 24px;min-height:650px;position:relative}
+    .kicker{text-align:center;color:var(--pink);font-size:14px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+    h1{text-align:center;font-size:clamp(38px,6vw,62px);margin:8px 0 8px;color:#432cb5;line-height:.98}
+    .instruction{text-align:center;font-size:20px;font-weight:600;margin-bottom:24px}
+    .card{
+      width:min(780px,100%);margin:0 auto;border:2px solid var(--line);border-radius:24px;padding:24px;
+      background:linear-gradient(180deg,#fff,#fcfbff)
+    }
+    .question{font-size:clamp(24px,4vw,36px);font-weight:700;text-align:center;margin:6px 0 22px}
+    .answers{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .answer{
+      border:3px solid #ded3fa;background:#fbf9ff;border-radius:18px;padding:15px 18px;color:var(--ink);
+      font-weight:700;font-size:18px;cursor:pointer;transition:.14s
+    }
+    .answer:hover{transform:translateY(-2px);border-color:#aa8df3}
+    .answer.good{border-color:#65d5a8;background:#ebfff6;color:#17734e;animation:pop .28s ease}
+    .answer.bad{border-color:#ff98a4;background:#fff0f2;color:#a63a47;animation:shake .28s ease}
+    .feedback{min-height:42px;text-align:center;margin:18px 0 4px;font-size:19px;font-weight:700}
+    .controls{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:14px;margin-top:28px}
+    .btn{border:2px solid #dbd2f8;border-radius:15px;background:#fff;color:#4734a9;padding:12px 18px;font-weight:700;cursor:pointer}
+    .controls .next{justify-self:end;background:linear-gradient(135deg,#ffd37c,#ffbd84);border:0;color:#76563b}
+    .center{text-align:center}
+    .hidden{display:none!important}
+    .start{padding:60px 32px;text-align:center}
+    .start p{font-size:19px;color:#667085}
+    .start input{width:min(560px,100%);padding:15px 17px;border:2px solid #d8cff4;border-radius:16px;font-size:18px}
+    .start .btn{margin-top:12px;background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;border:0}
+    .stars{font-size:26px;letter-spacing:5px}
+    .confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:20}
+    .confetti i{position:absolute;width:10px;height:16px;border-radius:3px;animation:fall 900ms linear forwards}
+    @keyframes pop{50%{transform:scale(1.035)}}
+    @keyframes shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+    @keyframes fall{from{transform:translateY(-10vh) rotate(0)}to{transform:translateY(110vh) rotate(500deg);opacity:.7}}
+    @media(max-width:700px){.top{grid-template-columns:1fr 1fr}.top>div:nth-child(2){grid-column:1/-1;grid-row:2;text-align:center}.stage{padding:22px 16px}.answers{grid-template-columns:1fr}.controls{grid-template-columns:1fr 1fr}.controls .restart{display:none}}
+  
+    /* Template FX v2 — reduced-motion aware and dependency-free */
+    .fx-enter{animation:fx-enter .38s cubic-bezier(.2,.8,.2,1) both}
+    .answer{transition:transform .17s ease,border-color .2s ease,box-shadow .2s ease,background .2s ease}
+    .answer:active,.btn:active{transform:scale(.97)}
+    .answer:focus-visible,.btn:focus-visible{outline:4px solid #f7bb56;outline-offset:3px}
+    .answer.good{box-shadow:0 0 0 4px rgba(81,213,157,.13)}
+    .answer.bad{box-shadow:0 0 0 4px rgba(255,118,144,.13)}
+    .answer:disabled{cursor:default}
+    .pill.score-pulse,.score-pulse{animation:fx-pulse .35s ease}
+    .feedback.success{color:#10845c;animation:fx-pop .4s ease both}
+    .feedback.error{color:#b44453;animation:fx-shake .32s ease both}
+    .mid-actions{display:flex;gap:8px;align-items:center;justify-content:center}
+    .mid-actions .btn{white-space:nowrap}
+    .btn:disabled{opacity:.4;cursor:not-allowed;filter:grayscale(.25)}
+    .next.ready{animation:fx-glow 1.8s ease-in-out infinite}
+    .fx-particles{position:fixed;inset:0;z-index:100;pointer-events:none;overflow:hidden}
+    .fx-particles span{position:absolute;top:-24px;width:10px;height:16px;border-radius:3px;animation:fx-rain 1.15s cubic-bezier(.2,.7,.5,1) forwards}
+    .fx-round-toast{position:fixed;inset:0;z-index:90;pointer-events:none;display:flex;justify-content:center;align-items:center;background:rgba(45,29,122,.11)}
+    .fx-round-toast.hidden{display:none!important}
+    .fx-round-pill{
+      text-align:center;border:4px solid #fff;border-radius:28px;
+      background:linear-gradient(135deg,#5b36d6,#8b6cf0);color:white;
+      padding:24px 36px;box-shadow:0 20px 60px rgba(54,38,152,.25);
+      font-size:clamp(25px,4vw,42px);font-weight:700;animation:fx-toast .7s ease both
+    }
+    .fx-round-pill small{display:block;font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:#ffdf85;margin-bottom:4px}
+    .result-area{text-align:center;padding:56px 24px}
+    .result-area h1{font-size:clamp(40px,6vw,64px);margin:10px 0;color:#432cb5}
+    .result-area .result-score{font-size:clamp(60px,10vw,100px);color:#5b36d6;font-weight:700;line-height:1.12}
+    .result-area .result-sub{font-size:21px;margin:8px 0 28px}
+    .result-area .btn{background:#6040d7;color:#fff;border:0;padding:15px 30px;font-size:18px}
+    .result-area .result-stars{font-size:38px;letter-spacing:8px;animation:fx-float 2s ease-in-out infinite}
+    .picture{animation:fx-picture-in .55s cubic-bezier(.2,.8,.2,1) both;transition:transform .25s ease,box-shadow .25s ease}
+    .picture:hover{transform:translateY(-3px) rotate(-1deg);box-shadow:0 17px 34px rgba(82,58,173,.21)}
+    .picture img{width:100%;height:100%;object-fit:cover;display:block}
+    @keyframes fx-enter{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes fx-pop{0%{transform:scale(.83);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+    @keyframes fx-pulse{50%{transform:scale(1.09)}}
+    @keyframes fx-shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+    @keyframes fx-glow{50%{box-shadow:0 0 0 6px rgba(255,205,100,.22)}}
+    @keyframes fx-rain{0%{transform:translateY(-10vh) rotate(0deg);opacity:1}100%{transform:translateY(112vh) rotate(620deg);opacity:0}}
+    @keyframes fx-toast{0%{transform:scale(.7) translateY(25px);opacity:0}40%{transform:scale(1.05);opacity:1}100%{transform:scale(1);opacity:1}}
+    @keyframes fx-float{50%{transform:translateY(-9px)}}
+    @keyframes fx-picture-in{from{opacity:0;transform:scale(.91) rotate(-2deg)}to{opacity:1;transform:scale(1) rotate(0)}}
+    @media(max-width:700px){
+      .controls{grid-template-columns:1fr 1fr}
+      .controls .mid-actions{grid-column:1/-1;grid-row:2;justify-content:center}
+      .controls .restart{display:inline-flex}
+      .result-area{padding:42px 16px}
+      .mid-actions .btn{font-size:14px;padding:10px 12px}
+    }
+    @media(prefers-reduced-motion:reduce){
+      *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+    }
+
+  
+    .answer{font-size:clamp(22px,2.6vw,28px);min-height:70px}.instruction{font-size:23px}.kicker{font-size:17px}.card{width:100%}.stage{min-height:0}button{touch-action:manipulation}.btn{font-size:20px;min-height:50px}label{font-size:22px}.progress-label{text-align:center;font-size:18px;margin:8px}.feedback{font-size:23px;line-height:1.5}.map-note{font-size:19px;text-align:center;margin:8px}.map{position:relative;width:100%;aspect-ratio:800/580;background:#eff9f3;border:2px solid #b5d7ce;border-radius:20px;overflow:hidden}.map svg{width:100%;height:100%;display:block}.place{position:absolute;transform:translate(-50%,-100%);width:25%;min-height:44px;padding:9px 2px;border:2px solid #9b86d6;border-radius:12px;background:#fff9e7;color:#29234c;font-size:clamp(13px,2.3vw,23px);cursor:pointer;box-shadow:0 3px 0 #c8bddf}.place:active{transform:translate(-50%,-100%) scale(.97)}.place.good{background:#bbf2d3;border-color:#21834f}.place.bad{background:#ffccd4;border-color:#b94454}.place:disabled{color:#29234c;cursor:default}.place.start-place{border:3px solid #6743df}#built{min-height:85px;border:3px dashed #b8a3ec;border-radius:16px;padding:12px;margin-bottom:14px}#tokens{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px}#tokens .btn,#built .btn{font-size:24px;margin:4px}#tokens .btn:disabled{opacity:.3}#builder>button{margin:8px}.speak{background:#f3edff;border-radius:12px;padding:12px;margin-top:12px;font-size:20px}.map-key{font-size:17px} @media(min-width:1000px){.app{width:min(1180px,98vw)}}@media(max-width:700px){body{padding:8px}.app{width:100%}.top{padding:12px}.pill{font-size:16px;padding:8px}.card{padding:12px}.place{font-size:clamp(12px,2.8vw,18px)}.controls .mid-actions .btn{font-size:18px}.question{font-size:27px}.stage{padding:18px 12px}h1{font-size:38px}}
+  
+.map-card{display:grid;grid-template-columns:minmax(220px,.8fr) minmax(0,1.6fr);gap:12px;align-items:center}.map-card #mapBox{grid-column:2;grid-row:1/4}.map-card .question{font-size:28px;line-height:1.3}.map-card .answers{grid-template-columns:1fr}.map-card .feedback{font-size:20px}.map-note{font-size:17px}.stage:has(.map-card) h1{font-size:42px}.stage:has(.map-card) .instruction{font-size:20px;margin-bottom:14px}.stage:has(.map-card) .controls{margin-top:16px}.stage:has(.map-card){padding-top:18px}.map-card .map{max-width:540px;margin:auto}@media(max-width:800px){.map-card{display:block}.map-card .question{font-size:25px}.map-card .answers{margin-top:14px}.map-card .map{max-width:560px}.map-note{font-size:17px}}
+</style>
+</head>
+<body>
+  <main class="app">
+    <section class="frame" id="startScreen">
+      <div class="start">
+        <div class="stars">⭐ ✨ ⭐</div>
+        <div class="kicker">A1–A2 · Explore • Ask • Guide</div>
+        <h1>Town Directions Quest</h1>
+        <p>30 activities · Places, map missions, conversations and sentence builders.<br>No timer. Say each answer aloud for extra speaking practice!</p>
+        <label for="nameInput">Your name</label><br><input id="nameInput" maxlength="80" autocomplete="name" placeholder="Enter your name" required>
+        <br>
+        <button class="btn" id="startBtn">Start Challenge</button>
+      </div>
+    </section>
+
+    <section class="frame hidden" id="gameScreen">
+      <div class="top">
+        <div class="pill" id="roundPill">Round 1 / 3</div>
+        <div class="pill">⭐ <span id="score">0</span> / <span id="total">4</span> points</div>
+        <div class="pill" id="questionPill">Question 1 / 4</div>
+      </div>
+      <div class="progress"><div id="bar"></div></div><div class="progress-label" id="progressLabel"></div>
+
+      <div class="stage">
+        <div class="kicker" id="kicker">Quick choice · 1 of 4</div>
+        <h1 id="title">Choose the best answer</h1>
+        <div class="instruction" id="instruction">Pick the sentence that sounds natural.</div>
+
+        <div class="card">
+          <div class="question" id="question"></div>
+          <div id="mapBox" class="hidden"></div><div id="builder" class="hidden"><div id="built" aria-label="Your sentence"></div><div id="tokens"></div><button class="btn" id="checkBtn">Check sentence</button><button class="btn" id="clearBtn">Clear</button></div><div class="answers" id="answers"></div>
+          <div class="feedback" id="feedback"></div>
+        </div>
+
+        <div class="controls">
+          <button class="btn" id="backBtn">← Back</button>
+          <div class="mid-actions"><button class="btn" id="soundBtn" aria-pressed="true">🔊 Sound On</button><button class="btn restart" id="restartBtn">↻ Restart</button></div>
+          <button class="btn next" id="nextBtn">Next →</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="frame hidden" id="resultScreen">
+      <div class="result-area">
+        <div class="result-stars">🌟 🎉 🌟</div>
+        <h1>Great Job, <span id="playerResult"></span>!</h1>
+        <div class="result-score"><span id="finalPoints">0</span>/<span id="finalTotal">4</span></div>
+        <p class="result-sub" id="resultMessage"></p>
+        <p class="result-sub" id="recordStatus"></p>
+        <button class="btn" id="playAgainBtn">↻ Play Again</button>
+      </div>
+    </section>
+  <div class="fx-particles" id="fxParticles" aria-hidden="true"></div>
+    <div class="fx-round-toast hidden" id="roundToast" aria-hidden="true"><div class="fx-round-pill"><small>LEVEL UP ✨</small><span id="roundToastText"></span></div></div>
+  </main>
+
+<script src="/minigame/shared/teacher-records-config.js"></script>
+<script src="/minigame/shared/teacher-records.js"></script>
+<script>
+
+const QUESTIONS=[{"round": 1, "q": "You want to borrow a book. Where do you go?", "choices": ["Library", "Bookshop", "Bank"], "a": 0, "ex": "You borrow books from a library. You buy them at a bookshop."}, {"round": 1, "q": "You need to post a parcel. Where do you go?", "choices": ["Police station", "Post office", "Hospital"], "a": 1, "ex": "You send letters and parcels at the post office."}, {"round": 1, "q": "You want to watch a film on a big screen.", "choices": ["Museum", "Supermarket", "Cinema"], "a": 2, "ex": "You watch films at the cinema."}, {"round": 1, "q": "You need bread and fresh rolls.", "choices": ["Bakery", "Bank", "Library"], "a": 0, "ex": "A bakery sells bread, rolls and cakes."}, {"round": 1, "q": "You need medicine for a cold.", "choices": ["Hotel", "Pharmacy", "Cinema"], "a": 1, "ex": "You can buy medicine at a pharmacy."}, {"round": 1, "q": "You want to learn about old objects and local history.", "choices": ["Museum", "Hospital", "Bakery"], "a": 0, "ex": "A museum displays objects from history, art or science."}, {"round": 1, "q": "You are visiting a town and need a room for the night.", "choices": ["School", "Hotel", "Post office"], "a": 1, "ex": "Visitors can stay overnight at a hotel."}, {"round": 1, "q": "You need to buy fruit, milk and rice in one place.", "choices": ["Bank", "Library", "Supermarket"], "a": 2, "ex": "A supermarket sells many types of food and household items."}, {"round": 1, "q": "You need to withdraw money at the counter.", "choices": ["Bank", "Cinema", "Park"], "a": 0, "ex": "A bank provides money services. Withdraw means take money out."}, {"round": 1, "q": "You want to have a picnic and walk among trees.", "choices": ["Hospital", "Park", "Police station"], "a": 1, "ex": "A park is a public outdoor space for relaxing and walking."}, {"round": 2, "type": "map", "q": "Go straight for two blocks.", "a": 1, "ex": "Walk north from Park, past Bank, to Library.", "route": "Go straight for two blocks."}, {"round": 2, "type": "map", "q": "Go straight for one block. Turn left. Go one block.", "a": 3, "ex": "Walk north to Bank, then west to Post office.", "route": "Go straight for one block. Turn left. Go one block."}, {"round": 2, "type": "map", "q": "Go straight for one block. Turn right. Go one block.", "a": 5, "ex": "Walk north to Bank, then east to Supermarket.", "route": "Go straight for one block. Turn right. Go one block."}, {"round": 2, "type": "map", "q": "Turn left. Go straight for one block.", "a": 6, "ex": "From Park, turn west and walk one block to Cinema.", "route": "Turn left. Go straight for one block."}, {"round": 2, "type": "map", "q": "Turn right. Go straight for one block.", "a": 8, "ex": "From Park, turn east and walk one block to Hospital.", "route": "Turn right. Go straight for one block."}, {"round": 2, "type": "map", "q": "Go straight for two blocks. Turn left. Go one block.", "a": 0, "ex": "Walk north to Library, then west to Bakery.", "route": "Go straight for two blocks. Turn left. Go one block."}, {"round": 2, "q": "Which place is one block north of the Bank?", "choices": ["Park", "Library", "Hospital"], "a": 1, "ex": "Library is one block north of Bank.", "map": true}, {"round": 2, "q": "Which place is between the Bakery and the Museum?", "choices": ["Library", "Cinema", "Supermarket"], "a": 0, "ex": "Library is in the middle of the top row.", "map": true}, {"round": 3, "q": "You want to ask a stranger for directions to the station.", "choices": ["Excuse me, how can I get to the station?", "Give me the station.", "Where you go station?"], "a": 0, "ex": "Use “Excuse me” and “How can I get to…?” to ask politely."}, {"round": 3, "q": "Visitor: “Is there a pharmacy near here?”", "choices": ["Yes, it opens medicine.", "Yes. There is one next to the bank.", "Yes, I am a pharmacy."], "a": 1, "ex": "Answer the question, then give the location."}, {"round": 3, "q": "Visitor: “How far is the museum?”", "choices": ["It is very old.", "It is open on Sundays.", "It is about a five-minute walk."], "a": 2, "ex": "“How far?” asks about distance. Walking time is a useful reply."}, {"round": 3, "q": "You did not hear the directions clearly.", "choices": ["Could you say that again, please?", "You are wrong.", "I do not like the town."], "a": 0, "ex": "Ask politely for the speaker to repeat the directions."}, {"round": 3, "q": "Helper: “Go straight on, then take the first right.”", "choices": ["Thanks for your help!", "I am straight.", "Yes, I buy it."], "a": 0, "ex": "Thank the person after they help you."}, {"round": 3, "q": "You do not know the way. What is the best reply?", "choices": ["Go anywhere.", "Sorry, I am not sure. You could ask at the information desk.", "Yes, it is mine."], "a": 1, "ex": "Be honest and suggest another source of help."}, {"round": 4, "type": "order", "q": "Build the sentence. Then say it aloud.", "words": ["Excuse", "me,", "where", "is", "the", "nearest", "bank?"], "a": "Excuse me, where is the nearest bank?", "ex": "“Where is…?” asks about a location."}, {"round": 4, "type": "order", "q": "Build the sentence. Then say it aloud.", "words": ["How", "can", "I", "get", "to", "the", "museum?"], "a": "How can I get to the museum?", "ex": "Use “get to” before the destination."}, {"round": 4, "type": "order", "q": "Build the sentence. Then say it aloud.", "words": ["Go", "straight", "on", "and", "turn", "left."], "a": "Go straight on and turn left.", "ex": "Use the base form of the verb to give directions."}, {"round": 4, "type": "order", "q": "Build the sentence. Then say it aloud.", "words": ["Take", "the", "second", "turning", "on", "the", "right."], "a": "Take the second turning on the right.", "ex": "Count the turnings, then take the second one."}, {"round": 4, "type": "order", "q": "Build the sentence. Then say it aloud.", "words": ["The", "pharmacy", "is", "next", "to", "the", "bank."], "a": "The pharmacy is next to the bank.", "ex": "“Next to” means beside."}, {"round": 4, "type": "order", "q": "Build the sentence. Then say it aloud.", "words": ["The", "cinema", "is", "opposite", "the", "post", "office."], "a": "The cinema is opposite the post office.", "ex": "“Opposite” means facing something on the other side."}];
+const PLACES=["Bakery", "Library", "Museum", "Post office", "Bank", "Supermarket", "Cinema", "Park", "Hospital"];
+
+
+const MODE = "present";
+const $ = id => document.getElementById(id);
+const state = QUESTIONS.map(() => ({choice:null, tokens:[], order:[]}));
+let pos = 0;
+let player = "";
+let soundOn = true;
+let audioCtx = null;
+let roundTimer = null;
+let startedAt = null;
+let attemptId="", finished=false;
+const roundNames=["Places in town","Follow the map","Ask & answer","Build your directions"];
+const totalRounds = Math.max(...QUESTIONS.map(q=>q.round));
+$("total").textContent = QUESTIONS.length;
+const roundElement = () => $(MODE === "present" ? "roundPill" : "round");
+const counterElement = () => $(MODE === "present" ? "questionPill" : "counter");
+
+function points() {
+  return state.reduce((n,s,idx)=>n+(s.choice === QUESTIONS[idx].a ? 1 : 0),0);
+}
+function chime(kind) {
+  if (!soundOn) return;
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    if (!audioCtx) audioCtx = new AC();
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    const melodies = {
+      correct:[[659,0,.11],[880,.11,.15],[1046,.23,.18]],
+      wrong:[[330,0,.13],[220,.11,.19]],
+      round:[[523,0,.1],[659,.11,.1],[784,.23,.19]],
+      finish:[[523,0,.14],[659,.15,.14],[784,.31,.15],[1046,.49,.28]]
+    };
+    const now = audioCtx.currentTime;
+    (melodies[kind] || melodies.correct).forEach(([hz,delay,len])=>{
+      const osc=audioCtx.createOscillator(),gain=audioCtx.createGain();
+      osc.type=kind==="wrong"?"triangle":"sine";
+      osc.frequency.setValueAtTime(hz,now+delay);
+      gain.gain.setValueAtTime(.0001,now+delay);
+      gain.gain.exponentialRampToValueAtTime(.095,now+delay+.018);
+      gain.gain.exponentialRampToValueAtTime(.0001,now+delay+len);
+      osc.connect(gain);gain.connect(audioCtx.destination);
+      osc.start(now+delay);osc.stop(now+delay+len+.01);
+    });
+  } catch (_) {}
+}
+function particles(count) {
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const box=$("fxParticles"), colors=["#ffc85b","#f65caf","#6de0b1","#77caff","#9e76f2","#ff9d78"];
+  for(let n=0;n<count;n++){
+    const p=document.createElement("span");
+    p.style.left=(Math.random()*100)+"%";
+    p.style.background=colors[n%colors.length];
+    p.style.animationDelay=(Math.random()*.27)+"s";
+    p.style.animationDuration=(.95+Math.random()*.7)+"s";
+    box.appendChild(p);
+    p.addEventListener("animationend",()=>p.remove(),{once:true});
+  }
+}
+function animateScore() {
+  const el=$("score");
+  el.textContent=points();
+  el.classList.remove("score-pulse");
+  void el.offsetWidth;
+  el.classList.add("score-pulse");
+}
+function toastRound(round){
+  if(roundTimer)clearTimeout(roundTimer);
+  $("roundToastText").textContent="Round "+round+" · "+roundNames[round-1];
+  $("roundToast").classList.remove("hidden");
+  chime("round");
+  roundTimer=setTimeout(()=>$("roundToast").classList.add("hidden"),900);
+}
+function setScreen(id){
+  ["startScreen","gameScreen","resultScreen"].forEach(x=>$(x).classList.toggle("hidden",x!==id));
+}
+function start(){
+  const name=$("nameInput").value.trim();
+  if(!name){alert("Please enter your name first.");$("nameInput").focus();return;}
+  player=name;
+  startedAt=Date.now();
+  pos=0;
+  resetAttempt();
+  setScreen("gameScreen");
+  render();
+  toastRound(QUESTIONS[0].round);
+}
+
+function resetAttempt(){
+  finished=false; attemptId=crypto.randomUUID ? crypto.randomUUID() : Date.now()+"-"+Math.random();
+  state.forEach((s,i)=>{s.choice=null;s.tokens=[];s.order=QUESTIONS[i].words ? QUESTIONS[i].words.map((_,n)=>n).sort(()=>Math.random()-.5):[];});
+}
+function drawMap(interactive){
+ const box=$("mapBox");box.innerHTML='';
+ const note=document.createElement('p');note.className='map-note';note.textContent=interactive?'Start at PARK, facing NORTH (up). Each question starts here again.':'Read the town map. North is up.';box.appendChild(note);
+ const map=document.createElement('div');map.className='map';
+ map.innerHTML=`<svg viewBox="0 0 800 580" role="img" aria-label="Town street grid, north is up. Top row: Bakery, Library, Museum. Middle: Post office, Bank, Supermarket. Bottom: Cinema, Park, Hospital."><path d="M160 140H640 M160 320H640 M160 500H640 M160 140V500 M400 140V500 M640 140V500" fill="none" stroke="#b9bed4" stroke-width="36" stroke-linecap="round"/><path d="M160 140H640 M160 320H640 M160 500H640 M160 140V500 M400 140V500 M640 140V500" fill="none" stroke="white" stroke-width="3" stroke-dasharray="10 10"/><text x="730" y="55" font-size="26" text-anchor="middle" fill="#4734a9">N ↑</text></svg>`;
+ PLACES.forEach((name,i)=>{const x=160+i%3*240,y=140+Math.floor(i/3)*180;const b=document.createElement('button');b.className='place'+(i===7?' start-place':'');b.textContent=name+(i===7?' · START ↑':'');b.style.left=x/8+'%';b.style.top=(y-12)/5.8+'%';b.disabled=!interactive||state[pos].choice!==null;if(interactive&&state[pos].choice!==null){if(i===QUESTIONS[pos].a)b.classList.add('good');else if(i===state[pos].choice)b.classList.add('bad');} b.onclick=()=>answer(i);map.appendChild(b);});
+ box.appendChild(map);const key=document.createElement('p');key.className='map-note map-key';key.textContent='Each place is at a road junction. One block = the next junction. Left and right depend on the way you are facing.';box.appendChild(key);
+}
+function renderBuilder(){
+ const q=QUESTIONS[pos],st=state[pos],locked=st.choice!==null;$("built").innerHTML='';$("tokens").innerHTML='';
+ st.tokens.forEach((id,n)=>{const b=document.createElement('button');b.className='btn';b.textContent=q.words[id];b.disabled=locked;b.onclick=()=>{st.tokens.splice(n,1);renderBuilder();};$("built").appendChild(b);});
+ st.order.forEach(id=>{const b=document.createElement('button');b.className='btn';b.textContent=q.words[id];b.disabled=locked||st.tokens.includes(id);b.onclick=()=>{st.tokens.push(id);renderBuilder();};$("tokens").appendChild(b);});
+ $("checkBtn").disabled=locked||st.tokens.length!==q.words.length;$("clearBtn").disabled=locked||!st.tokens.length;
+}
+
+function render(){
+  const q=QUESTIONS[pos], st=state[pos];
+  $("question").parentElement.classList.toggle("map-card",q.type==="map"||!!q.map);
+  roundElement().textContent="Round "+q.round+" / "+totalRounds;
+  counterElement().textContent="Question "+(pos+1)+" / "+QUESTIONS.length;
+  const completed=state.filter(s=>s.choice!==null).length;
+  $("bar").style.width=(completed/QUESTIONS.length*100)+"%";$("progressLabel").textContent=completed+" / "+QUESTIONS.length+" completed";
+  $("score").textContent=points();
+  $("kicker").textContent=roundNames[q.round-1]+" · "+(pos+1)+" of "+QUESTIONS.length;
+  if(MODE==="present"){
+    $("title").textContent=roundNames[q.round-1];
+    $("instruction").textContent=q.type==="map"?"Follow the directions. Tap your destination on the map.":q.type==="order"?"Tap the words in order. Tap a chosen word to remove it.":"Choose the best answer. Say it aloud.";
+    $("question").textContent=q.q;
+  }else{
+    $("prompt").textContent=q.prompt;
+    const photo=$("picture");
+    photo.innerHTML="";
+    if(q.image){
+      const img=document.createElement("img");img.src=q.image;img.alt=q.alt||q.picture||"Question picture";
+      photo.appendChild(img);
+    }else{photo.innerHTML=placeholder(q.picture||"Picture prompt");}
+    photo.style.animation="none";
+    void photo.offsetWidth;
+    photo.style.animation="";
+  }
+  const answerBox=$("answers");
+  answerBox.innerHTML="";
+  $("mapBox").classList.toggle("hidden",!(q.type==="map"||q.map));
+  if(q.type==="map"||q.map)drawMap(q.type==="map");
+  $("builder").classList.toggle("hidden",q.type!=="order");if(q.type==="order")renderBuilder();
+  (q.choices||[]).forEach((label,n)=>{
+    const b=document.createElement("button");
+    b.type="button";b.className="answer";b.textContent=label;
+    if(st.choice!==null){
+      b.disabled=true;
+      if(n===q.a)b.classList.add("good");
+      if(n===st.choice && n!==q.a)b.classList.add("bad");
+    }else{b.onclick=()=>answer(n);}
+    answerBox.appendChild(b);
+  });
+  const feedback=$("feedback");
+  feedback.textContent=st.choice===null ? "" : (st.choice===q.a ? "Correct! ⭐ " : "Incorrect. 💡 ")+q.ex+(q.type==="order"?" Answer: "+q.a:"");
+  feedback.className="feedback"+(st.choice===null?"":st.choice===q.a?" success":" error");
+  feedback.setAttribute("aria-live","polite");
+  $("nextBtn").disabled=st.choice===null;
+  $("nextBtn").classList.toggle("ready",st.choice!==null);
+  $("nextBtn").textContent=pos===QUESTIONS.length-1?"See Results":"Next";
+  $("backBtn").disabled=pos===0;
+  const scene=$("gameScreen").querySelector(MODE==="present"?".stage":".content");
+  scene.classList.remove("fx-enter");
+  void scene.offsetWidth;
+  scene.classList.add("fx-enter");
+}
+function answer(choice){
+  if(state[pos].choice!==null)return;
+  state[pos].choice=choice;
+  const correct=choice===QUESTIONS[pos].a;
+  chime(correct?"correct":"wrong");
+  if(correct)particles(24);
+  render();
+  animateScore();
+}
+function next(){
+  if(state[pos].choice===null)return;
+  if(pos===QUESTIONS.length-1){finish();return;}
+  const prevRound=QUESTIONS[pos].round;
+  pos++;
+  render();
+  if(QUESTIONS[pos].round!==prevRound)toastRound(QUESTIONS[pos].round);
+}
+function back(){if(pos>0){pos--;render();}}
+function restart(){
+  startedAt=Date.now();
+  pos=0;resetAttempt();setScreen("gameScreen");render();toastRound(QUESTIONS[0].round);
+}
+async function finish(){
+  if(finished || state.some(s=>s.choice===null))return; finished=true; const finishedAttempt=attemptId;
+  setScreen("resultScreen");
+  const score=points();
+  $("playerResult").textContent=player;
+  $("finalPoints").textContent=score;
+  $("finalTotal").textContent=QUESTIONS.length;
+  const pct=Math.round(score/QUESTIONS.length*100);
+  $("resultMessage").textContent = pct>=85 ? "Amazing! You're a town explorer!" : pct>=60 ? "Great effort! Keep practicing and level up!" : "Every try makes you stronger. Play again!";
+  chime("finish");
+  particles(100);
+
+  const preview = /\/_templates?\//.test(location.pathname);
+  if(preview){
+    $("recordStatus").textContent="Template preview — score not sent.";
+    return;
+  }
+
+  $("recordStatus").textContent="Sending score to your teacher…";
+  if(window.TeacherRecords){
+    const result=await TeacherRecords.submit({
+      attemptId, completedAt:new Date().toISOString(), gameUrl:location.href,
+      studentName:player,
+      gameTitle:document.title,
+      score,
+      total:QUESTIONS.length,
+      durationSeconds:startedAt ? Math.max(0,Math.round((Date.now()-startedAt)/1000)) : 0
+    });
+    if(attemptId!==finishedAttempt)return;
+    $("recordStatus").textContent=result.sent
+      ? "✅ Score sent to your teacher."
+      : "⚠️ Score saved on this device, but could not be sent right now.";
+  }else{
+    try {localStorage.setItem("townDirectionsBackup:"+attemptId,JSON.stringify({studentName:player,gameTitle:document.title,score,total:QUESTIONS.length,percentage:pct,durationSeconds:Math.round((Date.now()-startedAt)/1000),attemptId,completedAt:new Date().toISOString(),gameUrl:location.href}));}catch(_){}
+    $("recordStatus").textContent="Score saved on this device. Teacher Records could not load.";
+  }
+}
+function toggleSound(){
+  soundOn=!soundOn;
+  $("soundBtn").textContent=soundOn?"🔊 Sound On":"🔇 Sound Off";
+  $("soundBtn").setAttribute("aria-pressed",String(soundOn));
+}
+$("checkBtn").onclick=()=>{const q=QUESTIONS[pos];answer(state[pos].tokens.map(i=>q.words[i]).join(' '));};
+$("clearBtn").onclick=()=>{state[pos].tokens=[];renderBuilder();};
+$("startBtn").addEventListener("click",start);
+$("nameInput").addEventListener("keydown",e=>{if(e.key==="Enter")start();});
+$("nextBtn").addEventListener("click",next);
+$("backBtn").addEventListener("click",back);
+$("restartBtn").addEventListener("click",restart);
+$("playAgainBtn").addEventListener("click",restart);
+$("soundBtn").addEventListener("click",toggleSound);
+
+</script>
+</body>
+</html>

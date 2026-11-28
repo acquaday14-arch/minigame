@@ -376,5 +376,11 @@
     "description": "30 activities from the supplied grammar page: 16 choices, 8 typed possessives and 6 sentence builders. People, animals, organisations, names ending in s, plurals, omitted house, shared and separate ownership. Source rule images after answers. No timer.",
     "level": "A2–B1",
     "path": "./possessive-spark/"
+  },
+  {
+    "title": "Town Directions Quest",
+    "description": "30 activities: 10 town-place clues, 8 interactive map challenges, 6 asking/giving directions conversations and 6 sentence builders. No timer.",
+    "level": "A1–A2",
+    "path": "./town-directions-quest/"
   }
 ]
