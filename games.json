@@ -388,5 +388,11 @@
     "description": "34 worksheet activities: 8 multiplication problems, 8 equal-sharing divisions, 5 picture remainders, all 7 remainder matches and 6 drag-or-tap sentence builders. Speaking after every answer. No timer.",
     "level": "A1–A2 · Maths in English",
     "path": "./maths-talk-quest/"
+  },
+  {
+    "title": "Plant Explorer Quest",
+    "description": "30 worksheet-based activities: 6 root groups, 4 missing plant parts, 4 stem functions, 6 flower-poem gaps, 5 fruit riddles and 5 sentence builders. Original pictures, speaking prompts and an adapted poem word bank. No timer.",
+    "level": "A1–A2 · Science",
+    "path": "./plant-explorer-quest/"
   }
 ]

@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en" data-template-effects-version="2">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Plant Explorer Quest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--purple:#5b36d6;--dark:#242b62;--pink:#e64a98;--soft:#f7f5ff;--line:#d9cff8;--yellow:#ffd57a}
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;background:linear-gradient(180deg,#f3f7ff,#f7f1ff);padding:12px;font-family:"Fredoka",ui-rounded,"Trebuchet MS",Arial,sans-serif;color:var(--dark)}
+    button,input{font:inherit}
+    .shell{width:min(1060px,100%);margin:1vh auto;background:white;border:4px solid #4330ad;border-radius:34px;overflow:hidden;box-shadow:0 14px 0 #ded6ff}
+    .hud{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;padding:18px 28px;background:linear-gradient(135deg,#5132c8,#6948df);color:white}
+    .pill{border:1px solid rgba(255,255,255,.45);background:rgba(255,255,255,.12);border-radius:999px;padding:9px 15px;font-weight:700}
+    .hud .pill:nth-child(2){justify-self:center}.hud .pill:last-child{justify-self:end}
+    .track{height:9px;background:#dcd1ff}.bar{height:100%;width:33%;background:#ffd267;transition:.25s}
+    .content{padding:22px 30px 20px;min-height:700px}
+    .kicker{text-align:center;color:var(--pink);font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+    h1{text-align:center;color:#432cb5;font-size:clamp(40px,6vw,60px);line-height:1;margin:8px 0}
+    .instruction{text-align:center;font-size:20px;font-weight:600;margin-bottom:14px}
+    .image-wrap{display:grid;place-items:center;margin:10px 0 18px}
+    .picture{
+      width:min(310px,80vw);aspect-ratio:1/1;border:4px solid #a98bf5;border-radius:28px;overflow:hidden;
+      box-shadow:0 10px 22px rgba(82,58,173,.16);background:linear-gradient(135deg,#ffedf5,#e7f5ff);position:relative
+    }
+    .picture svg{width:100%;height:100%;display:block}
+    .prompt{text-align:center;font-size:clamp(25px,4vw,35px);font-weight:700;margin:12px 0}
+    .answers{width:min(780px,100%);margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .answer{border:3px solid #ded4f9;background:#fbfaff;border-radius:18px;padding:14px;color:var(--dark);font-weight:700;font-size:18px;cursor:pointer}
+    .answer:hover{border-color:#ab95ed}
+    .answer.good{border-color:#63d7a6;background:#eafff5;color:#176a49;animation:pop .28s}
+    .answer.bad{border-color:#ff9fab;background:#fff0f2;color:#a33745;animation:shake .28s}
+    .feedback{text-align:center;min-height:36px;margin:15px 0;font-size:19px;font-weight:700}
+    .controls{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;margin-top:25px}
+    .btn{border:2px solid #dbd3f5;background:#fff;border-radius:15px;padding:11px 18px;font-weight:700;color:#4733a6;cursor:pointer}
+    .next{justify-self:end;background:linear-gradient(135deg,#ffd88b,#ffc586);border:0;color:#785d41}
+    .hidden{display:none!important}
+    .start{text-align:center;padding:65px 30px}.start p{font-size:19px;color:#687086}.start input{width:min(540px,100%);padding:15px 17px;border:2px solid #d8cff4;border-radius:16px}
+    .start .btn{margin-top:12px;background:linear-gradient(135deg,#5532cf,#7754e9);border:0;color:#fff}
+    @keyframes pop{50%{transform:scale(1.035)}}@keyframes shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+    @media(max-width:700px){.hud{grid-template-columns:1fr 1fr}.hud .pill:nth-child(2){grid-column:1/-1;grid-row:2}.content{padding:20px 14px}.answers{grid-template-columns:1fr}.controls{grid-template-columns:1fr 1fr}.controls .restart{display:none}}
+  
+    /* Template FX v2 — reduced-motion aware and dependency-free */
+    .fx-enter{animation:fx-enter .38s cubic-bezier(.2,.8,.2,1) both}
+    .answer{transition:transform .17s ease,border-color .2s ease,box-shadow .2s ease,background .2s ease}
+    .answer:active,.btn:active{transform:scale(.97)}
+    .answer:focus-visible,.btn:focus-visible{outline:4px solid #f7bb56;outline-offset:3px}
+    .answer.good{box-shadow:0 0 0 4px rgba(81,213,157,.13)}
+    .answer.bad{box-shadow:0 0 0 4px rgba(255,118,144,.13)}
+    .answer:disabled{cursor:default}
+    .pill.score-pulse,.score-pulse{animation:fx-pulse .35s ease}
+    .feedback.success{color:#10845c;animation:fx-pop .4s ease both}
+    .feedback.error{color:#b44453;animation:fx-shake .32s ease both}
+    .mid-actions{display:flex;gap:8px;align-items:center;justify-content:center}
+    .mid-actions .btn{white-space:nowrap}
+    .btn:disabled{opacity:.4;cursor:not-allowed;filter:grayscale(.25)}
+    .next.ready{animation:fx-glow 1.8s ease-in-out infinite}
+    .fx-particles{position:fixed;inset:0;z-index:100;pointer-events:none;overflow:hidden}
+    .fx-particles span{position:absolute;top:-24px;width:10px;height:16px;border-radius:3px;animation:fx-rain 1.15s cubic-bezier(.2,.7,.5,1) forwards}
+    .fx-round-toast{position:fixed;inset:0;z-index:90;pointer-events:none;display:flex;justify-content:center;align-items:center;background:rgba(45,29,122,.11)}
+    .fx-round-toast.hidden{display:none!important}
+    .fx-round-pill{
+      text-align:center;border:4px solid #fff;border-radius:28px;
+      background:linear-gradient(135deg,#5b36d6,#8b6cf0);color:white;
+      padding:24px 36px;box-shadow:0 20px 60px rgba(54,38,152,.25);
+      font-size:clamp(25px,4vw,42px);font-weight:700;animation:fx-toast .7s ease both
+    }
+    .fx-round-pill small{display:block;font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:#ffdf85;margin-bottom:4px}
+    .result-area{text-align:center;padding:56px 24px}
+    .result-area h1{font-size:clamp(40px,6vw,64px);margin:10px 0;color:#432cb5}
+    .result-area .result-score{font-size:clamp(60px,10vw,100px);color:#5b36d6;font-weight:700;line-height:1.12}
+    .result-area .result-sub{font-size:21px;margin:8px 0 28px}
+    .result-area .btn{background:#6040d7;color:#fff;border:0;padding:15px 30px;font-size:18px}
+    .result-area .result-stars{font-size:38px;letter-spacing:8px;animation:fx-float 2s ease-in-out infinite}
+    .picture{animation:fx-picture-in .55s cubic-bezier(.2,.8,.2,1) both;transition:transform .25s ease,box-shadow .25s ease}
+    .picture:hover{transform:translateY(-3px) rotate(-1deg);box-shadow:0 17px 34px rgba(82,58,173,.21)}
+    .picture img{width:100%;height:100%;object-fit:cover;display:block}
+    @keyframes fx-enter{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes fx-pop{0%{transform:scale(.83);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+    @keyframes fx-pulse{50%{transform:scale(1.09)}}
+    @keyframes fx-shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+    @keyframes fx-glow{50%{box-shadow:0 0 0 6px rgba(255,205,100,.22)}}
+    @keyframes fx-rain{0%{transform:translateY(-10vh) rotate(0deg);opacity:1}100%{transform:translateY(112vh) rotate(620deg);opacity:0}}
+    @keyframes fx-toast{0%{transform:scale(.7) translateY(25px);opacity:0}40%{transform:scale(1.05);opacity:1}100%{transform:scale(1);opacity:1}}
+    @keyframes fx-float{50%{transform:translateY(-9px)}}
+    @keyframes fx-picture-in{from{opacity:0;transform:scale(.91) rotate(-2deg)}to{opacity:1;transform:scale(1) rotate(0)}}
+    @media(max-width:700px){
+      .controls{grid-template-columns:1fr 1fr}
+      .controls .mid-actions{grid-column:1/-1;grid-row:2;justify-content:center}
+      .controls .restart{display:inline-flex}
+      .result-area{padding:42px 16px}
+      .mid-actions .btn{font-size:14px;padding:10px 12px}
+    }
+    @media(prefers-reduced-motion:reduce){
+      *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+    }
+
+  
+.shell{width:min(1120px,100%)}.content{min-height:540px}.answer,.btn{font-size:clamp(21px,2.5vw,27px);min-height:52px}.instruction,.feedback,.speak{font-size:clamp(21px,2.5vw,27px);line-height:1.45}.prompt{font-size:clamp(25px,3.5vw,34px);line-height:1.4;max-width:940px;margin:18px auto}.picture{width:min(360px,90%);height:280px;aspect-ratio:auto;background:#fff}.picture img{object-fit:contain;width:100%;height:100%;padding:10px}.picture.wide{width:min(900px,100%);height:auto;min-height:150px;aspect-ratio:auto}.picture.wide img{height:auto;max-height:320px;object-fit:contain}.picture.poem-picture{width:130px;height:155px}.picture:hover{transform:none}.start input{font-size:25px}.start label{font-size:22px}.start p{font-size:24px;line-height:1.5}.poem-context{max-width:780px;margin:10px auto;padding:16px 24px;border:2px solid #d9cff8;border-radius:20px;background:#f7f5ff;line-height:1.6;font-size:23px}.poem-context p{margin:5px 0}.active-line{color:#4330ad;background:#ffe6a7;border-radius:8px;padding:5px 10px;font-weight:bold}.speak{max-width:850px;margin:20px auto;padding:16px;background:#e9f9f4;border-radius:18px;border:2px solid #8ad6bb}.built,.bank,.check{grid-column:1/-1}.built,.bank{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;padding:16px}.built{min-height:90px;background:#edf8ff;border:2px dashed #91b9e7;border-radius:18px;font-size:23px}.bank .btn:disabled{opacity:.35}.built .btn:disabled{opacity:1}.check{background:#5b36d6;color:white}.review{text-align:left;max-width:850px;margin:24px auto;padding:16px;font-size:22px;line-height:1.6}.review summary{cursor:pointer;color:#5132c8;font-weight:bold}.review article{padding:15px 0;border-bottom:1px solid #ddd}.review p{white-space:pre-line}.bar{width:0}input:focus-visible,summary:focus-visible{outline:4px solid #f7bb56;outline-offset:3px}.hud .pill{font-size:18px}.controls .btn{white-space:nowrap}
+@media(max-width:700px){body{padding:8px}.hud{padding:16px 12px;gap:8px}.hud .pill{font-size:16px;padding:8px}.mid-actions .btn{font-size:19px}.picture{height:240px}.controls{gap:8px}.poem-context{padding:14px;font-size:21px}.start{padding:38px 20px}h1{font-size:clamp(34px,7vw,54px);line-height:1.1}}
+
+</style>
+</head>
+<body>
+  <main class="shell" id="startScreen">
+    <section class="start">
+      <div class="kicker">A1–A2 · Science in English · No timer</div>
+      <h1>Plant Explorer Quest</h1>
+      <p>30 activities · Roots, stems, a flower poem and fruit riddles.<br>Choose, build sentences and practise speaking. Each question earns 1 point.</p>
+      <label for="nameInput">Student name</label><br><input id="nameInput" placeholder="Enter your name" maxlength="80" autocomplete="name">
+      <br><button class="btn" id="startBtn">Start Quest</button>
+    </section>
+  </main>
+
+  <main class="shell hidden" id="gameScreen">
+    <div class="hud">
+      <div class="pill" id="round">Round 1 / 2 · Picture questions</div>
+      <div class="pill">⭐ <span id="score">0</span> / <span id="total">3</span> points</div>
+      <div class="pill" id="counter">Question 1 / 3</div>
+    </div>
+    <div class="track"><div class="bar" id="bar"></div></div>
+    <section class="content">
+      <div class="kicker" id="kicker">Picture questions · 1 of 3</div>
+      <h1 id="title">Picture questions</h1>
+      <div class="instruction" id="instruction"></div><div class="poem-context hidden" id="poemContext"></div>
+
+      <div class="image-wrap">
+        <div class="picture" id="picture"></div>
+      </div>
+
+      <div class="prompt" id="prompt"></div>
+      <div class="answers" id="answers"></div>
+      <div class="feedback" id="feedback" role="status" aria-live="polite"></div><p class="speak hidden" id="speak"></p>
+
+      <div class="controls">
+        <button class="btn" id="backBtn">← Back</button>
+        <div class="mid-actions"><button class="btn" id="soundBtn" aria-pressed="true">🔊 Sound On</button><button class="btn restart" id="restartBtn">↻ Restart</button></div>
+        <button class="btn next" id="nextBtn">Next →</button>
+      </div>
+    </section>
+  </main>
+
+<main class="shell hidden" id="resultScreen">
+      <div class="result-area">
+        <div class="result-stars">🌟 🎉 🌟</div>
+        <h1>Quest Complete, <span id="playerResult"></span>!</h1>
+        <div class="result-score"><span id="finalPoints">0</span>/<span id="finalTotal">3</span></div>
+        <p class="result-sub" id="resultMessage"></p>
+        <p class="result-sub" id="recordStatus" role="status"></p><details class="review"><summary>Review my answers</summary><div id="review"></div></details><details class="review"><summary>Read the completed flower poem aloud</summary><p id="fullPoem"></p><small>Adapted from the supplied worksheet: “air” was added to complete the missing word bank.</small></details>
+        <button class="btn" id="playAgainBtn">↻ Play Again</button>
+      </div>
+    </main>
+<div class="fx-particles" id="fxParticles" aria-hidden="true"></div>
+    <div class="fx-round-toast hidden" id="roundToast" aria-hidden="true"><div class="fx-round-pill"><small>LEVEL UP ✨</small><span id="roundToastText"></span></div></div>
+<script src="../shared/teacher-records-config.js"></script>
+<script src="../shared/teacher-records.js"></script>
+<script>
+
+const QUESTIONS=[{"round": 1, "type": "choice", "prompt": "Which root group does the pumpkin plant belong to?", "choices": ["Group 1 · Taproot", "Group 2 · Fibrous root"], "a": 0, "why": "Pumpkin plants have taproots. A taproot system has one main root with smaller side roots.", "image": "assets/pumpkin.webp", "alt": "Worksheet picture of a pumpkin plant with visible roots.", "speak": "Say: “Pumpkin plants belong to group 1. They have taproots.”"}, {"round": 1, "type": "choice", "prompt": "Which root group does the garlic plant belong to?", "choices": ["Group 1 · Taproot", "Group 2 · Fibrous root"], "a": 1, "why": "Garlic plants have fibrous roots. A fibrous root system has many thin roots growing from the base.", "image": "assets/garlic.webp", "alt": "Worksheet picture of a garlic plant with visible roots.", "speak": "Say: “Garlic plants belong to group 2. They have fibrous roots.”"}, {"round": 1, "type": "choice", "prompt": "Which root group does the carrot plant belong to?", "choices": ["Group 1 · Taproot", "Group 2 · Fibrous root"], "a": 0, "why": "Carrot plants have taproots. A taproot system has one main root with smaller side roots.", "image": "assets/carrot.webp", "alt": "Worksheet picture of a carrot plant with visible roots.", "speak": "Say: “Carrot plants belong to group 1. They have taproots.”"}, {"round": 1, "type": "choice", "prompt": "Which root group does the corn plant belong to?", "choices": ["Group 1 · Taproot", "Group 2 · Fibrous root"], "a": 1, "why": "Corn plants have fibrous roots. A fibrous root system has many thin roots growing from the base.", "image": "assets/corn.webp", "alt": "Worksheet picture of a corn plant with visible roots.", "speak": "Say: “Corn plants belong to group 2. They have fibrous roots.”"}, {"round": 1, "type": "choice", "prompt": "Which root group does the bean plant belong to?", "choices": ["Group 1 · Taproot", "Group 2 · Fibrous root"], "a": 0, "why": "Bean plants have taproots. A taproot system has one main root with smaller side roots.", "image": "assets/bean.webp", "alt": "Worksheet picture of a bean plant with visible roots.", "speak": "Say: “Bean plants belong to group 1. They have taproots.”"}, {"round": 1, "type": "choice", "prompt": "Which root group does the onion plant belong to?", "choices": ["Group 1 · Taproot", "Group 2 · Fibrous root"], "a": 1, "why": "Onion plants have fibrous roots. A fibrous root system has many thin roots growing from the base.", "image": "assets/onion.webp", "alt": "Worksheet picture of a onion plant with visible roots.", "speak": "Say: “Onion plants belong to group 2. They have fibrous roots.”"}, {"round": 2, "type": "choice", "prompt": "Look at the missing part. Which piece completes picture 1?", "choices": ["A", "B", "C"], "a": 0, "why": "The missing part is the stem. It transports water and mineral nutrients to other parts of the plant.", "image": "assets/stem-puzzle-1.webp", "alt": "Worksheet stem puzzle 1: a plant with a missing part and pieces A, B and C.", "speak": "Explain your choice aloud: “I choose A. It transports water and mineral nutrients to other parts of the plant.”"}, {"round": 2, "type": "choice", "prompt": "Look at the missing part. Which piece completes picture 2?", "choices": ["A", "B", "C"], "a": 2, "why": "Piece C contains the missing fruit and leaf. The stem supports leaves, fruits and flowers.", "image": "assets/stem-puzzle-2.webp", "alt": "Worksheet stem puzzle 2: a plant with a missing part and pieces A, B and C.", "speak": "Explain your choice aloud: “I choose C. The stem supports leaves, fruits and flowers.”"}, {"round": 2, "type": "choice", "prompt": "Look at the missing part. Which piece completes picture 3?", "choices": ["A", "B", "C"], "a": 1, "why": "Piece B shows the potato tubers. A potato tuber is a modified underground stem that stores food.", "image": "assets/stem-puzzle-3.webp", "alt": "Worksheet stem puzzle 3: a plant with a missing part and pieces A, B and C.", "speak": "Explain your choice aloud: “I choose B. A potato tuber is a modified underground stem that stores food.”"}, {"round": 2, "type": "choice", "prompt": "Look at the missing part. Which piece completes picture 4?", "choices": ["A", "B", "C"], "a": 0, "why": "Piece A shows the roots with water moving upward. The stem transports water from the roots to other parts of the plant.", "image": "assets/stem-puzzle-4.webp", "alt": "Worksheet stem puzzle 4: a plant with a missing part and pieces A, B and C.", "speak": "Explain your choice aloud: “I choose A. The stem transports water from the roots to other parts of the plant.”"}, {"round": 3, "type": "choice", "prompt": "What does the stem transport to different parts of the plant?", "choices": ["Water and nutrients", "Air and soil"], "a": 0, "why": "The stem transports water and mineral nutrients to different parts of the plant.", "image": "assets/stem-question-1.webp", "alt": "Original worksheet question about stem function 1.", "speak": "Answer in a full sentence: The stem transports water and mineral nutrients to different parts of the plant."}, {"round": 3, "type": "choice", "prompt": "Which is a function of the stem?", "choices": ["Anchoring the plant in the soil", "Transporting water"], "a": 1, "why": "The stem transports water. Roots anchor the plant in the soil.", "image": "assets/stem-question-2.webp", "alt": "Original worksheet question about stem function 2.", "speak": "Answer in a full sentence: The stem transports water. Roots anchor the plant in the soil."}, {"round": 3, "type": "choice", "prompt": "Which is another function of the stem?", "choices": ["Holding other parts of the plant", "Absorbing water from the soil"], "a": 0, "why": "The stem holds leaves, flowers and fruits. Roots absorb water from the soil.", "image": "assets/stem-question-3.webp", "alt": "Original worksheet question about stem function 3.", "speak": "Answer in a full sentence: The stem holds leaves, flowers and fruits. Roots absorb water from the soil."}, {"round": 3, "type": "choice", "prompt": "Can a stem store food and nutrients?", "choices": ["No, stems never store food.", "Yes, some stems can."], "a": 1, "why": "Some stems store food. For example, potato tubers are modified underground stems that store starch.", "image": "assets/stem-question-4.webp", "alt": "Original worksheet question about stem function 4.", "speak": "Answer in a full sentence: Some stems store food. For example, potato tubers are modified underground stems that store starch."}, {"round": 4, "type": "choice", "prompt": "Flowers, _____ everywhere,", "choices": ["store", "year", "blooming", "flowers", "table", "air"], "a": 3, "why": "“Flowers, flowers everywhere” repeats flowers to describe many flowers.", "image": "assets/poem-flowers.webp", "alt": "Flower illustration extracted from the supplied poem page.", "poemLine": 0, "speak": "Read the completed line aloud: Flowers, flowers everywhere,"}, {"round": 4, "type": "choice", "prompt": "In the _____, in my hair.", "choices": ["store", "year", "blooming", "flowers", "table", "air"], "a": 5, "why": "“Air” rhymes with “hair”. The supplied word bank was missing this word; this line is adapted.", "image": "assets/poem-flowers.webp", "alt": "Flower illustration extracted from the supplied poem page.", "poemLine": 1, "speak": "Read the completed line aloud: In the air, in my hair."}, {"round": 4, "type": "choice", "prompt": "In the vase and at the _____,", "choices": ["store", "year", "blooming", "flowers", "table", "air"], "a": 0, "why": "“At the store” means at a shop. Store rhymes with door.", "image": "assets/poem-flowers.webp", "alt": "Flower illustration extracted from the supplied poem page.", "poemLine": 2, "speak": "Read the completed line aloud: In the vase and at the store,"}, {"round": 4, "type": "choice", "prompt": "On the _____, on the door.", "choices": ["store", "year", "blooming", "flowers", "table", "air"], "a": 4, "why": "“On the table” tells us where the flowers are.", "image": "assets/poem-flowers.webp", "alt": "Flower illustration extracted from the supplied poem page.", "poemLine": 3, "speak": "Read the completed line aloud: On the table, on the door."}, {"round": 4, "type": "choice", "prompt": "What a lovely time of _____,", "choices": ["store", "year", "blooming", "flowers", "table", "air"], "a": 1, "why": "“Time of year” is the usual expression. Year rhymes with cheer.", "image": "assets/poem-flowers.webp", "alt": "Flower illustration extracted from the supplied poem page.", "poemLine": 4, "speak": "Read the completed line aloud: What a lovely time of year,"}, {"round": 4, "type": "choice", "prompt": "Flowers _____, bringing cheer!", "choices": ["store", "year", "blooming", "flowers", "table", "air"], "a": 2, "why": "“Flowers blooming” describes flowers opening.", "image": "assets/poem-flowers.webp", "alt": "Flower illustration extracted from the supplied poem page.", "poemLine": 5, "speak": "Read the completed line aloud: Flowers blooming, bringing cheer!"}, {"round": 5, "type": "choice", "prompt": "Green skin, red flesh, many black seeds, and a sweet taste. What is it?", "choices": ["Watermelon", "Mango", "Apple"], "a": 0, "why": "A watermelon can have green skin, red flesh and many black seeds. This is the worksheet example.", "image": "assets/fruit-plate.webp", "alt": "Worksheet fruit plate showing an apple, mango, dragon fruit and orange.", "speak": "Describe the fruit to a partner without saying its name. Then ask: “Can you guess what fruit it is?”"}, {"round": 5, "type": "choice", "prompt": "Yellow skin, yellow flesh, one big seed, and a sweet or sour taste. What is it?", "choices": ["Orange", "Mango", "Dragon fruit"], "a": 1, "why": "The worksheet describes a mango. It has one large, flat seed inside.", "image": "assets/fruit-plate.webp", "alt": "Worksheet fruit plate showing an apple, mango, dragon fruit and orange.", "speak": "Describe the fruit to a partner without saying its name. Then ask: “Can you guess what fruit it is?”"}, {"round": 5, "type": "choice", "prompt": "Red skin, white or red flesh, many tiny seeds, and a sweet taste. What is it?", "choices": ["Apple", "Orange", "Dragon fruit"], "a": 2, "why": "This describes a red-skinned dragon fruit. Its flesh can be white or red and contains many tiny seeds.", "image": "assets/fruit-plate.webp", "alt": "Worksheet fruit plate showing an apple, mango, dragon fruit and orange.", "speak": "Describe the fruit to a partner without saying its name. Then ask: “Can you guess what fruit it is?”"}, {"round": 5, "type": "choice", "prompt": "Orange or green skin, orange flesh, some small seeds, and a sour taste. What is it?", "choices": ["Orange", "Dragon fruit", "Apple"], "a": 0, "why": "The worksheet describes an orange. Oranges can taste sweet or sour; this clue describes a sour one.", "image": "assets/fruit-plate.webp", "alt": "Worksheet fruit plate showing an apple, mango, dragon fruit and orange.", "speak": "Describe the fruit to a partner without saying its name. Then ask: “Can you guess what fruit it is?”"}, {"round": 5, "type": "choice", "prompt": "Red skin, white flesh, a few small seeds, and a sweet taste. What is it?", "choices": ["Mango", "Apple", "Watermelon"], "a": 1, "why": "This describes a red apple. Apples have a small number of seeds in their core.", "image": "assets/fruit-plate.webp", "alt": "Worksheet fruit plate showing an apple, mango, dragon fruit and orange.", "speak": "Describe the fruit to a partner without saying its name. Then ask: “Can you guess what fruit it is?”"}, {"round": 6, "type": "order", "prompt": "Build the sentence.", "words": ["Carrot", "plants", "have", "taproots"], "accepted": ["Carrot plants have taproots."], "why": "Use a plural subject (carrot plants) with have.", "image": "assets/carrot.webp", "alt": "Related picture from the supplied worksheet.", "speak": "Read your completed sentence aloud."}, {"round": 6, "type": "order", "prompt": "Build the sentence.", "words": ["Onion", "plants", "have", "fibrous", "roots"], "accepted": ["Onion plants have fibrous roots."], "why": "Onion plants belong to the fibrous-root group.", "image": "assets/onion.webp", "alt": "Related picture from the supplied worksheet.", "speak": "Read your completed sentence aloud."}, {"round": 6, "type": "order", "prompt": "Build the sentence.", "words": ["The", "stem", "transports", "water", "and", "nutrients"], "accepted": ["The stem transports water and nutrients.", "The stem transports nutrients and water."], "why": "A singular subject (the stem) takes transports.", "image": "assets/stem-puzzle-1.webp", "alt": "Related picture from the supplied worksheet.", "speak": "Read your completed sentence aloud."}, {"round": 6, "type": "order", "prompt": "Build the sentence.", "words": ["The", "stem", "holds", "leaves", "and", "flowers"], "accepted": ["The stem holds leaves and flowers.", "The stem holds flowers and leaves."], "why": "The stem supports the other parts of the plant.", "image": "assets/stem-puzzle-2.webp", "alt": "Related picture from the supplied worksheet.", "speak": "Read your completed sentence aloud."}, {"round": 6, "type": "order", "prompt": "Build a sentence about the apple: red skin / white flesh.", "words": ["This", "fruit", "has", "red", "skin", "and", "white", "flesh"], "accepted": ["This fruit has red skin and white flesh.", "This fruit has white flesh and red skin."], "why": "Use has after the singular subject this fruit.", "image": "assets/fruit-plate.webp", "alt": "Related picture from the supplied worksheet.", "speak": "Read your completed sentence aloud."}];
+const POEM=["Flowers, _____ everywhere,", "In the _____, in my hair.", "In the vase and at the _____,", "On the _____, on the door.", "What a lovely time of _____,", "Flowers _____, bringing cheer!"];
+const POEM_KEYS=["flowers", "air", "store", "table", "year", "blooming"];
+const ROUNDS=['Root groups','Missing plant parts','Stem detective','Flowers poem','Fruit riddles','Sentence garden'];
+const $=id=>document.getElementById(id);
+let state=[],pos=0,player='',soundOn=true,audioCtx=null,roundTimer=null,startedAt=0,attemptId='',finished=false;
+const totalRounds=6;
+const norm=s=>s.toLowerCase().replace(/[.!?]+$/,'').replace(/\s+/g,' ').trim();
+function points(){return state.reduce((n,s)=>n+(s.correct===true?1:0),0)}
+function chime(kind) {
+  if (!soundOn) return;
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    if (!audioCtx) audioCtx = new AC();
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    const melodies = {
+      correct:[[659,0,.11],[880,.11,.15],[1046,.23,.18]],
+      wrong:[[330,0,.13],[220,.11,.19]],
+      round:[[523,0,.1],[659,.11,.1],[784,.23,.19]],
+      finish:[[523,0,.14],[659,.15,.14],[784,.31,.15],[1046,.49,.28]]
+    };
+    const now = audioCtx.currentTime;
+    (melodies[kind] || melodies.correct).forEach(([hz,delay,len])=>{
+      const osc=audioCtx.createOscillator(),gain=audioCtx.createGain();
+      osc.type=kind==="wrong"?"triangle":"sine";
+      osc.frequency.setValueAtTime(hz,now+delay);
+      gain.gain.setValueAtTime(.0001,now+delay);
+      gain.gain.exponentialRampToValueAtTime(.095,now+delay+.018);
+      gain.gain.exponentialRampToValueAtTime(.0001,now+delay+len);
+      osc.connect(gain);gain.connect(audioCtx.destination);
+      osc.start(now+delay);osc.stop(now+delay+len+.01);
+    });
+  } catch (_) {}
+}
+function particles(count) {
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const box=$("fxParticles"), colors=["#ffc85b","#f65caf","#6de0b1","#77caff","#9e76f2","#ff9d78"];
+  for(let n=0;n<count;n++){
+    const p=document.createElement("span");
+    p.style.left=(Math.random()*100)+"%";
+    p.style.background=colors[n%colors.length];
+    p.style.animationDelay=(Math.random()*.27)+"s";
+    p.style.animationDuration=(.95+Math.random()*.7)+"s";
+    box.appendChild(p);
+    p.addEventListener("animationend",()=>p.remove(),{once:true});
+  }
+}
+function animateScore() {
+  const el=$("score");
+  el.textContent=points();
+  el.classList.remove("score-pulse");
+  void el.offsetWidth;
+  el.classList.add("score-pulse");
+}
+function toastRound(round){
+  if(roundTimer)clearTimeout(roundTimer);
+  $("roundToastText").textContent="Round "+round+" / "+totalRounds;
+  $("roundToast").classList.remove("hidden");
+  chime("round");
+  roundTimer=setTimeout(()=>$("roundToast").classList.add("hidden"),900);
+}
+function setScreen(id){
+  ["startScreen","gameScreen","resultScreen"].forEach(x=>$(x).classList.toggle("hidden",x!==id));
+}
+
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function start(){const name=$('nameInput').value.trim();if(!name){$('nameInput').setCustomValidity('Please enter your name first.');$('nameInput').reportValidity();return}player=name;restart()}
+function restart(){if(!player)return;attemptId=window.crypto?.randomUUID?.()||Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);finished=false;startedAt=Date.now();pos=0;state=QUESTIONS.map(q=>({choice:null,correct:null,picked:[],bank:q.words?shuffle(q.words.map((_,i)=>i)):[]}));$('total').textContent=QUESTIONS.length;setScreen('gameScreen');render();toastRound(1)}
+function render(){
+ const q=QUESTIONS[pos],s=state[pos];$('round').textContent='Round '+q.round+' / '+totalRounds;$('counter').textContent='Question '+(pos+1)+' / '+QUESTIONS.length;$('score').textContent=points();$('bar').style.width=(state.filter(s=>s.correct!==null).length/QUESTIONS.length*100)+'%';$('kicker').textContent='Explore · '+(pos+1)+' of '+QUESTIONS.length;$('title').textContent=ROUNDS[q.round-1];$('instruction').textContent=q.type==='order'?'Tap every word in order. Tap a word in your sentence to undo.':q.round===4?'Choose a word for the highlighted line. The adapted word bank includes “air”.':q.round===2?'Look at the missing part and the three picture pieces. Choose A, B or C.':'Look, read and choose one answer.';
+ $('prompt').textContent=q.prompt;
+ const pic=$('picture');pic.replaceChildren();if(q.image){const im=document.createElement('img');im.src=q.image;im.alt=q.alt;pic.appendChild(im)}
+ pic.classList.toggle('wide',q.round===2||q.round===3);pic.classList.toggle('poem-picture',q.round===4);
+ const context=$('poemContext');context.classList.toggle('hidden',q.round!==4);context.replaceChildren();
+ if(q.round===4){POEM.forEach((line,i)=>{const p=document.createElement('p');p.textContent=line;p.className=i===q.poemLine?'active-line':'';context.appendChild(p)})}
+ const box=$('answers');box.replaceChildren();
+ if(q.type==='choice')q.choices.forEach((label,i)=>{const b=document.createElement('button');b.className='answer';b.textContent=label;b.disabled=s.correct!==null;if(s.correct!==null){if(i===q.a)b.classList.add('good');if(i===s.choice&&!s.correct)b.classList.add('bad')}b.onclick=()=>answer(i);box.appendChild(b)});
+ else {
+  const built=document.createElement('div');built.className='built';built.setAttribute('aria-label','Your sentence');if(!s.picked.length)built.textContent='Your sentence appears here.';
+  s.picked.forEach((id,i)=>{const b=document.createElement('button');b.className='btn';b.textContent=q.words[id];b.disabled=s.correct!==null;b.onclick=()=>{s.picked.splice(i,1);render()};built.appendChild(b)});box.appendChild(built);
+  const bank=document.createElement('div');bank.className='bank';bank.setAttribute('aria-label','Word bank');s.bank.forEach(id=>{const b=document.createElement('button');b.className='btn';b.textContent=q.words[id];b.disabled=s.correct!==null||s.picked.includes(id);b.onclick=()=>{s.picked.push(id);render()};bank.appendChild(b)});box.appendChild(bank);
+  const check=document.createElement('button');check.className='btn check';check.textContent='Check Answer';check.disabled=s.correct!==null||s.picked.length!==q.words.length;check.onclick=()=>answer(s.picked.map(id=>q.words[id]).join(' '));box.appendChild(check);
+ }
+ const f=$('feedback');f.className='feedback'+(s.correct===null?'':s.correct?' success':' error');f.textContent=s.correct===null?'':(s.correct?'Correct! ⭐ ':'Incorrect. Answer: '+solution(q)+'. ')+q.why;
+ $('speak').textContent=s.correct===null?'':'🗣 '+q.speak;$('speak').classList.toggle('hidden',s.correct===null);
+ $('backBtn').disabled=pos===0;$('nextBtn').disabled=s.correct===null;$('nextBtn').textContent=pos===QUESTIONS.length-1?'Finish':'Next';$('nextBtn').classList.toggle('ready',s.correct!==null);
+}
+function solution(q){return q.type==='choice'?q.choices[q.a]:q.accepted[0]}
+function answer(value){if(finished||state[pos].correct!==null)return;const q=QUESTIONS[pos];if(q.type==='order'&&state[pos].picked.length!==q.words.length)return;const correct=q.type==='choice'?value===q.a:q.accepted.some(a=>norm(a)===norm(value));state[pos].choice=value;state[pos].correct=correct;chime(correct?'correct':'wrong');if(correct)particles(20);render();animateScore()}
+function next(){if(finished||state[pos].correct===null)return;if(pos===QUESTIONS.length-1){finish();return}const prev=QUESTIONS[pos].round;pos++;render();if(QUESTIONS[pos].round!==prev)toastRound(QUESTIONS[pos].round);const content=$('gameScreen').querySelector('.content');content.classList.remove('fx-enter');void content.offsetWidth;content.classList.add('fx-enter');$('title').scrollIntoView({block:'start',behavior:'instant'})}
+function back(){if(!finished&&pos>0){pos--;render()}}
+async function finish(){
+ if(finished||state.some(s=>s.correct===null))return;finished=true;const id=attemptId,score=points(),percentage=Math.round(score/QUESTIONS.length*100);setScreen('resultScreen');$('playerResult').textContent=player;$('finalPoints').textContent=score;$('finalTotal').textContent=QUESTIONS.length;$('resultMessage').textContent=percentage+'% · '+(percentage>=80?'You’re a plant explorer superstar!':'Great exploring! Review your answers and try again.');particles(100);chime('finish');
+ const review=$('review');review.replaceChildren();QUESTIONS.forEach((q,i)=>{const a=document.createElement('article');const h=document.createElement('strong');h.textContent=(state[i].correct?'✅ ':'❌ ')+(i+1)+'. '+q.prompt;const p=document.createElement('p');p.textContent='Your answer: '+(q.type==='choice'?q.choices[state[i].choice]:state[i].choice)+'\nCorrect answer: '+solution(q)+'\n'+q.why;a.appendChild(h);a.appendChild(p);review.appendChild(a)});
+ $('fullPoem').textContent=POEM.map((line,i)=>line.replace('_____',POEM_KEYS[i])).join('\n');
+ const payload={studentName:player,gameTitle:document.title,score,total:QUESTIONS.length,percentage,durationSeconds:Math.max(0,Math.round((Date.now()-startedAt)/1000)),completedAt:new Date().toISOString(),attemptId:id,gameUrl:location.href};
+ try{const key='plantExplorerAttempts',rows=JSON.parse(localStorage.getItem(key)||'[]');if(!rows.some(row=>row.attemptId===id)){rows.unshift(payload);localStorage.setItem(key,JSON.stringify(rows.slice(0,50)))}}catch(_){}
+ if(/\/_templates?\//.test(location.pathname)){$('recordStatus').textContent='Template preview — score not sent.';return}
+ $('recordStatus').textContent='Sending score to your teacher…';try{const result=window.TeacherRecords?await window.TeacherRecords.submit(payload):{sent:false};if(attemptId===id)$('recordStatus').textContent=result.sent?'✅ Score sent to your teacher.':'⚠️ Result saved on this device. Could not send right now.'}catch(_){if(attemptId===id)$('recordStatus').textContent='⚠️ Result saved on this device. Could not send right now.'}
+}
+function toggleSound(){soundOn=!soundOn;$('soundBtn').textContent=soundOn?'🔊 Sound On':'🔇 Sound Off';$('soundBtn').setAttribute('aria-pressed',String(soundOn))}
+$('startBtn').onclick=start;$('nameInput').oninput=()=>$('nameInput').setCustomValidity('');$('nameInput').onkeydown=e=>{if(e.key==='Enter')start()};$('nextBtn').onclick=next;$('backBtn').onclick=back;$('restartBtn').onclick=restart;$('playAgainBtn').onclick=restart;$('soundBtn').onclick=toggleSound;
+
+</script>
+</body>
+</html>
