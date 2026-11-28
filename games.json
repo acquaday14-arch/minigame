@@ -364,5 +364,11 @@
     "description": "28 individual questions from the four supplied Test 1 pages: notice matching (1–5), Sam’s new computer (6–10), conversations (11–15), Line dancing cloze (28–35) and typed bag-word clues (36–40). Readable notices and article, feedback and review. No timer.",
     "level": "A2",
     "path": "./test-1-reading-quest/"
+  },
+  {
+    "title": "Comparison Star Challenge",
+    "description": "30 A2 activities: 12 choices, 8 typed adjective forms and 10 sentence builders. Comparatives, superlatives, spelling and irregular forms, with explanations. No timer.",
+    "level": "A2",
+    "path": "./comparison-star-challenge/"
   }
 ]

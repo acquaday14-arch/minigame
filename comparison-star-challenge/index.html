@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="en" data-template-effects-version="2">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Comparison Star Challenge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --purple:#5b36d6;--purple2:#7a57eb;--ink:#20285c;--pink:#ef5aa7;
+      --yellow:#ffd76a;--mint:#6be0b2;--sky:#74c7ff;--soft:#f8f6ff;--line:#d9cff8;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;min-height:100vh;padding:18px;
+      font-family:"Fredoka",ui-rounded,"Trebuchet MS",Arial,sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at 9% 12%,#ffe2f0 0 7%,transparent 7.5%),
+        radial-gradient(circle at 90% 14%,#dff5ff 0 8%,transparent 8.5%),
+        linear-gradient(180deg,#f8fbff,#f4efff);
+    }
+    button,input{font:inherit}
+    .app{width:min(1060px,98vw);margin:1vh auto}
+    .frame{
+      background:#fff;border:4px solid #4b32bf;border-radius:32px;overflow:hidden;
+      box-shadow:0 14px 0 #ded5ff,0 24px 44px rgba(63,47,147,.14)
+    }
+    .top{
+      background:linear-gradient(135deg,var(--purple),#6541dc);
+      padding:18px 28px;color:#fff;display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:center
+    }
+    .pill{border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.12);padding:9px 15px;border-radius:999px;font-weight:700}
+    .top .pill:last-child{justify-self:end}
+    .progress{height:10px;background:#dacdfd}
+    .progress>div{height:100%;width:25%;background:linear-gradient(90deg,#ffd75f,#ffae73);transition:.25s}
+    .stage{padding:28px 34px 24px;min-height:650px;position:relative}
+    .kicker{text-align:center;color:var(--pink);font-size:14px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+    h1{text-align:center;font-size:clamp(38px,6vw,62px);margin:8px 0 8px;color:#432cb5;line-height:.98}
+    .instruction{text-align:center;font-size:20px;font-weight:600;margin-bottom:24px}
+    .card{
+      width:min(780px,100%);margin:0 auto;border:2px solid var(--line);border-radius:24px;padding:24px;
+      background:linear-gradient(180deg,#fff,#fcfbff)
+    }
+    .question{font-size:clamp(24px,4vw,36px);font-weight:700;text-align:center;margin:6px 0 22px}
+    .answers{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .answer{
+      border:3px solid #ded3fa;background:#fbf9ff;border-radius:18px;padding:15px 18px;color:var(--ink);
+      font-weight:700;font-size:18px;cursor:pointer;transition:.14s
+    }
+    .answer:hover{transform:translateY(-2px);border-color:#aa8df3}
+    .answer.good{border-color:#65d5a8;background:#ebfff6;color:#17734e;animation:pop .28s ease}
+    .answer.bad{border-color:#ff98a4;background:#fff0f2;color:#a63a47;animation:shake .28s ease}
+    .feedback{min-height:42px;text-align:center;margin:18px 0 4px;font-size:19px;font-weight:700}
+    .controls{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:14px;margin-top:28px}
+    .btn{border:2px solid #dbd2f8;border-radius:15px;background:#fff;color:#4734a9;padding:12px 18px;font-weight:700;cursor:pointer}
+    .controls .next{justify-self:end;background:linear-gradient(135deg,#ffd37c,#ffbd84);border:0;color:#76563b}
+    .center{text-align:center}
+    .hidden{display:none!important}
+    .start{padding:60px 32px;text-align:center}
+    .start p{font-size:19px;color:#667085}
+    .start input{width:min(560px,100%);padding:15px 17px;border:2px solid #d8cff4;border-radius:16px;font-size:18px}
+    .start .btn{margin-top:12px;background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;border:0}
+    .stars{font-size:26px;letter-spacing:5px}
+    .confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:20}
+    .confetti i{position:absolute;width:10px;height:16px;border-radius:3px;animation:fall 900ms linear forwards}
+    @keyframes pop{50%{transform:scale(1.035)}}
+    @keyframes shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+    @keyframes fall{from{transform:translateY(-10vh) rotate(0)}to{transform:translateY(110vh) rotate(500deg);opacity:.7}}
+    @media(max-width:700px){.top{grid-template-columns:1fr 1fr}.top>div:nth-child(2){grid-column:1/-1;grid-row:2;text-align:center}.stage{padding:22px 16px}.answers{grid-template-columns:1fr}.controls{grid-template-columns:1fr 1fr}.controls .restart{display:none}}
+  
+    /* Template FX v2 — reduced-motion aware and dependency-free */
+    .fx-enter{animation:fx-enter .38s cubic-bezier(.2,.8,.2,1) both}
+    .answer{transition:transform .17s ease,border-color .2s ease,box-shadow .2s ease,background .2s ease}
+    .answer:active,.btn:active{transform:scale(.97)}
+    .answer:focus-visible,.btn:focus-visible{outline:4px solid #f7bb56;outline-offset:3px}
+    .answer.good{box-shadow:0 0 0 4px rgba(81,213,157,.13)}
+    .answer.bad{box-shadow:0 0 0 4px rgba(255,118,144,.13)}
+    .answer:disabled{cursor:default}
+    .pill.score-pulse,.score-pulse{animation:fx-pulse .35s ease}
+    .feedback.success{color:#10845c;animation:fx-pop .4s ease both}
+    .feedback.error{color:#b44453;animation:fx-shake .32s ease both}
+    .mid-actions{display:flex;gap:8px;align-items:center;justify-content:center}
+    .mid-actions .btn{white-space:nowrap}
+    .btn:disabled{opacity:.4;cursor:not-allowed;filter:grayscale(.25)}
+    .next.ready{animation:fx-glow 1.8s ease-in-out infinite}
+    .fx-particles{position:fixed;inset:0;z-index:100;pointer-events:none;overflow:hidden}
+    .fx-particles span{position:absolute;top:-24px;width:10px;height:16px;border-radius:3px;animation:fx-rain 1.15s cubic-bezier(.2,.7,.5,1) forwards}
+    .fx-round-toast{position:fixed;inset:0;z-index:90;pointer-events:none;display:flex;justify-content:center;align-items:center;background:rgba(45,29,122,.11)}
+    .fx-round-toast.hidden{display:none!important}
+    .fx-round-pill{
+      text-align:center;border:4px solid #fff;border-radius:28px;
+      background:linear-gradient(135deg,#5b36d6,#8b6cf0);color:white;
+      padding:24px 36px;box-shadow:0 20px 60px rgba(54,38,152,.25);
+      font-size:clamp(25px,4vw,42px);font-weight:700;animation:fx-toast .7s ease both
+    }
+    .fx-round-pill small{display:block;font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:#ffdf85;margin-bottom:4px}
+    .result-area{text-align:center;padding:56px 24px}
+    .result-area h1{font-size:clamp(40px,6vw,64px);margin:10px 0;color:#432cb5}
+    .result-area .result-score{font-size:clamp(60px,10vw,100px);color:#5b36d6;font-weight:700;line-height:1.12}
+    .result-area .result-sub{font-size:21px;margin:8px 0 28px}
+    .result-area .btn{background:#6040d7;color:#fff;border:0;padding:15px 30px;font-size:18px}
+    .result-area .result-stars{font-size:38px;letter-spacing:8px;animation:fx-float 2s ease-in-out infinite}
+    .picture{animation:fx-picture-in .55s cubic-bezier(.2,.8,.2,1) both;transition:transform .25s ease,box-shadow .25s ease}
+    .picture:hover{transform:translateY(-3px) rotate(-1deg);box-shadow:0 17px 34px rgba(82,58,173,.21)}
+    .picture img{width:100%;height:100%;object-fit:cover;display:block}
+    @keyframes fx-enter{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes fx-pop{0%{transform:scale(.83);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+    @keyframes fx-pulse{50%{transform:scale(1.09)}}
+    @keyframes fx-shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+    @keyframes fx-glow{50%{box-shadow:0 0 0 6px rgba(255,205,100,.22)}}
+    @keyframes fx-rain{0%{transform:translateY(-10vh) rotate(0deg);opacity:1}100%{transform:translateY(112vh) rotate(620deg);opacity:0}}
+    @keyframes fx-toast{0%{transform:scale(.7) translateY(25px);opacity:0}40%{transform:scale(1.05);opacity:1}100%{transform:scale(1);opacity:1}}
+    @keyframes fx-float{50%{transform:translateY(-9px)}}
+    @keyframes fx-picture-in{from{opacity:0;transform:scale(.91) rotate(-2deg)}to{opacity:1;transform:scale(1) rotate(0)}}
+    @media(max-width:700px){
+      .controls{grid-template-columns:1fr 1fr}
+      .controls .mid-actions{grid-column:1/-1;grid-row:2;justify-content:center}
+      .controls .restart{display:inline-flex}
+      .result-area{padding:42px 16px}
+      .mid-actions .btn{font-size:14px;padding:10px 12px}
+    }
+    @media(prefers-reduced-motion:reduce){
+      *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+    }
+
+    .answer,.btn,.start input{font-size:clamp(20px,2.6vw,26px);min-height:52px}
+    .instruction,.feedback{font-size:clamp(21px,2.7vw,28px)}
+    .kicker{font-size:16px}.typed{grid-column:1/-1;width:100%;padding:18px;border:3px solid #b49aef;border-radius:16px;font-size:30px;color:var(--ink)}
+    .check,.built,.bank{grid-column:1/-1}.check{background:#5b36d6;color:white}.built{min-height:100px;padding:16px;background:#edf8ff;border:2px dashed #87b4e9;border-radius:18px;font-size:22px}.bank{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}.word{margin:4px}.word:disabled{opacity:.38}.built .word:disabled{opacity:1}.stage{min-height:540px}.start label{font-size:22px}
+    @media(max-width:700px){body{padding:8px}.app{width:100%}.top{padding:16px;gap:8px}.pill{font-size:16px;padding:9px}.card{padding:16px}.controls{gap:10px}.mid-actions .btn{font-size:18px}.start{padding:32px 20px}h1{line-height:1.08}}
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="frame" id="startScreen">
+      <div class="start">
+        <div class="stars">⭐ ✨ ⭐</div>
+        <div class="kicker">A2 · 30 challenges · No timer</div>
+        <h1>Comparison Star Challenge</h1>
+        <p>Compare, complete and build! 12 choices · 8 word gaps · 10 sentence builders. Each first answer earns up to one point.</p>
+        <label for="nameInput">Student name</label><br><input id="nameInput" maxlength="80" autocomplete="name" placeholder="Enter your name">
+        <br>
+        <button class="btn" id="startBtn">Start Challenge</button>
+      </div>
+    </section>
+
+    <section class="frame hidden" id="gameScreen">
+      <div class="top">
+        <div class="pill" id="roundPill">Round 1 / 3</div>
+        <div class="pill">⭐ <span id="score">0</span> / <span id="total">4</span> points</div>
+        <div class="pill" id="questionPill">Question 1 / 4</div>
+      </div>
+      <div class="progress"><div id="bar"></div></div>
+
+      <div class="stage">
+        <div class="kicker" id="kicker">Quick choice · 1 of 4</div>
+        <h1 id="title">Choose the best answer</h1>
+        <div class="instruction" id="instruction">Pick the sentence that sounds natural.</div>
+
+        <div class="card">
+          <div class="question" id="question"></div>
+          <div class="answers" id="answers"></div>
+          <div class="feedback" id="feedback"></div>
+        </div>
+
+        <div class="controls">
+          <button class="btn" id="backBtn">← Back</button>
+          <div class="mid-actions"><button class="btn" id="soundBtn" aria-pressed="true">🔊 Sound On</button><button class="btn restart" id="restartBtn">↻ Restart</button></div>
+          <button class="btn next" id="nextBtn">Next →</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="frame hidden" id="resultScreen">
+      <div class="result-area">
+        <div class="result-stars">🌟 🎉 🌟</div>
+        <h1>Great Job, <span id="playerResult"></span>!</h1>
+        <div class="result-score"><span id="finalPoints">0</span>/<span id="finalTotal">4</span></div>
+        <p class="result-sub" id="resultMessage"></p>
+        <p class="result-sub" id="recordStatus"></p>
+        <button class="btn" id="playAgainBtn">↻ Play Again</button>
+      </div>
+    </section>
+  <div class="fx-particles" id="fxParticles" aria-hidden="true"></div>
+    <div class="fx-round-toast hidden" id="roundToast" aria-hidden="true"><div class="fx-round-pill"><small>LEVEL UP ✨</small><span id="roundToastText"></span></div></div>
+  </main>
+
+<script src="../shared/teacher-records-config.js"></script>
+<script src="../shared/teacher-records.js"></script>
+<script>
+
+const QUESTIONS=[{"round": 1, "type": "choice", "q": "A giraffe is _____ than a horse.", "choices": ["taller", "tallest", "more tall"], "a": 0, "explanation": "Use adjective + -er + than to compare two animals: taller than."}, {"round": 1, "type": "choice", "q": "This bag is _____ than that one.", "choices": ["heavyer", "heavier", "heaviest"], "a": 1, "explanation": "Change consonant + y to -ier: heavy → heavier."}, {"round": 1, "type": "choice", "q": "Today is _____ than yesterday.", "choices": ["hotest", "more hot", "hotter"], "a": 2, "explanation": "Double the final consonant: hot → hotter."}, {"round": 1, "type": "choice", "q": "This puzzle is _____ than the first one.", "choices": ["more difficult", "difficulter", "most difficult"], "a": 0, "explanation": "Use more + a long adjective + than: more difficult than."}, {"round": 1, "type": "choice", "q": "My new shoes are _____ than my old ones.", "choices": ["comfortabler", "more comfortable", "most comfortable"], "a": 1, "explanation": "Comfortable is a long adjective: more comfortable."}, {"round": 1, "type": "choice", "q": "My score is 9/10. My last score was 6/10. This score is _____.", "choices": ["best", "gooder", "better"], "a": 2, "explanation": "Good has an irregular comparative: better."}, {"round": 1, "type": "choice", "q": "Of all five runners, Mia is the _____.", "choices": ["fastest", "faster", "most fast"], "a": 0, "explanation": "Use the superlative to compare one person with the whole group: the fastest."}, {"round": 1, "type": "choice", "q": "This is the _____ room in our house.", "choices": ["biger", "biggest", "most big"], "a": 1, "explanation": "Double g and add -est: big → biggest."}, {"round": 1, "type": "choice", "q": "This is the _____ story in the book.", "choices": ["more interesting", "interestingest", "most interesting"], "a": 2, "explanation": "Use the most + a long adjective for a superlative."}, {"round": 1, "type": "choice", "q": "Of the three cakes, this one tastes the _____.", "choices": ["best", "better", "goodest"], "a": 0, "explanation": "Good → better → best. Use best for the whole group."}, {"round": 1, "type": "choice", "q": "The blue bike costs $80. The red bike costs $120. The blue bike is _____.", "choices": ["more expensive", "cheaper", "cheapest"], "a": 1, "explanation": "$80 is less than $120, so the blue bike is cheaper than the red bike."}, {"round": 1, "type": "choice", "q": "Which sentence is correct?", "choices": ["Ben is more taller than Tom.", "Ben is tallest than Tom.", "Ben is taller than Tom."], "a": 2, "explanation": "Use taller than. Do not combine more with taller."}, {"round": 2, "type": "blank", "q": "My sister is _____ than me. (young)", "accepted": ["younger"], "explanation": "Young → younger. Use the comparative before than."}, {"round": 2, "type": "blank", "q": "This box is _____ than that box. (large)", "accepted": ["larger"], "explanation": "Large ends in e, so add -r: larger."}, {"round": 2, "type": "blank", "q": "I feel _____ today than I did yesterday. (happy)", "accepted": ["happier"], "explanation": "Happy → happier: change y to i and add -er."}, {"round": 2, "type": "blank", "q": "A train ticket costs $40. A bus ticket costs $15. The train is _____ than the bus. (expensive)", "accepted": ["more expensive"], "explanation": "Use more expensive for the higher price."}, {"round": 2, "type": "blank", "q": "This was the _____ day of my holiday. (bad)", "accepted": ["worst"], "explanation": "Bad → worse → worst. The superlative is the worst."}, {"round": 2, "type": "blank", "q": "Anna is the _____ child in her family. (old)", "accepted": ["oldest"], "explanation": "Old → older → oldest. Use oldest for the whole family."}, {"round": 2, "type": "blank", "q": "Of these three chairs, this is the _____. (comfortable)", "accepted": ["most comfortable"], "explanation": "The most comfortable compares this chair with all three chairs."}, {"round": 2, "type": "blank", "q": "The red bag weighs 5 kg. The green bag weighs 2 kg. The red bag is _____ than the green bag. (heavy)", "accepted": ["heavier"], "explanation": "Heavy → heavier. The red bag weighs more."}, {"round": 3, "type": "order", "q": "Build the sentence.", "words": ["My", "brother", "is", "taller", "than", "me"], "accepted": ["My brother is taller than me."], "explanation": "Comparative pattern: subject + be + comparative + than + person."}, {"round": 3, "type": "order", "q": "Build the sentence.", "words": ["This", "book", "is", "more", "exciting", "than", "that", "one"], "accepted": ["This book is more exciting than that one."], "explanation": "Use more exciting for a long adjective, then than."}, {"round": 3, "type": "order", "q": "Build the sentence.", "words": ["This", "is", "the", "smallest", "room", "in", "the", "house"], "accepted": ["This is the smallest room in the house."], "explanation": "Superlative pattern: the + adjective-est + noun + in the group."}, {"round": 3, "type": "order", "q": "Build the sentence.", "words": ["A", "car", "is", "faster", "than", "a", "bicycle"], "accepted": ["A car is faster than a bicycle."], "explanation": "Fast → faster. Use than to connect the two things."}, {"round": 3, "type": "order", "q": "Build the sentence.", "words": ["Lucy", "is", "the", "youngest", "student", "in", "our", "class"], "accepted": ["Lucy is the youngest student in our class."], "explanation": "Youngest compares Lucy with all students in the class."}, {"round": 3, "type": "order", "q": "Build the sentence.", "words": ["My", "bag", "is", "heavier", "than", "yours"], "accepted": ["My bag is heavier than yours."], "explanation": "Heavy → heavier. Yours means your bag."}, {"round": 3, "type": "order", "q": "Build the sentence.", "words": ["This", "is", "the", "most", "beautiful", "garden", "in", "town"], "accepted": ["This is the most beautiful garden in town."], "explanation": "Use the most beautiful before the noun garden."}, {"round": 3, "type": "order", "q": "Build the sentence.", "words": ["This", "game", "is", "better", "than", "the", "last", "one"], "accepted": ["This game is better than the last one."], "explanation": "Good has the irregular comparative better."}, {"round": 3, "type": "order", "q": "Build the sentence.", "words": ["That", "was", "the", "worst", "meal", "of", "the", "week"], "accepted": ["That was the worst meal of the week."], "explanation": "Bad has the irregular superlative worst."}, {"round": 3, "type": "order", "q": "Build the sentence.", "words": ["This", "chair", "is", "more", "comfortable", "than", "that", "one"], "accepted": ["This chair is more comfortable than that one."], "explanation": "Use more comfortable than to compare two chairs."}];
+const MODE = "present";
+const $ = id => document.getElementById(id);
+const state = QUESTIONS.map(() => ({choice:null, response:"", picked:[]}));
+let attemptId="", finished=false;
+let pos = 0;
+let player = "";
+let soundOn = true;
+let audioCtx = null;
+let roundTimer = null;
+let startedAt = null;
+const totalRounds = Math.max(...QUESTIONS.map(q=>q.round));
+$("total").textContent = QUESTIONS.length;
+const roundElement = () => $(MODE === "present" ? "roundPill" : "round");
+const counterElement = () => $(MODE === "present" ? "questionPill" : "counter");
+
+function points() {
+  return state.reduce((n,s,idx)=>n+(s.choice === true ? 1 : 0),0);
+}
+function chime(kind) {
+  if (!soundOn) return;
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    if (!audioCtx) audioCtx = new AC();
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    const melodies = {
+      correct:[[659,0,.11],[880,.11,.15],[1046,.23,.18]],
+      wrong:[[330,0,.13],[220,.11,.19]],
+      round:[[523,0,.1],[659,.11,.1],[784,.23,.19]],
+      finish:[[523,0,.14],[659,.15,.14],[784,.31,.15],[1046,.49,.28]]
+    };
+    const now = audioCtx.currentTime;
+    (melodies[kind] || melodies.correct).forEach(([hz,delay,len])=>{
+      const osc=audioCtx.createOscillator(),gain=audioCtx.createGain();
+      osc.type=kind==="wrong"?"triangle":"sine";
+      osc.frequency.setValueAtTime(hz,now+delay);
+      gain.gain.setValueAtTime(.0001,now+delay);
+      gain.gain.exponentialRampToValueAtTime(.095,now+delay+.018);
+      gain.gain.exponentialRampToValueAtTime(.0001,now+delay+len);
+      osc.connect(gain);gain.connect(audioCtx.destination);
+      osc.start(now+delay);osc.stop(now+delay+len+.01);
+    });
+  } catch (_) {}
+}
+function particles(count) {
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const box=$("fxParticles"), colors=["#ffc85b","#f65caf","#6de0b1","#77caff","#9e76f2","#ff9d78"];
+  for(let n=0;n<count;n++){
+    const p=document.createElement("span");
+    p.style.left=(Math.random()*100)+"%";
+    p.style.background=colors[n%colors.length];
+    p.style.animationDelay=(Math.random()*.27)+"s";
+    p.style.animationDuration=(.95+Math.random()*.7)+"s";
+    box.appendChild(p);
+    p.addEventListener("animationend",()=>p.remove(),{once:true});
+  }
+}
+function animateScore() {
+  const el=$("score");
+  el.textContent=points();
+  el.classList.remove("score-pulse");
+  void el.offsetWidth;
+  el.classList.add("score-pulse");
+}
+function toastRound(round){
+  if(roundTimer)clearTimeout(roundTimer);
+  $("roundToastText").textContent="Round "+round+" / "+totalRounds;
+  $("roundToast").classList.remove("hidden");
+  chime("round");
+  roundTimer=setTimeout(()=>$("roundToast").classList.add("hidden"),900);
+}
+function setScreen(id){
+  ["startScreen","gameScreen","resultScreen"].forEach(x=>$(x).classList.toggle("hidden",x!==id));
+}
+function start(){
+  const name=$("nameInput").value.trim();
+  if(!name){alert("Please enter your name first.");$("nameInput").focus();return;}
+  player=name;
+  startedAt=Date.now();
+  attemptId=window.crypto?.randomUUID?.() || Date.now().toString(36)+Math.random().toString(36).slice(2); finished=false;
+  pos=0;
+  state.forEach(s=>{s.choice=null;s.response="";s.picked=[];});
+  setScreen("gameScreen");
+  render();
+  toastRound(QUESTIONS[0].round);
+}
+function render(){
+  const q=QUESTIONS[pos], st=state[pos];
+  roundElement().textContent="Round "+q.round+" / "+totalRounds+(MODE==="picture"?" · Picture questions":"");
+  counterElement().textContent="Question "+(pos+1)+" / "+QUESTIONS.length;
+  $("bar").style.width=((state.filter(s=>s.choice!==null).length/QUESTIONS.length)*100)+"%";
+  $("score").textContent=points();
+  $("kicker").textContent=["Choose & compare","Complete the comparison","Sentence builder"][q.round-1]+" · "+(pos+1)+" of "+QUESTIONS.length;
+  if(MODE==="present"){
+    $("title").textContent=["Choose the best answer","Type the missing words","Tap words in order"][q.round-1];
+    $("instruction").textContent=q.type==="order"?"Tap a word to add it. Tap it in your sentence to undo. Finish with Check Answer.":q.type==="blank"?"Type the correct form of the adjective. Then check your answer.":"Choose one answer. Each question counts once.";
+    $("question").textContent=q.q;
+  }else{
+    $("prompt").textContent=q.prompt;
+    const photo=$("picture");
+    photo.innerHTML="";
+    if(q.image){
+      const img=document.createElement("img");img.src=q.image;img.alt=q.alt||q.picture||"Question picture";
+      photo.appendChild(img);
+    }else{photo.innerHTML=placeholder(q.picture||"Picture prompt");}
+    photo.style.animation="none";
+    void photo.offsetWidth;
+    photo.style.animation="";
+  }
+  const answerBox=$("answers");
+  answerBox.innerHTML="";
+  if(q.type==='choice'){
+    q.choices.forEach((label,n)=>{
+      const b=document.createElement('button');b.className='answer';b.textContent=label;
+      if(st.choice!==null){b.disabled=true;if(n===q.a)b.classList.add('good');if(st.response===String(n)&&!st.choice)b.classList.add('bad');}
+      else b.onclick=()=>answer(String(n));
+      answerBox.appendChild(b);
+    });
+  } else if(q.type==='blank'){
+    const input=document.createElement('input');input.className='typed';input.autocomplete='off';input.spellcheck=false;input.setAttribute('aria-label','Your answer');input.value=st.response;input.disabled=st.choice!==null;
+    input.oninput=()=>st.response=input.value;input.onkeydown=e=>{if(e.key==='Enter')answer(input.value);};answerBox.appendChild(input);
+    addCheck(()=>answer(input.value));
+  } else {
+    const built=document.createElement('div');built.className='built';built.setAttribute('aria-label','Your sentence');
+    st.picked.forEach((id,i)=>{const b=document.createElement('button');b.className='btn word';b.textContent=q.words[id];b.disabled=st.choice!==null;b.onclick=()=>{st.picked.splice(i,1);render();};built.appendChild(b);});
+    if(!st.picked.length)built.textContent='Your sentence will appear here.';
+    answerBox.appendChild(built);
+    const bank=document.createElement('div');bank.className='bank';
+    const ids=q.words.map((_,i)=>i).sort((a,b)=>((a*7+3)%q.words.length)-((b*7+3)%q.words.length));
+    if(ids.every((v,i)=>v===i))ids.reverse();
+    ids.forEach(id=>{const b=document.createElement('button');b.className='btn word';b.textContent=q.words[id];b.disabled=st.choice!==null||st.picked.includes(id);b.onclick=()=>{st.picked.push(id);render();};bank.appendChild(b);});
+    answerBox.appendChild(bank);addCheck(()=>answer(st.picked.map(id=>q.words[id]).join(' ')),st.picked.length!==q.words.length);
+  }
+  const feedback=$("feedback");
+  feedback.textContent=st.choice===null ? "" : ((st.choice ? "Correct! ⭐ " : "Incorrect. 💡 Answer: "+(q.type==='choice'?q.choices[q.a]:q.accepted[0])+". ")+q.explanation);
+  feedback.className="feedback"+(st.choice===null?"":st.choice?" success":" error");
+  feedback.setAttribute("aria-live","polite");
+  $("nextBtn").disabled=st.choice===null;
+  $("nextBtn").classList.toggle("ready",st.choice!==null);
+  $("nextBtn").textContent=pos===QUESTIONS.length-1?"See Results →":"Next →";
+  $("backBtn").disabled=pos===0;
+  const scene=$("gameScreen").querySelector(MODE==="present"?".stage":".content");
+  scene.classList.remove("fx-enter");
+  void scene.offsetWidth;
+  scene.classList.add("fx-enter");
+}
+function addCheck(fn,disabled=false){const b=document.createElement('button');b.className='btn check';b.textContent='Check Answer';b.disabled=state[pos].choice!==null||disabled;b.onclick=fn;$('answers').appendChild(b);}
+function normalize(s){return s.toLowerCase().trim().replace(/[.?!]+$/,'').replace(/\s+/g,' ');}
+function answer(value){
+  if(finished||state[pos].choice!==null)return;
+  if(!value.trim()){$('feedback').textContent='Please enter an answer.';return;}
+  const q=QUESTIONS[pos];
+  const correct=q.type==='choice'?Number(value)===q.a:q.accepted.some(a=>normalize(a)===normalize(value));
+  state[pos].response=value;state[pos].choice=correct;
+  chime(correct?'correct':'wrong');if(correct)particles(24);render();animateScore();
+}
+function next(){
+  if(state[pos].choice===null)return;
+  if(pos===QUESTIONS.length-1){finish();return;}
+  const prevRound=QUESTIONS[pos].round;
+  pos++;
+  render();
+  if(QUESTIONS[pos].round!==prevRound)toastRound(QUESTIONS[pos].round);
+}
+function back(){if(pos>0){pos--;render();}}
+function restart(){
+  startedAt=Date.now();
+  attemptId=window.crypto?.randomUUID?.() || Date.now().toString(36)+Math.random().toString(36).slice(2); finished=false;
+  pos=0;state.forEach(s=>{s.choice=null;s.response="";s.picked=[];});setScreen("gameScreen");render();toastRound(QUESTIONS[0].round);
+}
+async function finish(){
+  if(finished || state.some(s=>s.choice===null))return;
+  finished=true; const finishingAttempt=attemptId;
+  setScreen("resultScreen");
+  const score=points();
+  $("playerResult").textContent=player;
+  $("finalPoints").textContent=score;
+  $("finalTotal").textContent=QUESTIONS.length;
+  const pct=Math.round(score/QUESTIONS.length*100);
+  $("resultMessage").textContent = pct>=85 ? "Amazing! You're a grammar superstar!" : pct>=60 ? "Great effort! Keep practicing and level up!" : "Every try makes you stronger. Play again!";
+  chime("finish");
+  particles(100);
+
+  const preview = /\/_templates?\//.test(location.pathname);
+  if(preview){
+    $("recordStatus").textContent="Template preview — score not sent.";
+    return;
+  }
+
+  try{localStorage.setItem('comparisonStarLastResult',JSON.stringify({studentName:player,gameTitle:document.title,score,total:QUESTIONS.length,percentage:pct,attemptId:finishingAttempt,completedAt:new Date().toISOString(),durationSeconds:Math.round((Date.now()-startedAt)/1000),gameUrl:location.href}));}catch(_){}
+  $('recordStatus').textContent="Sending score to your teacher…";
+  if(window.TeacherRecords){
+    let result;
+    try { result=await TeacherRecords.submit({
+      attemptId:finishingAttempt,
+      percentage:Math.round(score/QUESTIONS.length*100),
+      studentName:player,
+      gameTitle:document.title,
+      score,
+      total:QUESTIONS.length,
+      durationSeconds:startedAt ? Math.max(0,Math.round((Date.now()-startedAt)/1000)) : 0
+    }); } catch(error) { result={sent:false}; }
+    if(attemptId!==finishingAttempt)return;
+    $("recordStatus").textContent=result.sent
+      ? "✅ Score sent to your teacher."
+      : "⚠️ Score saved on this device, but could not be sent right now.";
+  }else{
+    $("recordStatus").textContent="⚠️ Score kept on this device. Teacher Records is unavailable.";
+  }
+}
+function toggleSound(){
+  soundOn=!soundOn;
+  $("soundBtn").textContent=soundOn?"🔊 Sound On":"🔇 Sound Off";
+  $("soundBtn").setAttribute("aria-pressed",String(soundOn));
+}
+$("startBtn").addEventListener("click",start);
+$("nameInput").addEventListener("keydown",e=>{if(e.key==="Enter")start();});
+$("nextBtn").addEventListener("click",next);
+$("backBtn").addEventListener("click",back);
+$("restartBtn").addEventListener("click",restart);
+$("playAgainBtn").addEventListener("click",restart);
+$("soundBtn").addEventListener("click",toggleSound);
+
+</script>
+</body>
+</html>
