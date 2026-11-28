@@ -370,5 +370,11 @@
     "description": "30 A2 activities: 12 choices, 8 typed adjective forms and 10 sentence builders. Comparatives, superlatives, spelling and irregular forms, with explanations. No timer.",
     "level": "A2",
     "path": "./comparison-star-challenge/"
+  },
+  {
+    "title": "Possessive Spark Challenge",
+    "description": "30 activities from the supplied grammar page: 16 choices, 8 typed possessives and 6 sentence builders. People, animals, organisations, names ending in s, plurals, omitted house, shared and separate ownership. Source rule images after answers. No timer.",
+    "level": "A2–B1",
+    "path": "./possessive-spark/"
   }
 ]
