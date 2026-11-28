@@ -382,5 +382,11 @@
     "description": "30 activities: 10 town-place clues, 8 interactive map challenges, 6 asking/giving directions conversations and 6 sentence builders. No timer.",
     "level": "A1–A2",
     "path": "./town-directions-quest/"
+  },
+  {
+    "title": "Maths Talk Quest",
+    "description": "34 worksheet activities: 8 multiplication problems, 8 equal-sharing divisions, 5 picture remainders, all 7 remainder matches and 6 drag-or-tap sentence builders. Speaking after every answer. No timer.",
+    "level": "A1–A2 · Maths in English",
+    "path": "./maths-talk-quest/"
   }
 ]
