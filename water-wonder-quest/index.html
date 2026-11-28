@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en" data-template-effects-version="2">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Water Wonder Quest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--purple:#5b36d6;--dark:#242b62;--pink:#e64a98;--soft:#f7f5ff;--line:#d9cff8;--yellow:#ffd57a}
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;background:linear-gradient(180deg,#f3f7ff,#f7f1ff);padding:12px;font-family:"Fredoka",ui-rounded,"Trebuchet MS",Arial,sans-serif;color:var(--dark)}
+    button,input{font:inherit}
+    .shell{width:min(1060px,100%);margin:1vh auto;background:white;border:4px solid #4330ad;border-radius:34px;overflow:hidden;box-shadow:0 14px 0 #ded6ff}
+    .hud{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;padding:18px 28px;background:linear-gradient(135deg,#5132c8,#6948df);color:white}
+    .pill{border:1px solid rgba(255,255,255,.45);background:rgba(255,255,255,.12);border-radius:999px;padding:9px 15px;font-weight:700}
+    .hud .pill:nth-child(2){justify-self:center}.hud .pill:last-child{justify-self:end}
+    .track{height:9px;background:#dcd1ff}.bar{height:100%;width:33%;background:#ffd267;transition:.25s}
+    .content{padding:22px 30px 20px;min-height:700px}
+    .kicker{text-align:center;color:var(--pink);font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+    h1{text-align:center;color:#432cb5;font-size:clamp(40px,6vw,60px);line-height:1;margin:8px 0}
+    .instruction{text-align:center;font-size:20px;font-weight:600;margin-bottom:14px}
+    .image-wrap{display:grid;place-items:center;margin:10px 0 18px}
+    .picture{
+      width:min(310px,80vw);aspect-ratio:1/1;border:4px solid #a98bf5;border-radius:28px;overflow:hidden;
+      box-shadow:0 10px 22px rgba(82,58,173,.16);background:linear-gradient(135deg,#ffedf5,#e7f5ff);position:relative
+    }
+    .picture svg{width:100%;height:100%;display:block}
+    .prompt{text-align:center;font-size:clamp(25px,4vw,35px);font-weight:700;margin:12px 0}
+    .answers{width:min(780px,100%);margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .answer{border:3px solid #ded4f9;background:#fbfaff;border-radius:18px;padding:14px;color:var(--dark);font-weight:700;font-size:18px;cursor:pointer}
+    .answer:hover{border-color:#ab95ed}
+    .answer.good{border-color:#63d7a6;background:#eafff5;color:#176a49;animation:pop .28s}
+    .answer.bad{border-color:#ff9fab;background:#fff0f2;color:#a33745;animation:shake .28s}
+    .feedback{text-align:center;min-height:36px;margin:15px 0;font-size:19px;font-weight:700}
+    .controls{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;margin-top:25px}
+    .btn{border:2px solid #dbd3f5;background:#fff;border-radius:15px;padding:11px 18px;font-weight:700;color:#4733a6;cursor:pointer}
+    .next{justify-self:end;background:linear-gradient(135deg,#ffd88b,#ffc586);border:0;color:#785d41}
+    .hidden{display:none!important}
+    .start{text-align:center;padding:65px 30px}.start p{font-size:19px;color:#687086}.start input{width:min(540px,100%);padding:15px 17px;border:2px solid #d8cff4;border-radius:16px}
+    .start .btn{margin-top:12px;background:linear-gradient(135deg,#5532cf,#7754e9);border:0;color:#fff}
+    @keyframes pop{50%{transform:scale(1.035)}}@keyframes shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+    @media(max-width:700px){.hud{grid-template-columns:1fr 1fr}.hud .pill:nth-child(2){grid-column:1/-1;grid-row:2}.content{padding:20px 14px}.answers{grid-template-columns:1fr}.controls{grid-template-columns:1fr 1fr}.controls .restart{display:none}}
+  
+    /* Template FX v2 — reduced-motion aware and dependency-free */
+    .fx-enter{animation:fx-enter .38s cubic-bezier(.2,.8,.2,1) both}
+    .answer{transition:transform .17s ease,border-color .2s ease,box-shadow .2s ease,background .2s ease}
+    .answer:active,.btn:active{transform:scale(.97)}
+    .answer:focus-visible,.btn:focus-visible{outline:4px solid #f7bb56;outline-offset:3px}
+    .answer.good{box-shadow:0 0 0 4px rgba(81,213,157,.13)}
+    .answer.bad{box-shadow:0 0 0 4px rgba(255,118,144,.13)}
+    .answer:disabled{cursor:default}
+    .pill.score-pulse,.score-pulse{animation:fx-pulse .35s ease}
+    .feedback.success{color:#10845c;animation:fx-pop .4s ease both}
+    .feedback.error{color:#b44453;animation:fx-shake .32s ease both}
+    .mid-actions{display:flex;gap:8px;align-items:center;justify-content:center}
+    .mid-actions .btn{white-space:nowrap}
+    .btn:disabled{opacity:.4;cursor:not-allowed;filter:grayscale(.25)}
+    .next.ready{animation:fx-glow 1.8s ease-in-out infinite}
+    .fx-particles{position:fixed;inset:0;z-index:100;pointer-events:none;overflow:hidden}
+    .fx-particles span{position:absolute;top:-24px;width:10px;height:16px;border-radius:3px;animation:fx-rain 1.15s cubic-bezier(.2,.7,.5,1) forwards}
+    .fx-round-toast{position:fixed;inset:0;z-index:90;pointer-events:none;display:flex;justify-content:center;align-items:center;background:rgba(45,29,122,.11)}
+    .fx-round-toast.hidden{display:none!important}
+    .fx-round-pill{
+      text-align:center;border:4px solid #fff;border-radius:28px;
+      background:linear-gradient(135deg,#5b36d6,#8b6cf0);color:white;
+      padding:24px 36px;box-shadow:0 20px 60px rgba(54,38,152,.25);
+      font-size:clamp(25px,4vw,42px);font-weight:700;animation:fx-toast .7s ease both
+    }
+    .fx-round-pill small{display:block;font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:#ffdf85;margin-bottom:4px}
+    .result-area{text-align:center;padding:56px 24px}
+    .result-area h1{font-size:clamp(40px,6vw,64px);margin:10px 0;color:#432cb5}
+    .result-area .result-score{font-size:clamp(60px,10vw,100px);color:#5b36d6;font-weight:700;line-height:1.12}
+    .result-area .result-sub{font-size:21px;margin:8px 0 28px}
+    .result-area .btn{background:#6040d7;color:#fff;border:0;padding:15px 30px;font-size:18px}
+    .result-area .result-stars{font-size:38px;letter-spacing:8px;animation:fx-float 2s ease-in-out infinite}
+    .picture{animation:fx-picture-in .55s cubic-bezier(.2,.8,.2,1) both;transition:transform .25s ease,box-shadow .25s ease}
+    .picture:hover{transform:translateY(-3px) rotate(-1deg);box-shadow:0 17px 34px rgba(82,58,173,.21)}
+    .picture img{width:100%;height:100%;object-fit:cover;display:block}
+    @keyframes fx-enter{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes fx-pop{0%{transform:scale(.83);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+    @keyframes fx-pulse{50%{transform:scale(1.09)}}
+    @keyframes fx-shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+    @keyframes fx-glow{50%{box-shadow:0 0 0 6px rgba(255,205,100,.22)}}
+    @keyframes fx-rain{0%{transform:translateY(-10vh) rotate(0deg);opacity:1}100%{transform:translateY(112vh) rotate(620deg);opacity:0}}
+    @keyframes fx-toast{0%{transform:scale(.7) translateY(25px);opacity:0}40%{transform:scale(1.05);opacity:1}100%{transform:scale(1);opacity:1}}
+    @keyframes fx-float{50%{transform:translateY(-9px)}}
+    @keyframes fx-picture-in{from{opacity:0;transform:scale(.91) rotate(-2deg)}to{opacity:1;transform:scale(1) rotate(0)}}
+    @media(max-width:700px){
+      .controls{grid-template-columns:1fr 1fr}
+      .controls .mid-actions{grid-column:1/-1;grid-row:2;justify-content:center}
+      .controls .restart{display:inline-flex}
+      .result-area{padding:42px 16px}
+      .mid-actions .btn{font-size:14px;padding:10px 12px}
+    }
+    @media(prefers-reduced-motion:reduce){
+      *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+    }
+
+  
+.shell{width:min(1120px,100%)}.content{min-height:540px}.answer,.btn{font-size:clamp(21px,2.5vw,27px);min-height:52px}.instruction,.feedback,.speak{font-size:clamp(21px,2.5vw,27px);line-height:1.45}.prompt{font-size:clamp(25px,3.5vw,34px);line-height:1.4;max-width:940px;margin:18px auto}.picture{width:min(360px,90%);height:280px;aspect-ratio:auto;background:#fff}.picture img{object-fit:contain;width:100%;height:100%;padding:10px}.picture.wide{width:min(900px,100%);height:auto;min-height:150px;aspect-ratio:auto}.picture.wide img{height:auto;max-height:320px;object-fit:contain}.picture:hover{transform:none}.start input{font-size:25px}.start label{font-size:22px}.start p{font-size:24px;line-height:1.5}.speak{max-width:850px;margin:20px auto;padding:16px;background:#e9f9f4;border-radius:18px;border:2px solid #8ad6bb}.built,.bank,.check{grid-column:1/-1}.built,.bank{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;padding:16px}.built{min-height:90px;background:#edf8ff;border:2px dashed #91b9e7;border-radius:18px;font-size:23px}.bank .btn:disabled{opacity:.35}.built .btn:disabled{opacity:1}.check{background:#5b36d6;color:white}.review{text-align:left;max-width:850px;margin:24px auto;padding:16px;font-size:22px;line-height:1.6}.review summary{cursor:pointer;color:#5132c8;font-weight:bold}.review article{padding:15px 0;border-bottom:1px solid #ddd}.review p{white-space:pre-line}.bar{width:0}input:focus-visible,summary:focus-visible{outline:4px solid #f7bb56;outline-offset:3px}.hud .pill{font-size:18px}.controls .btn{white-space:nowrap}
+@media(max-width:700px){body{padding:8px}.hud{padding:16px 12px;gap:8px}.hud .pill{font-size:16px;padding:8px}.mid-actions .btn{font-size:19px}.picture{height:240px}.controls{gap:8px}.start{padding:38px 20px}h1{font-size:clamp(34px,7vw,54px);line-height:1.1}}
+
+
+.picture{width:min(400px,100%);height:auto;min-height:200px;aspect-ratio:auto}.picture figure{margin:0;width:100%;height:100%;display:grid;place-items:center}.picture img{width:100%;height:280px;object-fit:contain;padding:10px}.picture.cycle{width:min(690px,100%)}.picture.cycle img{height:auto;max-height:440px}.picture.wide{width:min(900px,100%);min-height:90px}.picture.wide img{height:auto;max-height:240px}.picture.pair{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:14px;border:0;box-shadow:none;border-radius:0;overflow:visible;background:transparent}.picture.pair figure{border:3px solid #a98bf5;border-radius:20px;overflow:hidden;background:white}.picture.pair img{height:auto;padding:0}.picture figcaption{font-size:24px;font-weight:bold;padding:8px;color:#432cb5;background:#f4f0ff;width:100%;text-align:center}.zoom-action{text-align:center;margin:6px 0 18px}.zoom-action .btn{font-size:18px;min-height:44px}.prompt{white-space:pre-line}dialog{max-width:min(1120px,96vw);max-height:94vh;width:1100px;padding:20px;border:4px solid #5b36d6;border-radius:24px;color:#242b62}dialog::backdrop{background:rgba(24,16,66,.65)}#largePicture{text-align:center}#largePicture img{display:block;margin:12px auto;width:auto;max-width:100%;max-height:78vh;object-fit:contain}#largePicture p{font-size:24px}#closeImageBtn{position:sticky;top:0;background:#5b36d6;color:white;z-index:2}.content{padding-bottom:24px}.review p{white-space:pre-line}@media(max-width:700px){.picture.pair{grid-template-columns:1fr}.picture.cycle img{max-height:390px}.picture img{height:240px}.picture.pair img{height:auto}.hud .pill{font-size:16px}.picture.wide{min-height:70px}}@media(prefers-reduced-motion:reduce){.picture{animation:none}}
+
+</style>
+</head>
+<body>
+  <main class="shell" id="startScreen">
+    <section class="start">
+      <div class="kicker">A1–A2 · Science in English · No timer</div>
+      <h1>Water Wonder Quest</h1>
+      <p>33 activities · The water cycle, changes of state and picture differences.<br>Choose, build sentences and practise speaking. Each question earns 1 point.</p>
+      <label for="nameInput">Student name</label><br><input id="nameInput" placeholder="Enter your name" maxlength="80" autocomplete="name">
+      <br><button class="btn" id="startBtn">Start Quest</button>
+    </section>
+  </main>
+
+  <main class="shell hidden" id="gameScreen">
+    <div class="hud">
+      <div class="pill" id="round">Round 1 / 2 · Picture questions</div>
+      <div class="pill">⭐ <span id="score">0</span> / <span id="total">3</span> points</div>
+      <div class="pill" id="counter">Question 1 / 3</div>
+    </div>
+    <div class="track"><div class="bar" id="bar"></div></div>
+    <section class="content">
+      <div class="kicker" id="kicker">Picture questions · 1 of 3</div>
+      <h1 id="title">Picture questions</h1>
+      <div class="instruction" id="instruction"></div>
+
+      <div class="image-wrap">
+        <div class="picture" id="picture"></div>
+      </div>
+
+      <div class="zoom-action"><button class="btn" id="zoomBtn">View larger picture</button></div><div class="prompt" id="prompt"></div>
+      <div class="answers" id="answers"></div>
+      <div class="feedback" id="feedback" role="status" aria-live="polite"></div><p class="speak hidden" id="speak"></p>
+
+      <div class="controls">
+        <button class="btn" id="backBtn">← Back</button>
+        <div class="mid-actions"><button class="btn" id="soundBtn" aria-pressed="true">🔊 Sound On</button><button class="btn restart" id="restartBtn">↻ Restart</button></div>
+        <button class="btn next" id="nextBtn">Next →</button>
+      </div>
+    </section>
+  </main>
+
+<main class="shell hidden" id="resultScreen">
+      <div class="result-area">
+        <div class="result-stars">🌟 🎉 🌟</div>
+        <h1>Quest Complete, <span id="playerResult"></span>!</h1>
+        <div class="result-score"><span id="finalPoints">0</span>/<span id="finalTotal">3</span></div>
+        <p class="result-sub" id="resultMessage"></p>
+        <p class="result-sub" id="recordStatus" role="status"></p><details class="review"><summary>Review my answers</summary><div id="review"></div></details>
+        <button class="btn" id="playAgainBtn">↻ Play Again</button>
+      </div>
+    </main>
+<div class="fx-particles" id="fxParticles" aria-hidden="true"></div>
+    <div class="fx-round-toast hidden" id="roundToast" aria-hidden="true"><div class="fx-round-pill"><small>LEVEL UP ✨</small><span id="roundToastText"></span></div></div>
+<dialog id="imageDialog" aria-label="Larger worksheet picture"><button class="btn" id="closeImageBtn">Close picture</button><div id="largePicture"></div></dialog>
+<script src="../shared/teacher-records-config.js"></script>
+<script src="../shared/teacher-records.js"></script>
+<script>
+
+const QUESTIONS=[{"round": 1, "type": "choice", "prompt": "What stage is number 1 in this water cycle?", "choices": ["Evaporation", "Condensation", "Precipitation", "Collection"], "a": 1, "why": "Water vapour cools and changes into tiny liquid droplets. These droplets form clouds. This is condensation.", "image": "assets/water-cycle.webp", "alt": "The worksheet water-cycle diagram: number 1 at clouds, 2 at rain, 3 at upward flow, and 4 at gathered water.", "speak": "Ask a partner: “What stage is number 1?” Then answer in a full sentence.", "layout": "cycle"}, {"round": 1, "type": "choice", "prompt": "What stage is number 2 in this water cycle?", "choices": ["Evaporation", "Condensation", "Precipitation", "Collection"], "a": 2, "why": "Water falls from clouds as rain or snow. This stage is precipitation.", "image": "assets/water-cycle.webp", "alt": "The worksheet water-cycle diagram: number 1 at clouds, 2 at rain, 3 at upward flow, and 4 at gathered water.", "speak": "Ask a partner: “What stage is number 2?” Then answer in a full sentence.", "layout": "cycle"}, {"round": 1, "type": "choice", "prompt": "What stage is number 3 in this water cycle?", "choices": ["Evaporation", "Condensation", "Precipitation", "Collection"], "a": 0, "why": "Liquid water changes into water vapour. In the cycle, energy from the Sun helps this happen. This is evaporation.", "image": "assets/water-cycle.webp", "alt": "The worksheet water-cycle diagram: number 1 at clouds, 2 at rain, 3 at upward flow, and 4 at gathered water.", "speak": "Ask a partner: “What stage is number 3?” Then answer in a full sentence.", "layout": "cycle"}, {"round": 1, "type": "choice", "prompt": "What stage is number 4 in this water cycle?", "choices": ["Evaporation", "Condensation", "Precipitation", "Collection"], "a": 3, "why": "Water gathers in rivers, lakes and oceans. In this model, this stage is collection.", "image": "assets/water-cycle.webp", "alt": "The worksheet water-cycle diagram: number 1 at clouds, 2 at rain, 3 at upward flow, and 4 at gathered water.", "speak": "Ask a partner: “What stage is number 4?” Then answer in a full sentence.", "layout": "cycle"}, {"round": 2, "type": "choice", "prompt": "The worksheet says: “There are 3 stages in the water cycle.” Which correction matches this diagram?", "choices": ["This diagram shows four stages.", "This diagram shows two stages.", "This diagram shows five stages."], "a": 0, "why": "This simplified diagram uses four stages: evaporation, condensation, precipitation and collection. The full water cycle includes other processes too.", "image": "assets/correct-example.webp", "alt": "Picture from the supplied water worksheet.", "speak": "Explain your answer aloud in a full sentence.", "layout": "wide"}, {"round": 2, "type": "choice", "prompt": "Incorrect: “In evaporation, water falls to the ground as rain.” Choose the correction.", "choices": ["In collection, water falls as rain.", "In precipitation, water falls as rain.", "In freezing, water falls as rain."], "a": 1, "why": "Rain falling from clouds is precipitation. Evaporation is the change from liquid water to water vapour.", "image": "assets/correct-1.webp", "alt": "Picture from the supplied water worksheet.", "speak": "Explain your answer aloud in a full sentence.", "layout": "wide"}, {"round": 2, "type": "choice", "prompt": "Incorrect: “When clouds hold too much water in condensation, evaporation happens.” What happens when cloud drops grow heavy enough to fall?", "choices": ["Evaporation happens.", "Freezing always happens.", "Precipitation happens."], "a": 2, "why": "Droplets in clouds can join and grow. When drops become large enough to fall, precipitation occurs.", "image": "assets/correct-2.webp", "alt": "Picture from the supplied water worksheet.", "speak": "Explain your answer aloud in a full sentence.", "layout": "wide"}, {"round": 2, "type": "choice", "prompt": "Incorrect: “In collection, water in the gas state forms clouds.” Which stage should replace collection?", "choices": ["Condensation", "Evaporation", "Freezing"], "a": 0, "why": "During condensation, water vapour cools into tiny liquid droplets that form clouds.", "image": "assets/correct-3.webp", "alt": "Picture from the supplied water worksheet.", "speak": "Explain your answer aloud in a full sentence.", "layout": "wide"}, {"round": 2, "type": "choice", "prompt": "Incorrect: “In condensation, water in the gas state condenses to form rain.” Which is the more accurate description of condensation?", "choices": ["Water vapour falls as invisible rain.", "Water vapour changes into tiny liquid droplets.", "Liquid water turns into gas."], "a": 1, "why": "Condensation changes water vapour into liquid droplets. Cloud droplets can later grow into raindrops; falling rain is precipitation.", "image": "assets/correct-4.webp", "alt": "Picture from the supplied water worksheet.", "speak": "Explain your answer aloud in a full sentence.", "layout": "wide"}, {"round": 3, "type": "choice", "prompt": "Water cycle · Which item is NOT a stage or feature of this four-stage model?", "choices": ["evaporation", "rock", "collection", "four stages"], "a": 1, "why": "Rock is the odd one out in this vocabulary set. Evaporation and collection are stage names, and four stages describes this diagram.", "image": "assets/odd-example.webp", "alt": "Picture from the supplied water worksheet.", "speak": "Say: “rock is the odd one out because…” Explain why.", "layout": "wide"}, {"round": 3, "type": "choice", "prompt": "Evaporation · Which word belongs more directly to cloud formation than to liquid water changing into vapour?", "choices": ["clouds", "liquid", "evaporate", "water"], "a": 0, "why": "Clouds is the expected odd one out here. Evaporation changes liquid water into gas; condensation forms cloud droplets.", "image": "assets/odd-evaporation.webp", "alt": "Picture from the supplied water worksheet.", "speak": "Say: “clouds is the odd one out because…” Explain why.", "layout": "wide"}, {"round": 3, "type": "choice", "prompt": "Condensation · Which word names falling precipitation rather than the change from vapour to liquid droplets?", "choices": ["gas", "rain", "clouds", "water"], "a": 1, "why": "Rain is the expected odd one out in this set. Condensation forms droplets; rain falling from clouds is precipitation.", "image": "assets/odd-condensation.webp", "alt": "Picture from the supplied water worksheet.", "speak": "Say: “rain is the odd one out because…” Explain why.", "layout": "wide"}, {"round": 3, "type": "choice", "prompt": "Precipitation · Which state is NOT the state of falling rain?", "choices": ["gas", "rain", "clouds", "liquid"], "a": 0, "why": "Gas is the expected odd one out. Rain is liquid water falling from clouds. Precipitation can also fall as solid snow or hail.", "image": "assets/odd-precipitation.webp", "alt": "Picture from the supplied water worksheet.", "speak": "Say: “gas is the odd one out because…” Explain why.", "layout": "wide"}, {"round": 3, "type": "choice", "prompt": "Collection · Which word does NOT describe the water gathered in an ocean in this model?", "choices": ["gas", "ocean", "liquid", "water"], "a": 0, "why": "Gas is the expected odd one out. The ocean water shown in collection is liquid.", "image": "assets/odd-collection.webp", "alt": "Picture from the supplied water worksheet.", "speak": "Say: “gas is the odd one out because…” Explain why.", "layout": "wide"}, {"round": 4, "type": "choice", "prompt": "How can you turn liquid water into solid ice?", "choices": ["Put it in a freezer.", "Heat it until it boils.", "Pour it into a warmer cup."], "a": 0, "why": "Cool the water enough and it freezes. Freezing changes liquid water into solid ice.", "image": "assets/state-changes.webp", "alt": "Worksheet diagram showing liquid water, solid ice, a kettle and arrows for changes of state.", "speak": "Ask: “How can you change water from one state to another?” Then explain the change.", "layout": "cycle"}, {"round": 4, "type": "choice", "prompt": "How can you turn solid ice into liquid water?", "choices": ["Cool it more.", "Warm it so it melts.", "Keep it frozen."], "a": 1, "why": "Adding heat can melt ice. Melting changes a solid into a liquid.", "image": "assets/state-changes.webp", "alt": "Worksheet diagram showing liquid water, solid ice, a kettle and arrows for changes of state.", "speak": "Ask: “How can you change water from one state to another?” Then explain the change.", "layout": "cycle"}, {"round": 4, "type": "choice", "prompt": "How can you change liquid water into water vapour faster?", "choices": ["Freeze the water.", "Turn the water into ice.", "Heat the water."], "a": 2, "why": "Heating increases the rate at which water changes to vapour. Water can evaporate without boiling.", "image": "assets/state-changes.webp", "alt": "Worksheet diagram showing liquid water, solid ice, a kettle and arrows for changes of state.", "speak": "Ask: “How can you change water from one state to another?” Then explain the change.", "layout": "cycle"}, {"round": 5, "type": "choice", "prompt": "Look at the ice cube. What state is this water?", "choices": ["Solid", "Liquid", "Gas"], "a": 0, "why": "Ice is water in the solid state.", "image": "assets/ice-cube.webp", "alt": "Original worksheet illustration: ice cube.", "speak": "Say: “It is water in the solid state.”"}, {"round": 5, "type": "choice", "prompt": "The kettle heats water. What state is the INVISIBLE water vapour released from it?", "choices": ["Solid", "Liquid", "Gas"], "a": 2, "why": "Water vapour is a gas. The visible white cloud near a kettle is made of tiny liquid droplets formed when vapour cools.", "image": "assets/kettle.webp", "alt": "Original worksheet illustration: kettle.", "speak": "Say: “It is water in the gas state.”"}, {"round": 5, "type": "choice", "prompt": "What state is the water in the glass?", "choices": ["Solid", "Liquid", "Gas"], "a": 1, "why": "The water in the glass is in the liquid state. It takes the shape of its container.", "image": "assets/glass.webp", "alt": "Original worksheet illustration: glass.", "speak": "Say: “It is water in the liquid state.”"}, {"round": 5, "type": "choice", "prompt": "What state are these falling raindrops?", "choices": ["Solid", "Liquid", "Gas"], "a": 1, "why": "Raindrops are liquid water.", "image": "assets/rain.webp", "alt": "Original worksheet illustration: rain.", "speak": "Say: “It is water in the liquid state.”"}, {"round": 5, "type": "choice", "prompt": "What state is the snow pointed to by the arrow?", "choices": ["Solid", "Liquid", "Gas"], "a": 0, "why": "Snow is made of ice crystals. It is water in the solid state.", "image": "assets/snow.webp", "alt": "Original worksheet illustration: snow.", "speak": "Say: “It is water in the solid state.”"}, {"round": 5, "type": "choice", "prompt": "Hot tea releases water vapour. What state is the INVISIBLE vapour?", "choices": ["Solid", "Liquid", "Gas"], "a": 2, "why": "Invisible water vapour is a gas. The visible mist above a hot drink contains tiny liquid droplets.", "image": "assets/hot-tea.webp", "alt": "Original worksheet illustration: hot tea.", "speak": "Say: “It is water in the gas state.”"}, {"round": 5, "type": "choice", "prompt": "Look at the frozen ice cliff pointed to by the arrow, above the dark sea. What state is the ICE?", "choices": ["Solid", "Liquid", "Gas"], "a": 0, "why": "The frozen ice cliff is solid water. The dark sea below it is liquid water.", "image": "assets/ice-cliff.webp", "alt": "Original worksheet illustration: ice cliff.", "speak": "Say: “It is water in the solid state.”"}, {"round": 6, "type": "choice", "prompt": "Which weather difference is shown?", "choices": ["A: snowing; B: raining.", "A: raining; B: snowing.", "It is sunny in both pictures."], "a": 0, "why": "Picture A shows snow outside: solid water. Picture B shows rain outside: liquid water.", "image": "assets/scene-a.webp", "alt": "Worksheet kitchen picture A.", "speak": "Compare the pictures aloud: “In picture A, … In picture B, …”", "image2": "assets/scene-b.webp", "alt2": "Worksheet kitchen picture B.", "layout": "pair"}, {"round": 6, "type": "choice", "prompt": "What is on the stove in each picture?", "choices": ["A: a kettle; B: a pot.", "A: a pot; B: a kettle.", "A: a glass; B: a bucket."], "a": 1, "why": "There is a cooking pot on the stove in A and a kettle on the stove in B. Both pictures show heated liquids releasing water vapour.", "image": "assets/scene-a.webp", "alt": "Worksheet kitchen picture A.", "speak": "Compare the pictures aloud: “In picture A, … In picture B, …”", "image2": "assets/scene-b.webp", "alt2": "Worksheet kitchen picture B.", "layout": "pair"}, {"round": 6, "type": "choice", "prompt": "Look beside the stove. Which difference is correct?", "choices": ["A has a cupcake; B has a bowl of water.", "Both pictures have a cupcake.", "A has a bowl of water; B has a cupcake."], "a": 2, "why": "A shows a round bowl containing liquid water. B shows a cupcake in that place.", "image": "assets/scene-a.webp", "alt": "Worksheet kitchen picture A.", "speak": "Compare the pictures aloud: “In picture A, … In picture B, …”", "image2": "assets/scene-b.webp", "alt2": "Worksheet kitchen picture B.", "layout": "pair"}, {"round": 6, "type": "choice", "prompt": "Look at the left side of each table. Which statement is correct?", "choices": ["A has a glass of liquid water; B has a bucket of ice.", "A has a bucket of ice; B has a glass of water.", "Both tables have only solid water."], "a": 0, "why": "The tall glass in A contains liquid water. The bucket in B contains solid ice.", "image": "assets/scene-a.webp", "alt": "Worksheet kitchen picture A.", "speak": "Compare the pictures aloud: “In picture A, … In picture B, …”", "image2": "assets/scene-b.webp", "alt2": "Worksheet kitchen picture B.", "layout": "pair"}, {"round": 6, "type": "choice", "prompt": "Look at the right side of each table. Which statement is correct?", "choices": ["A has an iced drink; B has a hot cup.", "A has a hot cup; B has a drink with ice cubes.", "Both drinks are frozen solid."], "a": 1, "why": "The hot cup in A releases water vapour. The drink in B contains liquid and solid ice cubes.", "image": "assets/scene-a.webp", "alt": "Worksheet kitchen picture A.", "speak": "Compare the pictures aloud: “In picture A, … In picture B, …”", "image2": "assets/scene-b.webp", "alt2": "Worksheet kitchen picture B.", "layout": "pair"}, {"round": 7, "type": "order", "prompt": "Build the science sentence.", "words": ["Water", "vapour", "forms", "during", "evaporation"], "accepted": ["Water vapour forms during evaporation.", "During evaporation water vapour forms."], "why": "Use during to connect water vapour formation with evaporation.", "image": "assets/water-cycle.webp", "alt": "Related worksheet picture.", "layout": "cycle", "speak": "Read your completed sentence aloud."}, {"round": 7, "type": "order", "prompt": "Build the science sentence.", "words": ["Rain", "is", "water", "in", "the", "liquid", "state"], "accepted": ["Rain is water in the liquid state."], "why": "Rain is liquid water. Use the phrase in the liquid state.", "image": "assets/rain.webp", "alt": "Related worksheet picture.", "layout": "", "speak": "Read your completed sentence aloud."}, {"round": 7, "type": "order", "prompt": "Build the science sentence.", "words": ["Ice", "melts", "when", "it", "gets", "warmer"], "accepted": ["Ice melts when it gets warmer.", "When it gets warmer ice melts."], "why": "Melts describes the change from solid ice to liquid water.", "image": "assets/ice-cube.webp", "alt": "Related worksheet picture.", "layout": "", "speak": "Read your completed sentence aloud."}, {"round": 7, "type": "order", "prompt": "Build the science sentence.", "words": ["Water", "droplets", "form", "during", "condensation"], "accepted": ["Water droplets form during condensation.", "During condensation water droplets form."], "why": "Condensation changes water vapour into liquid droplets.", "image": "assets/water-cycle.webp", "alt": "Related worksheet picture.", "layout": "cycle", "speak": "Read your completed sentence aloud."}];
+const ROUNDS=["Cycle stages", "Science fact check", "Odd one out", "Change the state", "Solid, liquid or gas?", "Spot the differences", "Sentence splash"];
+const $=id=>document.getElementById(id);
+let state=[],pos=0,player='',soundOn=true,audioCtx=null,roundTimer=null,startedAt=0,attemptId='',finished=false;
+const totalRounds=7;
+const norm=s=>s.toLowerCase().replace(/[.!?]+$/,'').replace(/\s+/g,' ').trim();
+function points(){return state.reduce((n,s)=>n+(s.correct===true?1:0),0)}
+function chime(kind) {
+  if (!soundOn) return;
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    if (!audioCtx) audioCtx = new AC();
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    const melodies = {
+      correct:[[659,0,.11],[880,.11,.15],[1046,.23,.18]],
+      wrong:[[330,0,.13],[220,.11,.19]],
+      round:[[523,0,.1],[659,.11,.1],[784,.23,.19]],
+      finish:[[523,0,.14],[659,.15,.14],[784,.31,.15],[1046,.49,.28]]
+    };
+    const now = audioCtx.currentTime;
+    (melodies[kind] || melodies.correct).forEach(([hz,delay,len])=>{
+      const osc=audioCtx.createOscillator(),gain=audioCtx.createGain();
+      osc.type=kind==="wrong"?"triangle":"sine";
+      osc.frequency.setValueAtTime(hz,now+delay);
+      gain.gain.setValueAtTime(.0001,now+delay);
+      gain.gain.exponentialRampToValueAtTime(.095,now+delay+.018);
+      gain.gain.exponentialRampToValueAtTime(.0001,now+delay+len);
+      osc.connect(gain);gain.connect(audioCtx.destination);
+      osc.start(now+delay);osc.stop(now+delay+len+.01);
+    });
+  } catch (_) {}
+}
+function particles(count) {
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const box=$("fxParticles"), colors=["#ffc85b","#f65caf","#6de0b1","#77caff","#9e76f2","#ff9d78"];
+  for(let n=0;n<count;n++){
+    const p=document.createElement("span");
+    p.style.left=(Math.random()*100)+"%";
+    p.style.background=colors[n%colors.length];
+    p.style.animationDelay=(Math.random()*.27)+"s";
+    p.style.animationDuration=(.95+Math.random()*.7)+"s";
+    box.appendChild(p);
+    p.addEventListener("animationend",()=>p.remove(),{once:true});
+  }
+}
+function animateScore() {
+  const el=$("score");
+  el.textContent=points();
+  el.classList.remove("score-pulse");
+  void el.offsetWidth;
+  el.classList.add("score-pulse");
+}
+function toastRound(round){
+  if(roundTimer)clearTimeout(roundTimer);
+  $("roundToastText").textContent="Round "+round+" / "+totalRounds;
+  $("roundToast").classList.remove("hidden");
+  chime("round");
+  roundTimer=setTimeout(()=>$("roundToast").classList.add("hidden"),900);
+}
+function setScreen(id){
+  ["startScreen","gameScreen","resultScreen"].forEach(x=>$(x).classList.toggle("hidden",x!==id));
+}
+
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function start(){const name=$('nameInput').value.trim();if(!name){$('nameInput').setCustomValidity('Please enter your name first.');$('nameInput').reportValidity();return}player=name;restart()}
+function restart(){if(!player)return;attemptId=window.crypto?.randomUUID?.()||Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);finished=false;startedAt=Date.now();pos=0;state=QUESTIONS.map(q=>({choice:null,correct:null,picked:[],bank:q.words?shuffle(q.words.map((_,i)=>i)):[]}));$('total').textContent=QUESTIONS.length;setScreen('gameScreen');render();toastRound(1)}
+function render(){
+ const q=QUESTIONS[pos],s=state[pos];$('round').textContent='Round '+q.round+' / '+totalRounds;$('counter').textContent='Question '+(pos+1)+' / '+QUESTIONS.length;$('score').textContent=points();$('bar').style.width=(state.filter(s=>s.correct!==null).length/QUESTIONS.length*100)+'%';$('kicker').textContent='Explore · '+(pos+1)+' of '+QUESTIONS.length;$('title').textContent=ROUNDS[q.round-1];$('instruction').textContent=q.type==='order'?'Tap every word in order. Tap a word in your sentence to undo.':q.round===2?'The worksheet statement is incorrect. Choose the correction.':q.round===3?'Choose the word that does not fit the target meaning.':q.round===6?'Compare picture A with picture B. Choose the correct statement.':'Look, read and choose one answer.';
+ $('prompt').textContent=q.prompt;
+ const pic=$('picture');pic.replaceChildren();pic.className='picture '+(q.layout||'');
+ const showImage=(src,alt,label)=>{const group=document.createElement('figure');const im=document.createElement('img');im.src=src;im.alt=alt;group.appendChild(im);if(label){const cap=document.createElement('figcaption');cap.textContent=label;group.appendChild(cap)}pic.appendChild(group)};
+ showImage(q.image,q.alt,q.image2?'Picture A':'');if(q.image2)showImage(q.image2,q.alt2,'Picture B');
+ const box=$('answers');box.replaceChildren();
+ if(q.type==='choice')q.choices.forEach((label,i)=>{const b=document.createElement('button');b.className='answer';b.textContent=label;b.disabled=s.correct!==null;if(s.correct!==null){if(i===q.a)b.classList.add('good');if(i===s.choice&&!s.correct)b.classList.add('bad')}b.onclick=()=>answer(i);box.appendChild(b)});
+ else {
+  const built=document.createElement('div');built.className='built';built.setAttribute('aria-label','Your sentence');if(!s.picked.length)built.textContent='Your sentence appears here.';
+  s.picked.forEach((id,i)=>{const b=document.createElement('button');b.className='btn';b.textContent=q.words[id];b.disabled=s.correct!==null;b.onclick=()=>{s.picked.splice(i,1);render()};built.appendChild(b)});box.appendChild(built);
+  const bank=document.createElement('div');bank.className='bank';bank.setAttribute('aria-label','Word bank');s.bank.forEach(id=>{const b=document.createElement('button');b.className='btn';b.textContent=q.words[id];b.disabled=s.correct!==null||s.picked.includes(id);b.onclick=()=>{s.picked.push(id);render()};bank.appendChild(b)});box.appendChild(bank);
+  const check=document.createElement('button');check.className='btn check';check.textContent='Check Answer';check.disabled=s.correct!==null||s.picked.length!==q.words.length;check.onclick=()=>answer(s.picked.map(id=>q.words[id]).join(' '));box.appendChild(check);
+ }
+ const f=$('feedback');f.className='feedback'+(s.correct===null?'':s.correct?' success':' error');f.textContent=s.correct===null?'':(s.correct?'Correct! ⭐ ':'Incorrect. Answer: '+solution(q)+'. ')+q.why;
+ $('speak').textContent=s.correct===null?'':'🗣 '+q.speak;$('speak').classList.toggle('hidden',s.correct===null);
+ $('backBtn').disabled=pos===0;$('nextBtn').disabled=s.correct===null;$('nextBtn').textContent=pos===QUESTIONS.length-1?'Finish':'Next';$('nextBtn').classList.toggle('ready',s.correct!==null);
+}
+function solution(q){return q.type==='choice'?q.choices[q.a]:q.accepted[0]}
+function answer(value){if(finished||state[pos].correct!==null)return;const q=QUESTIONS[pos];if(q.type==='order'&&state[pos].picked.length!==q.words.length)return;const correct=q.type==='choice'?value===q.a:q.accepted.some(a=>norm(a)===norm(value));state[pos].choice=value;state[pos].correct=correct;chime(correct?'correct':'wrong');if(correct)particles(20);render();animateScore()}
+function next(){if(finished||state[pos].correct===null)return;if(pos===QUESTIONS.length-1){finish();return}const prev=QUESTIONS[pos].round;pos++;render();if(QUESTIONS[pos].round!==prev)toastRound(QUESTIONS[pos].round);const content=$('gameScreen').querySelector('.content');content.classList.remove('fx-enter');void content.offsetWidth;content.classList.add('fx-enter');$('title').scrollIntoView({block:'start',behavior:'instant'})}
+function back(){if(!finished&&pos>0){pos--;render()}}
+async function finish(){
+ if(finished||state.some(s=>s.correct===null))return;finished=true;const id=attemptId,score=points(),percentage=Math.round(score/QUESTIONS.length*100);setScreen('resultScreen');$('playerResult').textContent=player;$('finalPoints').textContent=score;$('finalTotal').textContent=QUESTIONS.length;$('resultMessage').textContent=percentage+'% · '+(percentage>=80?'You’re a water science superstar!':'Great exploring! Review your answers and try again.');particles(100);chime('finish');
+ const review=$('review');review.replaceChildren();QUESTIONS.forEach((q,i)=>{const a=document.createElement('article');const h=document.createElement('strong');h.textContent=(state[i].correct?'✅ ':'❌ ')+(i+1)+'. '+q.prompt;const p=document.createElement('p');p.textContent='Your answer: '+(q.type==='choice'?q.choices[state[i].choice]:state[i].choice)+'\nCorrect answer: '+solution(q)+'\n'+q.why;a.appendChild(h);a.appendChild(p);review.appendChild(a)});
+ const payload={studentName:player,gameTitle:document.title,score,total:QUESTIONS.length,percentage,durationSeconds:Math.max(0,Math.round((Date.now()-startedAt)/1000)),completedAt:new Date().toISOString(),attemptId:id,gameUrl:location.href};
+ try{const key='waterWonderAttempts',rows=JSON.parse(localStorage.getItem(key)||'[]');if(!rows.some(row=>row.attemptId===id)){rows.unshift(payload);localStorage.setItem(key,JSON.stringify(rows.slice(0,50)))}}catch(_){}
+ if(/\/_templates?\//.test(location.pathname)){$('recordStatus').textContent='Template preview — score not sent.';return}
+ $('recordStatus').textContent='Sending score to your teacher…';try{const result=window.TeacherRecords?await window.TeacherRecords.submit(payload):{sent:false};if(attemptId===id)$('recordStatus').textContent=result.sent?'✅ Score sent to your teacher.':'⚠️ Result saved on this device. Could not send right now.'}catch(_){if(attemptId===id)$('recordStatus').textContent='⚠️ Result saved on this device. Could not send right now.'}
+}
+function toggleSound(){soundOn=!soundOn;$('soundBtn').textContent=soundOn?'🔊 Sound On':'🔇 Sound Off';$('soundBtn').setAttribute('aria-pressed',String(soundOn))}
+$('zoomBtn').onclick=()=>{const box=$('largePicture');box.replaceChildren();const q=QUESTIONS[pos];[q.image,q.image2].filter(Boolean).forEach((src,i)=>{const p=document.createElement('p');p.textContent=q.image2?'Picture '+(i===0?'A':'B'):ROUNDS[q.round-1];const im=document.createElement('img');im.src=src;im.alt=i===0?q.alt:q.alt2;box.appendChild(p);box.appendChild(im)});$('imageDialog').showModal()};$('closeImageBtn').onclick=()=>$('imageDialog').close();
+$('startBtn').onclick=start;$('nameInput').oninput=()=>$('nameInput').setCustomValidity('');$('nameInput').onkeydown=e=>{if(e.key==='Enter')start()};$('nextBtn').onclick=next;$('backBtn').onclick=back;$('restartBtn').onclick=restart;$('playAgainBtn').onclick=restart;$('soundBtn').onclick=toggleSound;
+
+</script>
+</body>
+</html>
