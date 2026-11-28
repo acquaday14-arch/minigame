@@ -127,6 +127,7 @@
     }
 
   
+    .journey{padding:22px 30px 12px;background:linear-gradient(180deg,#e9f9ff,#f1edff);border-bottom:2px solid #e4dcfb}.journey-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;font-size:23px;color:#432cb5}.islands{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.island{font:inherit;padding:12px 8px;border:2px solid #d1c4f2;border-radius:18px;background:#fff;color:#483489;font-size:19px;cursor:pointer}.island.current{background:#fff0bd;border-color:#e1a02f;box-shadow:0 4px 0 #edcb79}.island:disabled{opacity:.4;cursor:not-allowed}.trail{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;padding:12px;background:#dcefdc;border-radius:24px;border:2px dashed #a3c6a3}.stone{min-width:45px;min-height:45px;border-radius:50%;border:2px solid #c7bdde;background:#fff;font:inherit;font-size:21px;color:#504268;cursor:pointer;box-shadow:0 3px 0 #bcb2cd}.stone.here{background:#ffdf85;border:3px solid #8d5bce;transform:scale(1.12);animation:fx-float 2s infinite}.stone.won{background:#fff0a3}.stone.tried{background:#e8e4fa}.stone:disabled{opacity:.5;cursor:not-allowed}.pip{display:flex;align-items:center;justify-content:center;gap:12px}.pip p{font-size:21px;margin:14px 0}.explorer{font-size:36px}.chest{display:block;margin:0 auto 10px;background:#ffe29b;color:#6f4600;font-size:23px;border-color:#dcac4b;animation:fx-pulse 1.5s infinite}.intro-islands{font-size:clamp(28px,5vw,48px);margin:25px 0}.treasure-summary{font-size:45px;letter-spacing:8px;margin:15px}.stage{min-height:0;padding-top:20px}dialog{max-width:min(540px,90vw);border:4px solid #6844cb;border-radius:28px;padding:28px;text-align:center;color:#362675;font:inherit;box-shadow:0 20px 90px #36267555}dialog::backdrop{background:#2a1f5680}dialog h2{font-size:34px}dialog p{font-size:23px;line-height:1.5}.treasure-icon{font-size:80px}dialog .btn{font-size:22px;background:#6040d7;color:#fff}button:focus-visible{outline:4px solid #ef8e32;outline-offset:3px}@media(max-width:700px){.journey{padding:18px 14px 10px}.journey-head{font-size:20px}.islands{grid-template-columns:1fr 1fr}.island{font-size:18px}.stone{min-width:42px;min-height:42px}.pip p{font-size:19px}}
     .activity{display:flex;flex-direction:column;gap:18px}.activity input{width:100%;font-size:28px;padding:18px;border:3px solid #d9cff8;border-radius:16px;color:#20285c}.check{background:#6040d7;color:white;font-size:24px}.built,.bank{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}.built{border:2px dashed #b49be9;min-height:100px;padding:16px;border-radius:18px;align-items:center}.bank{padding:10px}.word{font-size:24px}.word:disabled{opacity:.25;background:#ddd;transform:none}.answer{font-size:clamp(23px,3vw,28px)}.feedback{font-size:23px;line-height:1.5}.instruction{font-size:23px}.submitted{font-size:26px;text-align:center;overflow-wrap:anywhere}.start label{font-size:22px}.progress>div{width:0}button{touch-action:manipulation}.top{font-size:18px}@media(max-width:700px){.stage{min-height:0}.top{padding:16px 12px;gap:8px}.word{font-size:21px}.card{padding:18px 12px}.controls .mid-actions .btn{font-size:17px}}
   </style>
 </head>
@@ -137,10 +138,10 @@
         <div class="stars">⭐ ✨ ⭐</div>
         <div class="kicker">Grade 6 · Grammar Adventure</div>
         <h1>Because, So &amp; Although Quest</h1>
-        <p>28 challenges · 4 rounds · About 20–30 minutes · No timer</p>
+        <p>Explore 4 islands · Solve 28 challenges · Collect treasure · No timer</p>
         <label for="nameInput">Student name</label><br><input maxlength="80" id="nameInput" placeholder="Enter your name">
         <br>
-        <button class="btn" id="startBtn">Start Challenge</button>
+        <div class="intro-islands" aria-hidden="true">🏝️ ➜ ⛰️ ➜ 🌳 ➜ 🏰</div><p>Guide Pip the explorer through Linker Land. Earn adventure stars, build a correct-answer streak and open treasure chests. Tap visited stepping stones to review.</p><button class="btn" id="startBtn">Start Adventure →</button>
       </div>
     </section>
 
@@ -152,6 +153,13 @@
       </div>
       <div class="progress"><div id="bar"></div></div>
 
+      <div class="journey" aria-label="Adventure map">
+        <div class="journey-head"><strong id="zoneName"></strong><span id="adventureStars">⭐ 0 stars</span><span id="streakCount">🔥 Streak 0</span></div>
+        <div class="islands" id="islands"></div>
+        <div class="trail" id="trail" aria-label="Stepping stones"></div>
+        <div class="pip"><span class="explorer" aria-hidden="true">🧑‍🚀</span><p id="pipMessage" aria-live="polite"></p></div>
+        <button class="btn chest hidden" id="chestBtn">🎁 Open treasure</button>
+      </div>
       <div class="stage">
         <div class="kicker" id="kicker">Quick choice · 1 of 4</div>
         <h1 id="title">Choose the best answer</h1>
@@ -177,10 +185,11 @@
         <h1>Great Job, <span id="playerResult"></span>!</h1>
         <div class="result-score"><span id="finalPoints">0</span>/<span id="finalTotal">4</span></div>
         <p class="result-sub" id="resultMessage"></p>
-        <p class="result-sub" id="recordStatus"></p>
+        <div class="treasure-summary" id="treasureSummary"></div><p class="result-sub" id="adventureResult"></p><p class="result-sub" id="recordStatus"></p>
         <button class="btn" id="playAgainBtn">↻ Play Again</button>
       </div>
     </section>
+  <dialog id="treasureDialog" aria-labelledby="treasureTitle"><div class="treasure-icon" id="treasureIcon">💎</div><h2 id="treasureTitle">Treasure unlocked!</h2><p id="treasureText"></p><button class="btn" id="closeTreasure">Continue exploring →</button></dialog>
   <div class="fx-particles" id="fxParticles" aria-hidden="true"></div>
     <div class="fx-round-toast hidden" id="roundToast" aria-hidden="true"><div class="fx-round-pill"><small>LEVEL UP ✨</small><span id="roundToastText"></span></div></div>
   </main>
@@ -202,6 +211,31 @@ let startedAt = null;
 let attemptId = "", finished = false;
 const norm = s => s.toLowerCase().replace(/[’]/g,"'").replace(/[.,!?]/g,"").replace(/\s+/g," ").trim();
 const correctAt = i => state[i].choice !== null && (QUESTIONS[i].type ? state[i].choice === true : state[i].choice === QUESTIONS[i].a);
+const ZONES=[{name:"Reason Reef",icon:"🏝️",badge:"🐚",treasure:"Reason Shell",tip:"BECAUSE explains why. You explored the reasons and results!"},{name:"Result Ridge",icon:"⛰️",badge:"💎",treasure:"Result Crystal",tip:"SO points to a result. Keep the cause before SO and the result after it."},{name:"Sentence Forest",icon:"🌳",badge:"🌿",treasure:"Sentence Crown",tip:"You built six complete sentences. With BECAUSE, put the reason after the linking word."},{name:"Linker Castle",icon:"🏰",badge:"👑",treasure:"Linker Crown",tip:"Use one linking structure: BECAUSE without SO, or ALTHOUGH without BUT, for the same two clauses."}];
+let openedChests=new Set();
+function adventureStats(){
+  let stars=0,streak=0,best=0;
+  state.forEach((st,i)=>{if(st.choice===null)return;if(correctAt(i)){streak++;best=Math.max(best,streak);stars+=10+Math.min(streak-1,4)*2;}else streak=0;});
+  return {stars,streak,best};
+}
+function zoneDone(round){return QUESTIONS.every((q,i)=>q.round!==round || state[i].choice!==null);}
+function updateAdventure(){
+  const round=QUESTIONS[pos].round,z=ZONES[round-1],stats=adventureStats();
+  $("zoneName").textContent=z.icon+" "+z.name;
+  $("adventureStars").textContent="⭐ "+stats.stars+" stars";
+  $("streakCount").textContent="🔥 Streak "+stats.streak;
+  const islands=$("islands");islands.replaceChildren();
+  ZONES.forEach((zone,i)=>{const b=document.createElement("button");b.className="island"+(i+1===round?" current":"");const first=QUESTIONS.findIndex(q=>q.round===i+1);b.disabled=i>0&&!zoneDone(i);b.textContent=(zoneDone(i+1)?"✅ ":"")+zone.icon+" "+zone.name;b.setAttribute("aria-label",zone.name+(b.disabled?", locked":""));b.onclick=()=>{pos=first;render();};islands.appendChild(b);});
+  const trail=$("trail");trail.replaceChildren();
+  QUESTIONS.forEach((q,i)=>{if(q.round!==round)return;const b=document.createElement("button");b.className="stone"+(i===pos?" here":"")+(state[i].choice!==null?(correctAt(i)?" won":" tried"):"");b.textContent=i===pos?"🧑‍🚀":state[i].choice!==null?(correctAt(i)?"⭐":"✓"):String(i+1);b.disabled=i>0&&state[i-1].choice===null;b.setAttribute("aria-label","Challenge "+(i+1)+(state[i].choice!==null?", completed":"")+(i===pos?", current":""));b.onclick=()=>{pos=i;render();};trail.appendChild(b);});
+  const done=state[pos].choice!==null;
+  $("pipMessage").textContent=done?(correctAt(pos)?(stats.streak>1?"A "+stats.streak+"-answer streak! Your adventure stars are growing!":"Nice work! You earned adventure stars. Move to the next stepping stone!"):"A tricky stone! Read the explanation, then keep exploring."):"Mission "+(pos+1)+": "+(round===1?"find the missing link!":round===2?"choose the best bridge!":round===3?"build a sentence bridge!":"repair the broken link!");
+  const chest=$("chestBtn");chest.classList.toggle("hidden",!zoneDone(round));chest.textContent=openedChests.has(round)?"✨ View "+z.treasure:"🎁 Open "+z.name+" treasure!";chest.onclick=()=>openTreasure(round);
+}
+function openTreasure(round){
+  const z=ZONES[round-1];openedChests.add(round);$("treasureIcon").textContent=z.badge;$("treasureTitle").textContent=z.treasure+" collected!";$("treasureText").textContent=z.tip;$("treasureDialog").showModal();chime("round");particles(40);updateAdventure();
+}
+$("closeTreasure").onclick=()=>$("treasureDialog").close();
 const totalRounds = Math.max(...QUESTIONS.map(q=>q.round));
 $("total").textContent = QUESTIONS.length;
 const roundElement = () => $(MODE === "present" ? "roundPill" : "round");
@@ -258,7 +292,7 @@ function animateScore() {
 }
 function toastRound(round){
   if(roundTimer)clearTimeout(roundTimer);
-  $("roundToastText").textContent="Round "+round+" / "+totalRounds;
+  $("roundToastText").textContent=ZONES[round-1].icon+" "+ZONES[round-1].name;
   $("roundToast").classList.remove("hidden");
   chime("round");
   roundTimer=setTimeout(()=>$("roundToast").classList.add("hidden"),900);
@@ -270,6 +304,7 @@ function start(){
   const name=$("nameInput").value.trim();
   if(!name){alert("Please enter your name first.");$("nameInput").focus();return;}
   player=name;
+  openedChests=new Set();
   attemptId=crypto.randomUUID(); finished=false;
   startedAt=Date.now();
   pos=0;
@@ -280,6 +315,7 @@ function start(){
 }
 function render(){
   const q=QUESTIONS[pos], st=state[pos];
+  updateAdventure();
   roundElement().textContent="Round "+q.round+" / "+totalRounds+(MODE==="picture"?" · Picture questions":"");
   counterElement().textContent="Question "+(pos+1)+" / "+QUESTIONS.length;
   $("bar").style.width=((state.filter(s=>s.choice!==null).length/QUESTIONS.length)*100)+"%";
@@ -366,6 +402,7 @@ function next(){
 }
 function back(){if(pos>0){pos--;render();}}
 function restart(){
+  openedChests=new Set();
   attemptId=crypto.randomUUID(); finished=false;
   startedAt=Date.now();
   pos=0;state.forEach(s=>{Object.keys(s).forEach(k=>delete s[k]);s.choice=null;});setScreen("gameScreen");render();toastRound(QUESTIONS[0].round);
@@ -379,6 +416,9 @@ async function finish(){
   $("playerResult").textContent=player;
   $("finalPoints").textContent=score;
   $("finalTotal").textContent=QUESTIONS.length;
+  const stats=adventureStats();
+  $("adventureResult").textContent="⭐ "+stats.stars+" adventure stars · Best streak: "+stats.best+" · All 4 islands explored!";
+  $("treasureSummary").textContent=ZONES.map(z=>z.badge).join("  ");
   const pct=Math.round(score/QUESTIONS.length*100);
   $("resultMessage").textContent = pct>=85 ? "Amazing! You're a grammar superstar!" : pct>=60 ? "Great effort! Keep practicing and level up!" : "Every try makes you stronger. Play again!";
   $("resultMessage").textContent += " · " + pct + "% · " + Math.max(0,Math.round((Date.now()-startedAt)/1000)) + " seconds";
