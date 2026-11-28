@@ -400,5 +400,11 @@
     "description": "33 activities from all six worksheets: 4 water-cycle stages, 5 corrections, 5 odd-one-out sets, 3 state changes, 7 state pictures, 5 kitchen differences and 4 sentence builders. Original pictures, larger-picture view, speaking and science explanations. No timer.",
     "level": "A1–A2 · Science",
     "path": "./water-wonder-quest/"
+  },
+  {
+    "title": "Geometry Talk Quest",
+    "description": "40 activities from all 7 worksheets: angles, parallel and perpendicular lines, all odd-one-out sets, named sides, all 6 parallelograms and 4 drag-or-tap sentence builders. Source pictures and speaking feedback. No timer.",
+    "level": "A1–A2 · Geometry in English",
+    "path": "./geometry-talk-quest/"
   }
 ]
