@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en" data-template-effects-version="2">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Test 1 Reading Quest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --purple:#5b36d6;--purple2:#7a57eb;--ink:#20285c;--pink:#ef5aa7;
+      --yellow:#ffd76a;--mint:#6be0b2;--sky:#74c7ff;--soft:#f8f6ff;--line:#d9cff8;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;min-height:100vh;padding:18px;
+      font-family:"Fredoka",ui-rounded,"Trebuchet MS",Arial,sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at 9% 12%,#ffe2f0 0 7%,transparent 7.5%),
+        radial-gradient(circle at 90% 14%,#dff5ff 0 8%,transparent 8.5%),
+        linear-gradient(180deg,#f8fbff,#f4efff);
+    }
+    button,input{font:inherit}
+    .app{width:min(1060px,100%);margin:1vh auto}
+    .frame{
+      background:#fff;border:4px solid #4b32bf;border-radius:32px;overflow:hidden;
+      box-shadow:0 14px 0 #ded5ff,0 24px 44px rgba(63,47,147,.14)
+    }
+    .top{
+      background:linear-gradient(135deg,var(--purple),#6541dc);
+      padding:18px 28px;color:#fff;display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:center
+    }
+    .pill{border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.12);padding:9px 15px;border-radius:999px;font-weight:700}
+    .top .pill:last-child{justify-self:end}
+    .progress{height:10px;background:#dacdfd}
+    .progress>div{height:100%;width:25%;background:linear-gradient(90deg,#ffd75f,#ffae73);transition:.25s}
+    .stage{padding:28px 34px 24px;min-height:650px;position:relative}
+    .kicker{text-align:center;color:var(--pink);font-size:14px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+    h1{text-align:center;font-size:clamp(38px,6vw,62px);margin:8px 0 8px;color:#432cb5;line-height:.98}
+    .instruction{text-align:center;font-size:20px;font-weight:600;margin-bottom:24px}
+    .card{
+      width:min(780px,100%);margin:0 auto;border:2px solid var(--line);border-radius:24px;padding:24px;
+      background:linear-gradient(180deg,#fff,#fcfbff)
+    }
+    .question{font-size:clamp(24px,4vw,36px);font-weight:700;text-align:center;margin:6px 0 22px}
+    .answers{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .answer{
+      border:3px solid #ded3fa;background:#fbf9ff;border-radius:18px;padding:15px 18px;color:var(--ink);
+      font-weight:700;font-size:18px;cursor:pointer;transition:.14s
+    }
+    .answer:hover{transform:translateY(-2px);border-color:#aa8df3}
+    .answer.good{border-color:#65d5a8;background:#ebfff6;color:#17734e;animation:pop .28s ease}
+    .answer.bad{border-color:#ff98a4;background:#fff0f2;color:#a63a47;animation:shake .28s ease}
+    .feedback{min-height:42px;text-align:center;margin:18px 0 4px;font-size:19px;font-weight:700}
+    .controls{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:14px;margin-top:28px}
+    .btn{border:2px solid #dbd2f8;border-radius:15px;background:#fff;color:#4734a9;padding:12px 18px;font-weight:700;cursor:pointer}
+    .controls .next{justify-self:end;background:linear-gradient(135deg,#ffd37c,#ffbd84);border:0;color:#76563b}
+    .center{text-align:center}
+    .hidden{display:none!important}
+    .start{padding:60px 32px;text-align:center}
+    .start p{font-size:19px;color:#667085}
+    .start input{width:min(560px,100%);padding:15px 17px;border:2px solid #d8cff4;border-radius:16px;font-size:18px}
+    .start .btn{margin-top:12px;background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;border:0}
+    .stars{font-size:26px;letter-spacing:5px}
+    .confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:20}
+    .confetti i{position:absolute;width:10px;height:16px;border-radius:3px;animation:fall 900ms linear forwards}
+    @keyframes pop{50%{transform:scale(1.035)}}
+    @keyframes shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+    @keyframes fall{from{transform:translateY(-10vh) rotate(0)}to{transform:translateY(110vh) rotate(500deg);opacity:.7}}
+    @media(max-width:700px){.top{grid-template-columns:1fr 1fr}.top>div:nth-child(2){grid-column:1/-1;grid-row:2;text-align:center}.stage{padding:22px 16px}.answers{grid-template-columns:1fr}.controls{grid-template-columns:1fr 1fr}.controls .restart{display:none}}
+  
+    /* Template FX v2 — reduced-motion aware and dependency-free */
+    .fx-enter{animation:fx-enter .38s cubic-bezier(.2,.8,.2,1) both}
+    .answer{transition:transform .17s ease,border-color .2s ease,box-shadow .2s ease,background .2s ease}
+    .answer:active,.btn:active{transform:scale(.97)}
+    .answer:focus-visible,.btn:focus-visible{outline:4px solid #f7bb56;outline-offset:3px}
+    .answer.good{box-shadow:0 0 0 4px rgba(81,213,157,.13)}
+    .answer.bad{box-shadow:0 0 0 4px rgba(255,118,144,.13)}
+    .answer:disabled{cursor:default}
+    .pill.score-pulse,.score-pulse{animation:fx-pulse .35s ease}
+    .feedback.success{color:#10845c;animation:fx-pop .4s ease both}
+    .feedback.error{color:#b44453;animation:fx-shake .32s ease both}
+    .mid-actions{display:flex;gap:8px;align-items:center;justify-content:center}
+    .mid-actions .btn{white-space:nowrap}
+    .btn:disabled{opacity:.4;cursor:not-allowed;filter:grayscale(.25)}
+    .next.ready{animation:fx-glow 1.8s ease-in-out infinite}
+    .fx-particles{position:fixed;inset:0;z-index:100;pointer-events:none;overflow:hidden}
+    .fx-particles span{position:absolute;top:-24px;width:10px;height:16px;border-radius:3px;animation:fx-rain 1.15s cubic-bezier(.2,.7,.5,1) forwards}
+    .fx-round-toast{position:fixed;inset:0;z-index:90;pointer-events:none;display:flex;justify-content:center;align-items:center;background:rgba(45,29,122,.11)}
+    .fx-round-toast.hidden{display:none!important}
+    .fx-round-pill{
+      text-align:center;border:4px solid #fff;border-radius:28px;
+      background:linear-gradient(135deg,#5b36d6,#8b6cf0);color:white;
+      padding:24px 36px;box-shadow:0 20px 60px rgba(54,38,152,.25);
+      font-size:clamp(25px,4vw,42px);font-weight:700;animation:fx-toast .7s ease both
+    }
+    .fx-round-pill small{display:block;font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:#ffdf85;margin-bottom:4px}
+    .result-area{text-align:center;padding:56px 24px}
+    .result-area h1{font-size:clamp(40px,6vw,64px);margin:10px 0;color:#432cb5}
+    .result-area .result-score{font-size:clamp(60px,10vw,100px);color:#5b36d6;font-weight:700;line-height:1.12}
+    .result-area .result-sub{font-size:21px;margin:8px 0 28px}
+    .result-area .btn{background:#6040d7;color:#fff;border:0;padding:15px 30px;font-size:18px}
+    .result-area .result-stars{font-size:38px;letter-spacing:8px;animation:fx-float 2s ease-in-out infinite}
+    .picture{animation:fx-picture-in .55s cubic-bezier(.2,.8,.2,1) both;transition:transform .25s ease,box-shadow .25s ease}
+    .picture:hover{transform:translateY(-3px) rotate(-1deg);box-shadow:0 17px 34px rgba(82,58,173,.21)}
+    .picture img{width:100%;height:100%;object-fit:cover;display:block}
+    @keyframes fx-enter{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes fx-pop{0%{transform:scale(.83);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+    @keyframes fx-pulse{50%{transform:scale(1.09)}}
+    @keyframes fx-shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+    @keyframes fx-glow{50%{box-shadow:0 0 0 6px rgba(255,205,100,.22)}}
+    @keyframes fx-rain{0%{transform:translateY(-10vh) rotate(0deg);opacity:1}100%{transform:translateY(112vh) rotate(620deg);opacity:0}}
+    @keyframes fx-toast{0%{transform:scale(.7) translateY(25px);opacity:0}40%{transform:scale(1.05);opacity:1}100%{transform:scale(1);opacity:1}}
+    @keyframes fx-float{50%{transform:translateY(-9px)}}
+    @keyframes fx-picture-in{from{opacity:0;transform:scale(.91) rotate(-2deg)}to{opacity:1;transform:scale(1) rotate(0)}}
+    @media(max-width:700px){
+      .controls{grid-template-columns:1fr 1fr}
+      .controls .mid-actions{grid-column:1/-1;grid-row:2;justify-content:center}
+      .controls .restart{display:inline-flex}
+      .result-area{padding:42px 16px}
+      .mid-actions .btn{font-size:14px;padding:10px 12px}
+    }
+    @media(prefers-reduced-motion:reduce){
+      *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+    }
+
+  
+.stage{min-height:500px}.question{white-space:pre-line;line-height:1.5;font-size:clamp(23px,3.5vw,32px)}.instruction{line-height:1.5}.answer{font-size:22px;min-height:62px}.btn{min-height:48px}.card{width:min(850px,100%)}h1{font-size:clamp(34px,5vw,52px);line-height:1.1}.feedback{line-height:1.6}.start label{display:block;margin:12px}.start input{font-size:22px}.word-zone,.built-zone{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;padding:12px}.built-zone{border:2px dashed #b7a1f0;border-radius:18px;min-height:80px;background:#f4f0ff}.word-zone .btn,.built-zone .btn{font-size:22px;background:#fff}.word-zone .btn:disabled{background:#e6e2ee;border-color:#c4bbd5;color:#8b819e;opacity:.45}.order-actions{grid-column:1/-1;display:flex;justify-content:center;gap:12px}.check{background:#5b36d6;color:white}.review{text-align:left;max-width:850px;margin:24px auto;padding:0 10px;font:19px/1.6 'Trebuchet MS',Arial,sans-serif}.review article{padding:14px 0;border-bottom:1px solid #ddd;white-space:pre-line}.review p{margin:8px 0}summary{cursor:pointer;color:#5234b6;font-weight:bold}button:focus-visible,input:focus-visible,summary:focus-visible{outline:4px solid #e9b52c;outline-offset:3px}.top{padding:18px;gap:8px}.pill{font-size:16px;padding:10px}.progress>div{width:0%}@media(max-width:700px){body{padding:8px}.stage{padding:20px 14px}.card{padding:15px}.start{padding:38px 18px}.word-zone .btn,.built-zone .btn{font-size:20px;padding:10px 12px}.controls{gap:8px}.controls .btn{padding:11px}.top{padding:12px}.pill{font-size:14px}}
+
+.task-layout{display:grid;gap:20px;align-items:start}.task-layout.with-source{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.source-panel{border:2px solid #b6d6eb;border-radius:22px;background:#f2faff;padding:20px;grid-column:1/-1;font:21px/1.6 'Trebuchet MS',Arial,sans-serif}.with-source .source-panel{grid-column:auto}.source-panel h2{font-family:'Fredoka',sans-serif;font-size:30px;color:#38258e;margin:0 0 14px}.notice{display:flex;gap:14px;border:2px solid #d0c4ef;border-radius:14px;background:white;margin:10px 0;padding:12px}.notice strong{color:#5b36d6;font-size:26px}.notice p{margin:0;white-space:pre-line}.article-text{white-space:pre-line}.article-text mark{background:#ffe38b;font-weight:bold;padding:3px}.source-note{font-size:16px;color:#4c5f73;margin:0 0 14px}.input-answer{grid-column:1/-1;display:grid;gap:16px}.input-answer label{font-size:27px;letter-spacing:.08em;text-align:center}.input-answer input{width:100%;min-width:0;border:3px solid #beadeb;border-radius:14px;padding:15px;font:26px 'Trebuchet MS',sans-serif;color:#20285c}.input-answer .check{font-size:22px}.with-source .answers{grid-template-columns:1fr}.with-source .question{font-size:28px}.with-source .card{min-width:0}.app{width:min(1320px,100%)}.feedback{font-size:21px}.btn{font-size:18px}@media(max-width:850px){.task-layout.with-source{grid-template-columns:1fr}.source-panel{font-size:19px}.with-source .answers{grid-template-columns:1fr 1fr}}@media(max-width:480px){.with-source .answers{grid-template-columns:1fr}.source-panel{padding:14px}}
+</style>
+<meta name="description" content="A2 individual reading practice from the supplied Test 1 pages: 28 questions with automatic marking and explanations."></head>
+<body>
+  <main class="app">
+    <section class="frame" id="startScreen">
+      <div class="start">
+        <div class="stars">⭐ ✨ ⭐</div>
+        <div class="kicker">A2 · Individual practice</div>
+        <h1>Test 1<br>Reading Quest</h1>
+        <p>28 questions · 5 rounds · No timer<br>Notices · Word choices · Conversations · Reading · Word clues<br>Practise all questions from your four pages. Choose answers or type a word. Each question earns 1 point.</p>
+        <label for="nameInput">Your name</label><br><input id="nameInput" required placeholder="Enter your name" maxlength="80" autocomplete="name">
+        <br>
+        <button class="btn" id="startBtn">Start Challenge</button>
+      </div>
+    </section>
+
+    <section class="frame hidden" id="gameScreen">
+      <div class="top">
+        <div class="pill" id="roundPill">Round 1 / 5</div>
+        <div class="pill">⭐ <span id="score">0</span> / <span id="total">28</span> points</div>
+        <div class="pill" id="questionPill">Question 1 / 28</div>
+      </div>
+      <div class="progress"><div id="bar"></div></div>
+
+      <div class="stage">
+        <div class="kicker" id="kicker">Quick choice · 1 of 4</div>
+        <h1 id="title">Choose the best answer</h1>
+        <div class="instruction" id="instruction">Pick the sentence that sounds natural.</div>
+
+        <div class="task-layout"><aside class="source-panel hidden" id="sourcePanel" aria-label="Reading material"></aside><div class="card">
+          <div class="question" id="question"></div>
+          <div class="answers" id="answers"></div>
+          <div class="feedback" id="feedback" role="status" aria-live="polite"></div>
+        </div></div>
+
+        <div class="controls">
+          <button class="btn" id="backBtn">Back</button>
+          <div class="mid-actions"><button class="btn" id="soundBtn" aria-pressed="true">🔊 Sound On</button><button class="btn restart" id="restartBtn">↻ Restart</button></div>
+          <button class="btn next" id="nextBtn">Next</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="frame hidden" id="resultScreen">
+      <div class="result-area">
+        <div class="result-stars">🌟 🎉 🌟</div>
+        <h1>Great Job, <span id="playerResult"></span>!</h1>
+        <div class="result-score"><span id="finalPoints">0</span>/<span id="finalTotal">28</span></div>
+        <p class="result-sub" id="resultMessage"></p>
+        <p class="result-sub" id="recordStatus" role="status"></p><details class="review"><summary>Review my answers</summary><div id="review"></div></details>
+        <button class="btn" id="playAgainBtn">↻ Play Again</button>
+      </div>
+    </section>
+  <div class="fx-particles" id="fxParticles" aria-hidden="true"></div>
+    <div class="fx-round-toast hidden" id="roundToast" aria-hidden="true"><div class="fx-round-pill"><small>LEVEL UP ✨</small><span id="roundToastText"></span></div></div>
+  </main>
+
+<script src="../shared/teacher-records-config.js"></script>
+<script src="../shared/teacher-records.js"></script>
+<script>
+
+
+const QUESTIONS=[{"round":1,"source":1,"type":"choice","prompt":"This is not for adults.","choices":["A","B","C","D","E","F","G","H"],"a":0,"why":"Notice A is for people under 16. Adults cannot join.","notices":true},{"round":1,"source":2,"type":"choice","prompt":"You can’t drive this way.","choices":["A","B","C","D","E","F","G","H"],"a":2,"why":"Notice C says the city centre is closed to traffic all day.","notices":true},{"round":1,"source":3,"type":"choice","prompt":"We can help you day and night.","choices":["A","B","C","D","E","F","G","H"],"a":3,"why":"Notice D says open 24 hours. That includes day and night.","notices":true},{"round":1,"source":4,"type":"choice","prompt":"You can have dinner here.","choices":["A","B","C","D","E","F","G","H"],"a":1,"why":"Notice B offers drinks with a three-course meal. You can eat a meal there.","notices":true},{"round":1,"source":5,"type":"choice","prompt":"Come here to book a holiday.","choices":["A","B","C","D","E","F","G","H"],"a":5,"why":"Notice F is for a travel company advertising summer holidays.","notices":true},{"round":2,"source":6,"type":"choice","prompt":"He _____ Sam how to use it.","choices":["learnt","showed","studied"],"a":1,"why":"Show someone how to do something means explain or demonstrate it.","context":"Sam’s father bought him a new computer for his birthday."},{"round":2,"source":7,"type":"choice","prompt":"Sam sent an e-mail _____ to his friend Billy to tell him about his nice present.","choices":["message","programme","form"],"a":0,"why":"An e-mail message is something you send to another person.","context":"Sam’s father bought him a new computer. His friend is called Billy."},{"round":2,"source":8,"type":"choice","prompt":"Billy came to Sam’s house and they did their geography _____ together.","choices":["subject","homework","class"],"a":1,"why":"We say do homework. Geography is the subject.","context":"Sam and Billy used the new computer together."},{"round":2,"source":9,"type":"choice","prompt":"They were _____ because they found some information about rivers on the internet.","choices":["happy","interesting","pleasant"],"a":0,"why":"Happy describes their positive feeling. Interesting describes something that holds your attention.","context":"Sam and Billy were doing their geography homework."},{"round":2,"source":10,"type":"choice","prompt":"Afterwards, they _____ playing a new computer game together.","choices":["wanted","thanked","enjoyed"],"a":2,"why":"Use enjoy + -ing: enjoyed playing. Want takes to + verb.","context":"Sam and Billy finished their geography homework first."},{"round":3,"source":11,"type":"choice","prompt":"Who’s that man with the green sweater?","choices":["He’s my brother.","It’s John’s.","I don’t know it."],"a":0,"why":"Who asks about a person’s identity. He’s my brother identifies the man."},{"round":3,"source":12,"type":"choice","prompt":"Where’s Amanda gone?","choices":["She’s at the station.","She’ll arrive tomorrow.","She’s going to leave tonight."],"a":0,"why":"Where has Amanda gone? asks about where she is now. She’s at the station answers that."},{"round":3,"source":13,"type":"choice","prompt":"I hate shopping.","choices":["So do I.","Certainly.","That’s all right."],"a":0,"why":"So do I agrees with the statement: I hate shopping too."},{"round":3,"source":14,"type":"choice","prompt":"How long did the journey take?","choices":["About 500 kilometres.","Almost 5 hours.","Last week."],"a":1,"why":"How long asks about duration. Almost 5 hours is a length of time."},{"round":3,"source":15,"type":"choice","prompt":"The room costs £55 a night.","choices":["I don’t take it.","Give me two, please.","That’s a lot."],"a":2,"why":"That’s a lot is a natural reaction to a price you think is high."},{"round":4,"source":28,"type":"choice","prompt":"In almost _____ town, you will find clubs and classes.","choices":["all","some","every"],"a":2,"why":"Use every + singular countable noun: every town. All and some normally need plural towns.","article":true},{"round":4,"source":29,"type":"choice","prompt":"Fiona Lever, a teacher, _____.","choices":["say","says","saying"],"a":1,"why":"Fiona is one person. In the present simple, say becomes says.","article":true},{"round":4,"source":30,"type":"choice","prompt":"You dance _____ groups.","choices":["at","to","in"],"a":2,"why":"The expression is in groups: several people doing something together.","article":true},{"round":4,"source":31,"type":"choice","prompt":"It’s the _____ way to make new friends.","choices":["best","better","good"],"a":0,"why":"The best is the superlative form of good.","article":true},{"round":4,"source":32,"type":"choice","prompt":"In my classes, _____ are young and old people.","choices":["here","there","they"],"a":1,"why":"Use there are to say that people are present.","article":true},{"round":4,"source":33,"type":"choice","prompt":"They can make a lot of noise with their feet _____ the dances.","choices":["among","across","during"],"a":2,"why":"During means throughout or at a time within an activity.","article":true},{"round":4,"source":34,"type":"choice","prompt":"When _____ line dancing begin?","choices":["has","is","did"],"a":2,"why":"Ask about a finished past event with did + base verb: did ... begin.","article":true},{"round":4,"source":35,"type":"choice","prompt":"It started about fifteen years _____.","choices":["after","ago","since"],"a":1,"why":"Use a length of time + ago to say how far back in the past.","article":true},{"round":5,"source":36,"type":"input","prompt":"If you lose this, you won’t be able to get into your house.","answer":"key","hint":"k _ _","why":"A key opens the lock on your door."},{"round":5,"source":37,"type":"input","prompt":"Many people put these on when they want to read something.","answer":"glasses","hint":"g _ _ _ _ _ _","why":"People wear glasses to help them see or read."},{"round":5,"source":38,"type":"input","prompt":"People pay for things with this.","answer":"money","hint":"m _ _ _ _","why":"Money is used to pay for goods and services."},{"round":5,"source":39,"type":"input","prompt":"If it has been windy, you may need to do your hair with this.","answer":"comb","hint":"c _ _ _","why":"A comb is used to tidy your hair."},{"round":5,"source":40,"type":"input","prompt":"You write important dates in this so you don’t forget them.","answer":"diary","hint":"d _ _ _ _","why":"A diary can be used to record dates and appointments."}];
+const NOTICES=[["A","YOUTH CLUB\nUnder 16s only"],["B","Half-price drinks\nwith 3-course meals!"],["C","CITY CENTRE\nCLOSED TO TRAFFIC\nALL DAY TODAY"],["D","Tourist Information\nopen 24 hours"],["E","NO PETROL STATION\nON MOTORWAY"],["F","TURNER TRAVEL\nFly away to the sun\nthis summer"],["G","SCHOOL OFFICE\nCLOSED FOR LUNCH"],["H","We repair shoes QUICKLY\n8 a.m. – 5 p.m."]];
+const ARTICLE="Thousands of people in Britain have a new hobby – line dancing. In almost [28] _____ town, you will find clubs and classes for this new activity.\n\n‘Line dancing is easy to learn. If you have two feet and can walk, then you can do it!’ Fiona Lever, a teacher, [29] _____. ‘You don’t need a partner because you dance [30] _____ groups. It’s the [31] _____ way to make new friends. In my classes, [32] _____ are young and old people. The boys like it because they can make a lot of noise with their feet [33] _____ the dances!’\n\nWhen [34] _____ line dancing begin? Most people think it started about fifteen years [35] _____ when American country music became famous in Britain.";
+const ROUNDS=['Notice detective','Sam’s new computer','Conversation challenge','Line dancing','What’s in your bag?'];
+const $=id=>document.getElementById(id);
+let state=[],pos=0,player='',soundOn=true,audioCtx=null,roundTimer=null,startedAt=0,attemptId='',finished=false;
+const totalRounds=5;
+const norm=s=>s.toLowerCase().replace(/[’‘]/g,"'").replace(/[.!?,]/g,'').replace(/\s+/g,' ').trim();
+function points(){return state.reduce((n,s)=>n+(s.correct===true?1:0),0)}
+function chime(kind) {
+  if (!soundOn) return;
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    if (!audioCtx) audioCtx = new AC();
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    const melodies = {
+      correct:[[659,0,.11],[880,.11,.15],[1046,.23,.18]],
+      wrong:[[330,0,.13],[220,.11,.19]],
+      round:[[523,0,.1],[659,.11,.1],[784,.23,.19]],
+      finish:[[523,0,.14],[659,.15,.14],[784,.31,.15],[1046,.49,.28]]
+    };
+    const now = audioCtx.currentTime;
+    (melodies[kind] || melodies.correct).forEach(([hz,delay,len])=>{
+      const osc=audioCtx.createOscillator(),gain=audioCtx.createGain();
+      osc.type=kind==="wrong"?"triangle":"sine";
+      osc.frequency.setValueAtTime(hz,now+delay);
+      gain.gain.setValueAtTime(.0001,now+delay);
+      gain.gain.exponentialRampToValueAtTime(.095,now+delay+.018);
+      gain.gain.exponentialRampToValueAtTime(.0001,now+delay+len);
+      osc.connect(gain);gain.connect(audioCtx.destination);
+      osc.start(now+delay);osc.stop(now+delay+len+.01);
+    });
+  } catch (_) {}
+}
+function particles(count) {
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const box=$("fxParticles"), colors=["#ffc85b","#f65caf","#6de0b1","#77caff","#9e76f2","#ff9d78"];
+  for(let n=0;n<count;n++){
+    const p=document.createElement("span");
+    p.style.left=(Math.random()*100)+"%";
+    p.style.background=colors[n%colors.length];
+    p.style.animationDelay=(Math.random()*.27)+"s";
+    p.style.animationDuration=(.95+Math.random()*.7)+"s";
+    box.appendChild(p);
+    p.addEventListener("animationend",()=>p.remove(),{once:true});
+  }
+}
+function animateScore() {
+  const el=$("score");
+  el.textContent=points();
+  el.classList.remove("score-pulse");
+  void el.offsetWidth;
+  el.classList.add("score-pulse");
+}
+function toastRound(round){
+  if(roundTimer)clearTimeout(roundTimer);
+  $("roundToastText").textContent="Round "+round+" / "+totalRounds;
+  $("roundToast").classList.remove("hidden");
+  chime("round");
+  roundTimer=setTimeout(()=>$("roundToast").classList.add("hidden"),900);
+}
+function setScreen(id){
+  ["startScreen","gameScreen","resultScreen"].forEach(x=>$(x).classList.toggle("hidden",x!==id));
+}
+
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function start(){const n=$('nameInput').value.trim();if(!n){$('nameInput').setCustomValidity('Please enter your name first.');$('nameInput').reportValidity();return}player=n;restart()}
+function restart(){attemptId=crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);finished=false;startedAt=Date.now();pos=0;state=QUESTIONS.map(q=>({choice:null,correct:null,built:[],bank:q.words?shuffle(q.words.map((_,i)=>i)):[]}));setScreen('gameScreen');render();toastRound(1)}
+function render(){const q=QUESTIONS[pos],s=state[pos];$('roundPill').textContent='Round '+q.round+' / '+totalRounds;$('questionPill').textContent='Question '+(pos+1)+' / '+QUESTIONS.length;$('total').textContent=QUESTIONS.length;$('score').textContent=points();$('bar').style.width=state.filter(s=>s.correct!==null).length/QUESTIONS.length*100+'%';$('kicker').textContent='Worksheet question '+q.source+' · A2';$('title').textContent=ROUNDS[q.round-1];$('instruction').textContent=q.type==='input'?'Type the whole word, including the first letter.':q.notices?'Read the notices and choose the correct letter.':q.article?'Read the article and choose the word for gap '+q.source+'.':'Choose the best answer.';renderSource(q);
+$('question').textContent=q.prompt;
+const box=$('answers');box.replaceChildren();
+if(q.type==='choice'){q.choices.forEach((label,i)=>{const b=document.createElement('button');b.className='answer';b.textContent=label;b.disabled=s.correct!==null;if(s.correct!==null){if(i===q.a)b.classList.add('good');if(i===s.choice&&!s.correct)b.classList.add('bad')}b.onclick=()=>commit({choice:i,correct:i===q.a});box.append(b)})}
+else if(q.type==='input'){const form=document.createElement('form');form.className='input-answer';const label=document.createElement('label');label.htmlFor='typedAnswer';label.textContent='Word clue: '+q.hint;const input=document.createElement('input');input.id='typedAnswer';input.type='text';input.autocomplete='off';input.spellcheck=false;input.setAttribute('autocapitalize','none');input.value=s.text||'';input.disabled=s.correct!==null;input.oninput=()=>{s.text=input.value};const check=document.createElement('button');check.className='btn check';check.type='submit';check.textContent='Check answer';check.disabled=s.correct!==null;form.append(label,input,check);form.onsubmit=e=>{e.preventDefault();const text=input.value.trim();if(!text){$('feedback').textContent='Type your answer first.';input.focus();return}commit({text,correct:norm(text)===norm(q.answer)})};box.append(form)}
+else {const built=document.createElement('div');built.className='built-zone';built.setAttribute('aria-label','Your sentence');if(!s.built.length)built.textContent='Your sentence appears here';s.built.forEach((id,n)=>{const b=document.createElement('button');b.className='btn';b.textContent=q.words[id];b.disabled=s.correct!==null;b.onclick=()=>{s.built.splice(n,1);render()};built.append(b)});box.append(built);const bank=document.createElement('div');bank.className='word-zone';bank.setAttribute('aria-label','Word bank');s.bank.forEach(id=>{const b=document.createElement('button');b.className='btn';b.textContent=q.words[id];b.dataset.wordId=id;b.disabled=s.correct!==null||s.built.includes(id);b.onclick=()=>{s.built.push(id);render()};bank.append(b)});box.append(bank);const actions=document.createElement('div');actions.className='order-actions';const clear=document.createElement('button');clear.className='btn';clear.textContent='Clear';clear.disabled=s.correct!==null;clear.onclick=()=>{s.built=[];render()};const check=document.createElement('button');check.id='checkBtn';check.className='btn check';check.textContent='Check sentence ✓';check.disabled=s.correct!==null;check.onclick=()=>{if(s.built.length!==q.words.length){$('feedback').textContent='Use every word before checking.';return}const text=s.built.map(id=>q.words[id]).join(' ');commit({correct:[q.answer,...(q.alternatives||[])].some(a=>norm(text)===norm(a))})};actions.append(clear,check);box.append(actions)}
+const f=$('feedback');f.className='feedback'+(s.correct===null?'':s.correct?' success':' error');f.textContent=s.correct===null?'':(s.correct?'Correct! ⭐ ':'Incorrect. Correct answer: '+solution(q)+'. ')+q.why;
+$('backBtn').disabled=pos===0;$('nextBtn').disabled=s.correct===null;$('nextBtn').textContent=pos===QUESTIONS.length-1?'Finish':'Next →';$('nextBtn').classList.toggle('ready',s.correct!==null);const scene=$('gameScreen').querySelector('.stage');scene.classList.remove('fx-enter');void scene.offsetWidth;scene.classList.add('fx-enter');}
+function renderSource(q){const box=$('sourcePanel');box.replaceChildren();box.classList.toggle('hidden',!q.notices&&!q.article&&!q.context);box.parentElement.classList.toggle('with-source',Boolean(q.notices||q.article));if(q.notices){const title=document.createElement('h2');title.textContent='Notices A–H';box.append(title);NOTICES.forEach(([letter,text])=>{const card=document.createElement('div');card.className='notice';const tag=document.createElement('strong');tag.textContent=letter;const p=document.createElement('p');p.textContent=text;card.append(tag,p);box.append(card)})}else if(q.article){const title=document.createElement('h2');title.textContent='Line dancing';const note=document.createElement('p');note.className='source-note';note.textContent='Read this original worksheet article. Answer the highlighted gap.';const text=document.createElement('div');text.className='article-text';const marker='['+q.source+'] _____',parts=ARTICLE.split(marker);text.append(document.createTextNode(parts[0]));const mark=document.createElement('mark');mark.textContent=marker;text.append(mark,document.createTextNode(parts[1]||''));box.append(title,note,text)}else if(q.context){const p=document.createElement('p');p.textContent=q.context;box.append(p)}}
+function solution(q){return q.type==='choice'?q.choices[q.a]:q.answer}
+function commit(result){if(finished||state[pos].correct!==null)return;Object.assign(state[pos],result);chime(result.correct?'correct':'wrong');if(result.correct)particles(20);render();animateScore()}
+function next(){if(finished||state[pos].correct===null)return;if(pos===QUESTIONS.length-1){finish();return}const prev=QUESTIONS[pos].round;pos++;render();if(QUESTIONS[pos].round!==prev)toastRound(QUESTIONS[pos].round);$('title').scrollIntoView({block:'start',behavior:'instant'})}
+function back(){if(!finished&&pos>0){pos--;render()}}
+
+function submitTeacherRecord(payload){return window.TeacherRecords.submit(payload)}
+
+async function finish(){if(finished||state.some(s=>s.correct===null))return;finished=true;const id=attemptId,score=points(),percentage=Math.round(score/QUESTIONS.length*100);setScreen('resultScreen');$('playerResult').textContent=player;$('finalPoints').textContent=score;$('finalTotal').textContent=QUESTIONS.length;$('resultMessage').textContent=percentage+'% · '+(percentage>=80?'You’re a reading superstar!':'Great effort! Review your answers and try again.');chime('finish');particles(100);
+$('review').replaceChildren();QUESTIONS.forEach((q,i)=>{const s=state[i],a=document.createElement('article');const h=document.createElement('strong');h.textContent=(s.correct?'✅ ':'❌ ')+'Worksheet '+q.source+'. '+q.prompt;const p=document.createElement('p');p.textContent='Your answer: '+(q.type==='choice'?q.choices[s.choice]:q.type==='input'?s.text:s.built.map(id=>q.words[id]).join(' '))+'\nCorrect answer: '+solution(q)+'\n'+q.why;a.append(h,p);$('review').append(a)});
+const payload={studentName:player,gameTitle:document.title,score,total:QUESTIONS.length,percentage,durationSeconds:Math.round((Date.now()-startedAt)/1000),completedAt:new Date().toISOString(),attemptId:id,gameUrl:location.href};
+try{const k='test1ReadingAttemptBackup',rows=JSON.parse(localStorage.getItem(k)||'[]');if(!rows.some(r=>r.attemptId===id)){rows.unshift(payload);localStorage.setItem(k,JSON.stringify(rows.slice(0,50)))}}catch(_){}
+if(/\/_templates?\//.test(location.pathname)){$('recordStatus').textContent='Template preview — score not sent.';return}
+$('recordStatus').textContent='Sending score to your teacher…';try{const result=window.TeacherRecords?await submitTeacherRecord(payload):{sent:false};if(attemptId===id)$('recordStatus').textContent=result.sent?'✅ Score sent to your teacher.':'⚠️ Result saved on this device. Could not send the score right now.'}catch(_){if(attemptId===id)$('recordStatus').textContent='⚠️ Result saved on this device. Could not send the score right now.'}}
+function toggleSound(){soundOn=!soundOn;$('soundBtn').textContent=soundOn?'🔊 Sound On':'🔇 Sound Off';$('soundBtn').setAttribute('aria-pressed',String(soundOn))}
+$('startBtn').onclick=start;$('nameInput').oninput=()=>$('nameInput').setCustomValidity('');$('nameInput').onkeydown=e=>{if(e.key==='Enter')start()};$('backBtn').onclick=back;$('nextBtn').onclick=next;$('restartBtn').onclick=restart;$('playAgainBtn').onclick=restart;$('soundBtn').onclick=toggleSound;
+
+
+</script>
+</body>
+</html>
