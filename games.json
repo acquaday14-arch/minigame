@@ -352,5 +352,11 @@
     "description": "Interactive Grade 6 adventure across four islands: all 28 worksheet challenges, stepping-stone map, streak stars, treasure chests and sentence bridges. No timer.",
     "level": "Grade 6 · A1–A2",
     "path": "./because-so-although/"
+  },
+  {
+    "title": "Reading Treasure Quest",
+    "description": "36 worksheet questions across Parts 1, 2, 3, 4 and 6: word clues, Betty–Katy replies, octopus story, airport cloze and Kim’s letter. Original images, full readable texts, five worlds and treasure rewards. No timer.",
+    "level": "A2 · Flyers",
+    "path": "./reading-treasure-quest/"
   }
 ]

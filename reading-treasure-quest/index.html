@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="en" data-template-effects-version="2">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Reading Treasure Quest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --purple:#5b36d6;--purple2:#7a57eb;--ink:#20285c;--pink:#ef5aa7;
+      --yellow:#ffd76a;--mint:#6be0b2;--sky:#74c7ff;--soft:#f8f6ff;--line:#d9cff8;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;min-height:100vh;padding:18px;
+      font-family:"Fredoka",ui-rounded,"Trebuchet MS",Arial,sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at 9% 12%,#ffe2f0 0 7%,transparent 7.5%),
+        radial-gradient(circle at 90% 14%,#dff5ff 0 8%,transparent 8.5%),
+        linear-gradient(180deg,#f8fbff,#f4efff);
+    }
+    button,input{font:inherit}
+    .app{width:min(1060px,98vw);margin:1vh auto}
+    .frame{
+      background:#fff;border:4px solid #4b32bf;border-radius:32px;overflow:hidden;
+      box-shadow:0 14px 0 #ded5ff,0 24px 44px rgba(63,47,147,.14)
+    }
+    .top{
+      background:linear-gradient(135deg,var(--purple),#6541dc);
+      padding:18px 28px;color:#fff;display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:center
+    }
+    .pill{border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.12);padding:9px 15px;border-radius:999px;font-weight:700}
+    .top .pill:last-child{justify-self:end}
+    .progress{height:10px;background:#dacdfd}
+    .progress>div{height:100%;width:25%;background:linear-gradient(90deg,#ffd75f,#ffae73);transition:.25s}
+    .stage{padding:28px 34px 24px;min-height:650px;position:relative}
+    .kicker{text-align:center;color:var(--pink);font-size:14px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+    h1{text-align:center;font-size:clamp(38px,6vw,62px);margin:8px 0 8px;color:#432cb5;line-height:.98}
+    .instruction{text-align:center;font-size:20px;font-weight:600;margin-bottom:24px}
+    .card{
+      width:min(780px,100%);margin:0 auto;border:2px solid var(--line);border-radius:24px;padding:24px;
+      background:linear-gradient(180deg,#fff,#fcfbff)
+    }
+    .question{font-size:clamp(24px,4vw,36px);font-weight:700;text-align:center;margin:6px 0 22px}
+    .answers{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .answer{
+      border:3px solid #ded3fa;background:#fbf9ff;border-radius:18px;padding:15px 18px;color:var(--ink);
+      font-weight:700;font-size:18px;cursor:pointer;transition:.14s
+    }
+    .answer:hover{transform:translateY(-2px);border-color:#aa8df3}
+    .answer.good{border-color:#65d5a8;background:#ebfff6;color:#17734e;animation:pop .28s ease}
+    .answer.bad{border-color:#ff98a4;background:#fff0f2;color:#a63a47;animation:shake .28s ease}
+    .feedback{min-height:42px;text-align:center;margin:18px 0 4px;font-size:19px;font-weight:700}
+    .controls{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:14px;margin-top:28px}
+    .btn{border:2px solid #dbd2f8;border-radius:15px;background:#fff;color:#4734a9;padding:12px 18px;font-weight:700;cursor:pointer}
+    .controls .next{justify-self:end;background:linear-gradient(135deg,#ffd37c,#ffbd84);border:0;color:#76563b}
+    .center{text-align:center}
+    .hidden{display:none!important}
+    .start{padding:60px 32px;text-align:center}
+    .start p{font-size:19px;color:#667085}
+    .start input{width:min(560px,100%);padding:15px 17px;border:2px solid #d8cff4;border-radius:16px;font-size:18px}
+    .start .btn{margin-top:12px;background:linear-gradient(135deg,var(--purple),var(--purple2));color:#fff;border:0}
+    .stars{font-size:26px;letter-spacing:5px}
+    .confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:20}
+    .confetti i{position:absolute;width:10px;height:16px;border-radius:3px;animation:fall 900ms linear forwards}
+    @keyframes pop{50%{transform:scale(1.035)}}
+    @keyframes shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+    @keyframes fall{from{transform:translateY(-10vh) rotate(0)}to{transform:translateY(110vh) rotate(500deg);opacity:.7}}
+    @media(max-width:700px){.top{grid-template-columns:1fr 1fr}.top>div:nth-child(2){grid-column:1/-1;grid-row:2;text-align:center}.stage{padding:22px 16px}.answers{grid-template-columns:1fr}.controls{grid-template-columns:1fr 1fr}.controls .restart{display:none}}
+  
+    /* Template FX v2 — reduced-motion aware and dependency-free */
+    .fx-enter{animation:fx-enter .38s cubic-bezier(.2,.8,.2,1) both}
+    .answer{transition:transform .17s ease,border-color .2s ease,box-shadow .2s ease,background .2s ease}
+    .answer:active,.btn:active{transform:scale(.97)}
+    .answer:focus-visible,.btn:focus-visible{outline:4px solid #f7bb56;outline-offset:3px}
+    .answer.good{box-shadow:0 0 0 4px rgba(81,213,157,.13)}
+    .answer.bad{box-shadow:0 0 0 4px rgba(255,118,144,.13)}
+    .answer:disabled{cursor:default}
+    .pill.score-pulse,.score-pulse{animation:fx-pulse .35s ease}
+    .feedback.success{color:#10845c;animation:fx-pop .4s ease both}
+    .feedback.error{color:#b44453;animation:fx-shake .32s ease both}
+    .mid-actions{display:flex;gap:8px;align-items:center;justify-content:center}
+    .mid-actions .btn{white-space:nowrap}
+    .btn:disabled{opacity:.4;cursor:not-allowed;filter:grayscale(.25)}
+    .next.ready{animation:fx-glow 1.8s ease-in-out infinite}
+    .fx-particles{position:fixed;inset:0;z-index:100;pointer-events:none;overflow:hidden}
+    .fx-particles span{position:absolute;top:-24px;width:10px;height:16px;border-radius:3px;animation:fx-rain 1.15s cubic-bezier(.2,.7,.5,1) forwards}
+    .fx-round-toast{position:fixed;inset:0;z-index:90;pointer-events:none;display:flex;justify-content:center;align-items:center;background:rgba(45,29,122,.11)}
+    .fx-round-toast.hidden{display:none!important}
+    .fx-round-pill{
+      text-align:center;border:4px solid #fff;border-radius:28px;
+      background:linear-gradient(135deg,#5b36d6,#8b6cf0);color:white;
+      padding:24px 36px;box-shadow:0 20px 60px rgba(54,38,152,.25);
+      font-size:clamp(25px,4vw,42px);font-weight:700;animation:fx-toast .7s ease both
+    }
+    .fx-round-pill small{display:block;font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:#ffdf85;margin-bottom:4px}
+    .result-area{text-align:center;padding:56px 24px}
+    .result-area h1{font-size:clamp(40px,6vw,64px);margin:10px 0;color:#432cb5}
+    .result-area .result-score{font-size:clamp(60px,10vw,100px);color:#5b36d6;font-weight:700;line-height:1.12}
+    .result-area .result-sub{font-size:21px;margin:8px 0 28px}
+    .result-area .btn{background:#6040d7;color:#fff;border:0;padding:15px 30px;font-size:18px}
+    .result-area .result-stars{font-size:38px;letter-spacing:8px;animation:fx-float 2s ease-in-out infinite}
+    .picture{animation:fx-picture-in .55s cubic-bezier(.2,.8,.2,1) both;transition:transform .25s ease,box-shadow .25s ease}
+    .picture:hover{transform:translateY(-3px) rotate(-1deg);box-shadow:0 17px 34px rgba(82,58,173,.21)}
+    .picture img{width:100%;height:100%;object-fit:cover;display:block}
+    @keyframes fx-enter{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes fx-pop{0%{transform:scale(.83);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+    @keyframes fx-pulse{50%{transform:scale(1.09)}}
+    @keyframes fx-shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+    @keyframes fx-glow{50%{box-shadow:0 0 0 6px rgba(255,205,100,.22)}}
+    @keyframes fx-rain{0%{transform:translateY(-10vh) rotate(0deg);opacity:1}100%{transform:translateY(112vh) rotate(620deg);opacity:0}}
+    @keyframes fx-toast{0%{transform:scale(.7) translateY(25px);opacity:0}40%{transform:scale(1.05);opacity:1}100%{transform:scale(1);opacity:1}}
+    @keyframes fx-float{50%{transform:translateY(-9px)}}
+    @keyframes fx-picture-in{from{opacity:0;transform:scale(.91) rotate(-2deg)}to{opacity:1;transform:scale(1) rotate(0)}}
+    @media(max-width:700px){
+      .controls{grid-template-columns:1fr 1fr}
+      .controls .mid-actions{grid-column:1/-1;grid-row:2;justify-content:center}
+      .controls .restart{display:inline-flex}
+      .result-area{padding:42px 16px}
+      .mid-actions .btn{font-size:14px;padding:10px 12px}
+    }
+    @media(prefers-reduced-motion:reduce){
+      *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+    }
+
+  
+    #readingSupport{margin-bottom:22px}.source-picture{display:block;max-width:min(400px,100%);max-height:220px;object-fit:contain;margin:0 auto 18px;border-radius:18px}.source-clue{width:100%;height:auto;margin-top:10px}.reading-context{white-space:pre-line;font-size:22px;line-height:1.5;padding:16px;border-radius:16px;background:#eff8ff}details{border:2px solid #e1d7f7;border-radius:16px;margin:12px 0;padding:13px 16px}summary{cursor:pointer;font-size:22px;font-weight:600;color:#5733a5}.passage{font-size:24px;line-height:1.7;white-space:pre-wrap;margin-top:16px}.active-gap{background:#ffde7c;border-radius:5px;padding:2px 7px;color:#542d80;font-weight:bold}.word-bank{font-size:23px;line-height:1.8;margin:10px 0 0;color:#365b63}.answers{grid-template-columns:1fr}.journey-head{font-size:21px}.islands .island{font-size:17px}.islands{gap:7px}@media(max-width:900px){.islands{grid-template-columns:repeat(3,1fr)}}
+    .journey{padding:22px 30px 12px;background:linear-gradient(180deg,#e9f9ff,#f1edff);border-bottom:2px solid #e4dcfb}.journey-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;font-size:23px;color:#432cb5}.islands{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:18px 0}.island{font:inherit;padding:12px 8px;border:2px solid #d1c4f2;border-radius:18px;background:#fff;color:#483489;font-size:19px;cursor:pointer}.island.current{background:#fff0bd;border-color:#e1a02f;box-shadow:0 4px 0 #edcb79}.island:disabled{opacity:.4;cursor:not-allowed}.trail{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;padding:12px;background:#dcefdc;border-radius:24px;border:2px dashed #a3c6a3}.stone{min-width:45px;min-height:45px;border-radius:50%;border:2px solid #c7bdde;background:#fff;font:inherit;font-size:21px;color:#504268;cursor:pointer;box-shadow:0 3px 0 #bcb2cd}.stone.here{background:#ffdf85;border:3px solid #8d5bce;transform:scale(1.12);animation:fx-float 2s infinite}.stone.won{background:#fff0a3}.stone.tried{background:#e8e4fa}.stone:disabled{opacity:.5;cursor:not-allowed}.pip{display:flex;align-items:center;justify-content:center;gap:12px}.pip p{font-size:21px;margin:14px 0}.explorer{font-size:36px}.chest{display:block;margin:0 auto 10px;background:#ffe29b;color:#6f4600;font-size:23px;border-color:#dcac4b;animation:fx-pulse 1.5s infinite}.intro-islands{font-size:clamp(28px,5vw,48px);margin:25px 0}.treasure-summary{font-size:45px;letter-spacing:8px;margin:15px}.stage{min-height:0;padding-top:20px}dialog{max-width:min(540px,90vw);border:4px solid #6844cb;border-radius:28px;padding:28px;text-align:center;color:#362675;font:inherit;box-shadow:0 20px 90px #36267555}dialog::backdrop{background:#2a1f5680}dialog h2{font-size:34px}dialog p{font-size:23px;line-height:1.5}.treasure-icon{font-size:80px}dialog .btn{font-size:22px;background:#6040d7;color:#fff}button:focus-visible{outline:4px solid #ef8e32;outline-offset:3px}@media(max-width:700px){.journey{padding:18px 14px 10px}.journey-head{font-size:20px}.islands{grid-template-columns:1fr 1fr}.island{font-size:18px}.stone{min-width:42px;min-height:42px}.pip p{font-size:19px}}
+    .activity{display:flex;flex-direction:column;gap:18px}.activity input{width:100%;font-size:28px;padding:18px;border:3px solid #d9cff8;border-radius:16px;color:#20285c}.check{background:#6040d7;color:white;font-size:24px}.built,.bank{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}.built{border:2px dashed #b49be9;min-height:100px;padding:16px;border-radius:18px;align-items:center}.bank{padding:10px}.word{font-size:24px}.word:disabled{opacity:.25;background:#ddd;transform:none}.answer{font-size:clamp(23px,3vw,28px)}.feedback{font-size:23px;line-height:1.5}.instruction{font-size:23px}.submitted{font-size:26px;text-align:center;overflow-wrap:anywhere}.start label{font-size:22px}.progress>div{width:0}button{touch-action:manipulation}.top{font-size:18px}@media(max-width:700px){.stage{min-height:0}.top{padding:16px 12px;gap:8px}.word{font-size:21px}.card{padding:18px 12px}.controls .mid-actions .btn{font-size:17px}}
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="frame" id="startScreen">
+      <div class="start">
+        <div class="stars">⭐ ✨ ⭐</div>
+        <div class="kicker">Flyers · Reading & Writing Adventure</div>
+        <h1>Reading Treasure Quest</h1>
+        <p>Explore 5 worlds · Solve 36 challenges · Collect treasure · No timer</p>
+        <label for="nameInput">Student name</label><br><input maxlength="80" id="nameInput" placeholder="Enter your name">
+        <br>
+        <div class="intro-islands" aria-hidden="true">🔎 🏫 🐙 ✈️ 🏆</div><p>Guide Pip through Reading Land. Earn adventure stars, build a correct-answer streak and open treasure chests. Tap visited stepping stones to review.</p><button class="btn" id="startBtn">Start Adventure →</button>
+      </div>
+    </section>
+
+    <section class="frame hidden" id="gameScreen">
+      <div class="top">
+        <div class="pill" id="roundPill">Round 1 / 3</div>
+        <div class="pill">⭐ <span id="score">0</span> / <span id="total">4</span> points</div>
+        <div class="pill" id="questionPill">Question 1 / 4</div>
+      </div>
+      <div class="progress"><div id="bar"></div></div>
+
+      <div class="journey" aria-label="Adventure map">
+        <div class="journey-head"><strong id="zoneName"></strong><span id="adventureStars">⭐ 0 stars</span><span id="streakCount">🔥 Streak 0</span></div>
+        <div class="islands" id="islands"></div>
+        <div class="trail" id="trail" aria-label="Stepping stones"></div>
+        <div class="pip"><span class="explorer" aria-hidden="true">🧑‍🚀</span><p id="pipMessage" aria-live="polite"></p></div>
+        <button class="btn chest hidden" id="chestBtn">🎁 Open treasure</button>
+      </div>
+      <div class="stage">
+        <div class="kicker" id="kicker">Quick choice · 1 of 4</div>
+        <h1 id="title">Choose the best answer</h1>
+        <div class="instruction" id="instruction">Pick the sentence that sounds natural.</div>
+
+        <div class="card">
+          <div id="readingSupport"></div>
+          <div class="question" id="question"></div>
+          <div class="answers" id="answers"></div>
+          <div class="feedback" id="feedback"></div>
+        </div>
+
+        <div class="controls">
+          <button class="btn" id="backBtn">← Back</button>
+          <div class="mid-actions"><button class="btn" id="soundBtn" aria-pressed="true">🔊 Sound On</button><button class="btn restart" id="restartBtn">↻ Restart</button></div>
+          <button class="btn next" id="nextBtn">Next →</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="frame hidden" id="resultScreen">
+      <div class="result-area">
+        <div class="result-stars">🌟 🎉 🌟</div>
+        <h1>Great Job, <span id="playerResult"></span>!</h1>
+        <div class="result-score"><span id="finalPoints">0</span>/<span id="finalTotal">4</span></div>
+        <p class="result-sub" id="resultMessage"></p>
+        <div class="treasure-summary" id="treasureSummary"></div><p class="result-sub" id="adventureResult"></p><p class="result-sub" id="recordStatus"></p>
+        <button class="btn" id="playAgainBtn">↻ Play Again</button>
+      </div>
+    </section>
+  <dialog id="treasureDialog" aria-labelledby="treasureTitle"><div class="treasure-icon" id="treasureIcon">💎</div><h2 id="treasureTitle">Treasure unlocked!</h2><p id="treasureText"></p><button class="btn" id="closeTreasure">Continue exploring →</button></dialog>
+  <div class="fx-particles" id="fxParticles" aria-hidden="true"></div>
+    <div class="fx-round-toast hidden" id="roundToast" aria-hidden="true"><div class="fx-round-pill"><small>LEVEL UP ✨</small><span id="roundToastText"></span></div></div>
+  </main>
+
+<script src="/minigame/shared/teacher-records-config.js"></script>
+<script src="/minigame/shared/teacher-records.js"></script>
+<script>
+
+const QUESTIONS=[{"round": 1, "source": "Part 1 · Question 1", "context": "Example: This is made of fruit and sugar. You put it on bread. → jam", "q": "You wear these on your hands in winter.", "explain": "Gloves keep your hands warm.", "type": "type", "answer": "gloves", "accepted": ["gloves", "gloves"], "bank": ["jam", "gloves", "a library", "an astronaut", "a key", "fur", "a lake", "sweets", "a cave", "a mechanic", "fish", "a bookshop", "an envelope", "a newspaper", "a university"], "sourceImage": "assets/clue-01.webp", "instruction": "Read the clue. Type the matching word from the word bank.", "title": "Word Detective"}, {"round": 1, "source": "Part 1 · Question 2", "q": "You put a letter in this when you post it.", "explain": "An envelope holds a letter when you post it.", "type": "type", "answer": "an envelope", "accepted": ["an envelope", "envelope"], "bank": ["jam", "gloves", "a library", "an astronaut", "a key", "fur", "a lake", "sweets", "a cave", "a mechanic", "fish", "a bookshop", "an envelope", "a newspaper", "a university"], "sourceImage": "assets/clue-02.webp", "instruction": "Read the clue. Type the matching word from the word bank.", "title": "Word Detective"}, {"round": 1, "source": "Part 1 · Question 3", "q": "This is a dark place inside a hill.", "explain": "A cave is a natural space inside rock or a hill.", "type": "type", "answer": "a cave", "accepted": ["a cave", "cave"], "bank": ["jam", "gloves", "a library", "an astronaut", "a key", "fur", "a lake", "sweets", "a cave", "a mechanic", "fish", "a bookshop", "an envelope", "a newspaper", "a university"], "sourceImage": "assets/clue-03.webp", "instruction": "Read the clue. Type the matching word from the word bank.", "title": "Word Detective"}, {"round": 1, "source": "Part 1 · Question 4", "q": "This is a place where you can buy books and magazines.", "explain": "You buy books in a bookshop; you borrow books from a library.", "type": "type", "answer": "a bookshop", "accepted": ["a bookshop", "bookshop"], "bank": ["jam", "gloves", "a library", "an astronaut", "a key", "fur", "a lake", "sweets", "a cave", "a mechanic", "fish", "a bookshop", "an envelope", "a newspaper", "a university"], "sourceImage": "assets/clue-04.webp", "instruction": "Read the clue. Type the matching word from the word bank.", "title": "Word Detective"}, {"round": 1, "source": "Part 1 · Question 5", "q": "This is a school for grown-ups.", "explain": "A university is a place for higher education.", "type": "type", "answer": "a university", "accepted": ["a university", "university"], "bank": ["jam", "gloves", "a library", "an astronaut", "a key", "fur", "a lake", "sweets", "a cave", "a mechanic", "fish", "a bookshop", "an envelope", "a newspaper", "a university"], "sourceImage": "assets/clue-05.webp", "instruction": "Read the clue. Type the matching word from the word bank.", "title": "Word Detective"}, {"round": 1, "source": "Part 1 · Question 6", "q": "This person travels in space and sees stars and planets.", "explain": "An astronaut travels in space; a mechanic repairs machines.", "type": "type", "answer": "an astronaut", "accepted": ["an astronaut", "astronaut"], "bank": ["jam", "gloves", "a library", "an astronaut", "a key", "fur", "a lake", "sweets", "a cave", "a mechanic", "fish", "a bookshop", "an envelope", "a newspaper", "a university"], "sourceImage": "assets/clue-06.webp", "instruction": "Read the clue. Type the matching word from the word bank.", "title": "Word Detective"}, {"round": 1, "source": "Part 1 · Question 7", "q": "You use this to open the door of a house or an office.", "explain": "A key opens a lock.", "type": "type", "answer": "a key", "accepted": ["a key", "key"], "bank": ["jam", "gloves", "a library", "an astronaut", "a key", "fur", "a lake", "sweets", "a cave", "a mechanic", "fish", "a bookshop", "an envelope", "a newspaper", "a university"], "sourceImage": "assets/clue-07.webp", "instruction": "Read the clue. Type the matching word from the word bank.", "title": "Word Detective"}, {"round": 1, "source": "Part 1 · Question 8", "q": "You read this to find out the news in the world.", "explain": "A newspaper contains news reports.", "type": "type", "answer": "a newspaper", "accepted": ["a newspaper", "newspaper"], "bank": ["jam", "gloves", "a library", "an astronaut", "a key", "fur", "a lake", "sweets", "a cave", "a mechanic", "fish", "a bookshop", "an envelope", "a newspaper", "a university"], "sourceImage": "assets/clue-08.webp", "instruction": "Read the clue. Type the matching word from the word bank.", "title": "Word Detective"}, {"round": 1, "source": "Part 1 · Question 9", "q": "These are small things with a lot of sugar which children love to eat.", "explain": "Sweets contain a lot of sugar.", "type": "type", "answer": "sweets", "accepted": ["sweets", "sweets"], "bank": ["jam", "gloves", "a library", "an astronaut", "a key", "fur", "a lake", "sweets", "a cave", "a mechanic", "fish", "a bookshop", "an envelope", "a newspaper", "a university"], "sourceImage": "assets/clue-09.webp", "instruction": "Read the clue. Type the matching word from the word bank.", "title": "Word Detective"}, {"round": 1, "source": "Part 1 · Question 10", "q": "This is the hair that is on the body of an animal.", "explain": "Fur is the hair covering an animal’s body.", "type": "type", "answer": "fur", "accepted": ["fur", "fur"], "bank": ["jam", "gloves", "a library", "an astronaut", "a key", "fur", "a lake", "sweets", "a cave", "a mechanic", "fish", "a bookshop", "an envelope", "a newspaper", "a university"], "sourceImage": "assets/clue-10.webp", "instruction": "Read the clue. Type the matching word from the word bank.", "title": "Word Detective"}, {"round": 2, "source": "Part 2 · Question 1", "q": "Betty: Yes, I do feel better now.\nKaty: _____", "explain": "Katy responds positively to Betty feeling better.", "choices": ["A · Yes, for geography and maths.", "B · No, it wasn’t.", "D · Yes. Let’s go!", "E · We must draw a map of all the streets round our houses.", "F · We had sausages and chips for lunch.", "G · That’s good to hear, Betty.", "H · Pages 13 and 14 in the book."], "a": 5, "image": "assets/school.webp", "alt": "Betty and Katy talking outside their classroom", "context": "Betty missed school yesterday and asks Katy about the homework.\nExample — Betty: Hello, Katy. I wasn’t at school yesterday.\nKaty: I know. I hope you are feeling well now.", "instruction": "Choose Katy’s best reply.", "title": "School Talk"}, {"round": 2, "source": "Part 2 · Question 2", "q": "Betty: Did Miss Singer give us homework?\nKaty: _____", "explain": "Betty asks whether there is homework. A answers yes and names the two subjects.", "choices": ["A · Yes, for geography and maths.", "B · No, it wasn’t.", "D · Yes. Let’s go!", "E · We must draw a map of all the streets round our houses.", "F · We had sausages and chips for lunch.", "G · That’s good to hear, Betty.", "H · Pages 13 and 14 in the book."], "a": 0, "image": "assets/school.webp", "alt": "Betty and Katy talking outside their classroom", "context": "Betty missed school yesterday and asks Katy about the homework.\nExample — Betty: Hello, Katy. I wasn’t at school yesterday.\nKaty: I know. I hope you are feeling well now.", "instruction": "Choose Katy’s best reply.", "title": "School Talk"}, {"round": 2, "source": "Part 2 · Question 3", "q": "Betty: What’s our homework for geography?\nKaty: _____", "explain": "Drawing a map is the geography homework.", "choices": ["A · Yes, for geography and maths.", "B · No, it wasn’t.", "D · Yes. Let’s go!", "E · We must draw a map of all the streets round our houses.", "F · We had sausages and chips for lunch.", "G · That’s good to hear, Betty.", "H · Pages 13 and 14 in the book."], "a": 3, "image": "assets/school.webp", "alt": "Betty and Katy talking outside their classroom", "context": "Betty missed school yesterday and asks Katy about the homework.\nExample — Betty: Hello, Katy. I wasn’t at school yesterday.\nKaty: I know. I hope you are feeling well now.", "instruction": "Choose Katy’s best reply.", "title": "School Talk"}, {"round": 2, "source": "Part 2 · Question 4", "q": "Betty: And for maths?\nKaty: _____", "explain": "Pages 13 and 14 are the maths homework.", "choices": ["A · Yes, for geography and maths.", "B · No, it wasn’t.", "D · Yes. Let’s go!", "E · We must draw a map of all the streets round our houses.", "F · We had sausages and chips for lunch.", "G · That’s good to hear, Betty.", "H · Pages 13 and 14 in the book."], "a": 6, "image": "assets/school.webp", "alt": "Betty and Katy talking outside their classroom", "context": "Betty missed school yesterday and asks Katy about the homework.\nExample — Betty: Hello, Katy. I wasn’t at school yesterday.\nKaty: I know. I hope you are feeling well now.", "instruction": "Choose Katy’s best reply.", "title": "School Talk"}, {"round": 2, "source": "Part 2 · Question 5", "q": "Betty: Thanks, Katy. Do you have time to go swimming?\nKaty: _____", "explain": "“Yes. Let’s go!” accepts the invitation to go swimming.", "choices": ["A · Yes, for geography and maths.", "B · No, it wasn’t.", "D · Yes. Let’s go!", "E · We must draw a map of all the streets round our houses.", "F · We had sausages and chips for lunch.", "G · That’s good to hear, Betty.", "H · Pages 13 and 14 in the book."], "a": 2, "image": "assets/school.webp", "alt": "Betty and Katy talking outside their classroom", "context": "Betty missed school yesterday and asks Katy about the homework.\nExample — Betty: Hello, Katy. I wasn’t at school yesterday.\nKaty: I know. I hope you are feeling well now.", "instruction": "Choose Katy’s best reply.", "title": "School Talk"}, {"round": 3, "source": "Part 3 · Gap 1", "q": "We went fishing in the sea, and we (1) _____ a lot of fish.", "explain": "CAUGHT is the past simple of CATCH: catch fish.", "type": "type", "answer": "caught", "bank": ["room", "naughty", "quickly", "caught", "tents", "decided", "quietly", "dangerous", "towels", "fell"], "passage": "story", "gap": 1, "image": "assets/octopus.webp", "alt": "Two children in a boat with a small octopus in the water", "instruction": "Read the story and type one word from the bank.", "title": "Octopus Island"}, {"round": 3, "source": "Part 3 · Gap 2", "q": "It was very hot and sunny, so we (2) _____ to jump into the sea and swim.", "explain": "DECIDED TO + verb describes the choice they made.", "type": "type", "answer": "decided", "bank": ["room", "naughty", "quickly", "caught", "tents", "decided", "quietly", "dangerous", "towels", "fell"], "passage": "story", "gap": 2, "image": "assets/octopus.webp", "alt": "Two children in a boat with a small octopus in the water", "instruction": "Read the story and type one word from the bank.", "title": "Octopus Island"}, {"round": 3, "source": "Part 3 · Gap 3", "q": "“There’s something in the water!” She climbed back into the boat very (3) _____ and I did too.", "explain": "She was frightened, so she climbed back QUICKLY, meaning fast.", "type": "type", "answer": "quickly", "bank": ["room", "naughty", "quickly", "caught", "tents", "decided", "quietly", "dangerous", "towels", "fell"], "passage": "story", "gap": 3, "image": "assets/octopus.webp", "alt": "Two children in a boat with a small octopus in the water", "instruction": "Read the story and type one word from the bank.", "title": "Octopus Island"}, {"round": 3, "source": "Part 3 · Gap 4", "q": "‘It’s only a small octopus,’ I told my sister. ‘It isn’t (4) _____.’", "explain": "DANGEROUS means likely to hurt someone. The narrator says this small octopus is not dangerous.", "type": "type", "answer": "dangerous", "bank": ["room", "naughty", "quickly", "caught", "tents", "decided", "quietly", "dangerous", "towels", "fell"], "passage": "story", "gap": 4, "image": "assets/octopus.webp", "alt": "Two children in a boat with a small octopus in the water", "instruction": "Read the story and type one word from the bank.", "title": "Octopus Island"}, {"round": 3, "source": "Part 3 · Gap 5", "q": "We didn’t have our (5) _____ so we sat on the beach of the island until we were dry.", "explain": "TOWELS are used to dry your body after swimming.", "type": "type", "answer": "towels", "bank": ["room", "naughty", "quickly", "caught", "tents", "decided", "quietly", "dangerous", "towels", "fell"], "passage": "story", "gap": 5, "image": "assets/octopus.webp", "alt": "Two children in a boat with a small octopus in the water", "instruction": "Read the story and type one word from the bank.", "title": "Octopus Island"}, {"round": 3, "source": "Part 3 · Question 6", "q": "What is the best name for this story?", "explain": "The main event is the sister’s meeting with an octopus; the hotel room is only background.", "choices": ["Breakfast by the lake", "My sister and the octopus", "Our lovely hotel room"], "a": 1, "passage": "story", "gap": 0, "image": "assets/octopus.webp", "alt": "Children in a boat above a small octopus", "instruction": "Open the complete story if you need to read it again.", "title": "Name the Adventure"}, {"round": 4, "source": "Part 4 · Gap 1", "q": "The pilots are the people (1) _____ fly the planes.", "explain": "WHO refers to people and introduces what they do.", "choices": ["who", "where", "what"], "a": 0, "passage": "airport", "gap": 1, "image": "assets/airport.webp", "alt": "Travellers with luggage inside an airport terminal", "instruction": "Choose the correct word to complete the airport text.", "title": "Airport Explorer"}, {"round": 4, "source": "Part 4 · Gap 2", "q": "There (2) _____ also people who work on the planes and give you food and drinks.", "explain": "THERE ARE goes with the plural noun PEOPLE.", "choices": ["are", "have", "is"], "a": 0, "passage": "airport", "gap": 2, "image": "assets/airport.webp", "alt": "Travellers with luggage inside an airport terminal", "instruction": "Choose the correct word to complete the airport text.", "title": "Airport Explorer"}, {"round": 4, "source": "Part 4 · Gap 3", "q": "Mechanics look (3) _____ the planes and they are very careful.", "explain": "LOOK AFTER means take care of; mechanics maintain the planes.", "choices": ["for", "after", "out"], "a": 1, "passage": "airport", "gap": 3, "image": "assets/airport.webp", "alt": "Travellers with luggage inside an airport terminal", "instruction": "Choose the correct word to complete the airport text.", "title": "Airport Explorer"}, {"round": 4, "source": "Part 4 · Gap 4", "q": "If a plane has a problem, it (4) _____ be very dangerous.", "explain": "CAN + base verb describes a possibility.", "choices": ["can", "does", "has"], "a": 0, "passage": "airport", "gap": 4, "image": "assets/airport.webp", "alt": "Travellers with luggage inside an airport terminal", "instruction": "Choose the correct word to complete the airport text.", "title": "Airport Explorer"}, {"round": 4, "source": "Part 4 · Gap 5", "q": "People very often (5) _____ to wait for a long time in airports.", "explain": "HAVE TO + verb expresses necessity. MUST and CAN are not followed by TO.", "choices": ["must", "have", "can"], "a": 1, "passage": "airport", "gap": 5, "image": "assets/airport.webp", "alt": "Travellers with luggage inside an airport terminal", "instruction": "Choose the correct word to complete the airport text.", "title": "Airport Explorer"}, {"round": 4, "source": "Part 4 · Gap 6", "q": "There are many shops (6) _____ they can buy books and magazines to read and food to eat.", "explain": "WHERE refers to the shops as places.", "choices": ["when", "what", "where"], "a": 2, "passage": "airport", "gap": 6, "image": "assets/airport.webp", "alt": "Travellers with luggage inside an airport terminal", "instruction": "Choose the correct word to complete the airport text.", "title": "Airport Explorer"}, {"round": 4, "source": "Part 4 · Gap 7", "q": "(7) _____ of the food is expensive.", "explain": "MOST OF THE FOOD means the greater part of it. FOOD is uncountable; FEW does not fit.", "choices": ["More", "Few", "Most"], "a": 2, "passage": "airport", "gap": 7, "image": "assets/airport.webp", "alt": "Travellers with luggage inside an airport terminal", "instruction": "Choose the correct word to complete the airport text.", "title": "Airport Explorer"}, {"round": 4, "source": "Part 4 · Gap 8", "q": "If you forget to bring (8) _____, you can usually buy it at the airport.", "explain": "SOMETHING refers to an unspecified item you forgot.", "choices": ["everything", "something", "nothing"], "a": 1, "passage": "airport", "gap": 8, "image": "assets/airport.webp", "alt": "Travellers with luggage inside an airport terminal", "instruction": "Choose the correct word to complete the airport text.", "title": "Airport Explorer"}, {"round": 4, "source": "Part 4 · Gap 9", "q": "It’s important to (9) _____ to the airport early.", "explain": "IMPORTANT TO + base verb: to GO.", "choices": ["go", "going", "went"], "a": 0, "passage": "airport", "gap": 9, "image": "assets/airport.webp", "alt": "Travellers with luggage inside an airport terminal", "instruction": "Choose the correct word to complete the airport text.", "title": "Airport Explorer"}, {"round": 4, "source": "Part 4 · Gap 10", "q": "It’s important to go to the airport early (10) _____ the plane won’t wait for you!", "explain": "BECAUSE introduces the reason for arriving early.", "choices": ["before", "why", "because"], "a": 2, "passage": "airport", "gap": 10, "image": "assets/airport.webp", "alt": "Travellers with luggage inside an airport terminal", "instruction": "Choose the correct word to complete the airport text.", "title": "Airport Explorer"}, {"round": 5, "source": "Part 6 · Gap 1", "q": "It’s the first competition I (1) _____ ever won.", "explain": "Use the present perfect HAVE + past participle WON for an experience up to now.", "type": "type", "answer": "have", "passage": "letter", "gap": 1, "image": "assets/kim.webp", "alt": "Kim writing a letter after winning a spelling competition", "instruction": "Read Kim’s letter. Type ONE missing word.", "title": "Winner’s Letter"}, {"round": 5, "source": "Part 6 · Gap 2", "q": "The children in my class had to spell lots (2) _____ difficult words.", "explain": "The expression is LOTS OF + noun.", "type": "type", "answer": "of", "passage": "letter", "gap": 2, "image": "assets/kim.webp", "alt": "Kim writing a letter after winning a spelling competition", "instruction": "Read Kim’s letter. Type ONE missing word.", "title": "Winner’s Letter"}, {"round": 5, "source": "Part 6 · Gap 3", "q": "I spelt the (3) _____ words, so I won!", "explain": "THE MOST WORDS means more words than any other child.", "type": "type", "answer": "most", "passage": "letter", "gap": 3, "image": "assets/kim.webp", "alt": "Kim writing a letter after winning a spelling competition", "instruction": "Read Kim’s letter. Type ONE missing word.", "title": "Winner’s Letter"}, {"round": 5, "source": "Part 6 · Gap 4", "q": "The teacher said I could have a video game, but I don’t know (4) _____ one to choose!", "explain": "WHICH ONE asks about a choice from a set of video games.", "type": "type", "answer": "which", "passage": "letter", "gap": 4, "image": "assets/kim.webp", "alt": "Kim writing a letter after winning a spelling competition", "instruction": "Read Kim’s letter. Type ONE missing word.", "title": "Winner’s Letter"}, {"round": 5, "source": "Part 6 · Gap 5", "q": "Spelling is my best subject because my mum gave (5) _____ a dictionary for Christmas.", "explain": "ME is the object pronoun: gave ME a dictionary.", "type": "type", "answer": "me", "passage": "letter", "gap": 5, "image": "assets/kim.webp", "alt": "Kim writing a letter after winning a spelling competition", "instruction": "Read Kim’s letter. Type ONE missing word.", "title": "Winner’s Letter"}];
+const PASSAGES={"story": "Last August, my family went on holiday for two weeks. We stayed in a nice hotel near the sea. The room we stayed in was very big and had two beds. We went fishing in the sea, and we (1) {1} a lot of fish. The hotel had boats that we could use to sail to a little island.\n\nOne day, when my parents were lying on the grass and reading, my sister and I took one of the boats out to sea. It was very hot and sunny, so we (2) {2} to jump into the sea and swim. The water was very cold and we played round the boat, climbing into it and jumping into the water again.\n\nSuddenly, my sister shouted, ‘There’s something in the water!’ She climbed back into the boat very (3) {3} and I did too. We looked into the dark water of the sea. There was an octopus!\n\nI started laughing. ‘It’s only a small octopus,’ I told my sister. ‘It isn’t (4) {4}.’\n\nWe didn’t have our (5) {5} so we sat on the beach of the island until we were dry. Then we sailed the boat back to the beach and we told our parents about our meeting with the octopus.", "airport": "Airports are busy places and lots of people work in them. The pilots are the people (1) {1} fly the planes. There (2) {2} also people who work on the planes and give you food and drinks. Mechanics look (3) {3} the planes and they are very careful. If a plane has a problem, it (4) {4} be very dangerous. However, flying by plane is the safest way to travel.\n\nPeople very often (5) {5} to wait for a long time in airports, so there are many shops (6) {6} they can buy books and magazines to read and food to eat. (7) {7} of the food is expensive. There are also shops that sell nice clothes and shoes. If you forget to bring (8) {8}, you can usually buy it at the airport. It’s important to (9) {9} to the airport early (10) {10} the plane won’t wait for you!", "letter": "Dear Paul,\n\nI won a competition at my school! I’m very excited because it’s the first competition I (1) {1} ever won.\n\nIt was a spelling competition. The children in my class had to spell lots (2) {2} difficult words and our teacher wrote our names and how many words we could spell on a piece of paper.\n\nI spelt the (3) {3} words, so I won!\n\nThe teacher said I could have a video game, but I don’t know (4) {4} one to choose!\n\nI liked the competition. Spelling is my best subject because my mum gave (5) {5} a dictionary for Christmas. See you!\n\nLove from Kim"};
+const MODE = "present";
+const $ = id => document.getElementById(id);
+const state = QUESTIONS.map(() => ({choice:null}));
+let pos = 0;
+let player = "";
+let soundOn = true;
+let audioCtx = null;
+let roundTimer = null;
+let startedAt = null;
+let attemptId = "", finished = false;
+const norm = s => s.toLowerCase().replace(/[’]/g,"'").replace(/[.,!?]/g,"").replace(/\s+/g," ").trim();
+const correctAt = i => state[i].choice !== null && (QUESTIONS[i].type ? state[i].choice === true : state[i].choice === QUESTIONS[i].a);
+const ZONES=[{"name": "Word Cove", "icon": "🔎", "badge": "🔑", "treasure": "Word Key", "tip": "Read the whole definition. A bookshop sells books; a library lends them."}, {"name": "School Harbour", "icon": "🏫", "badge": "📘", "treasure": "Conversation Compass", "tip": "Match the reply to the question and the previous speaker’s meaning."}, {"name": "Octopus Island", "icon": "🏝️", "badge": "🐙", "treasure": "Octopus Pearl", "tip": "Read before and after each gap. Check both the meaning and the grammar."}, {"name": "Airport City", "icon": "✈️", "badge": "🎟️", "treasure": "Explorer Ticket", "tip": "Check expressions such as look after and have to, and match relative words to people or places."}, {"name": "Winner Castle", "icon": "🏰", "badge": "🏆", "treasure": "Spelling Trophy", "tip": "Read the full letter to check the meaning. Small words such as have, of and me matter!"}];
+let openedChests=new Set();
+function adventureStats(){
+  let stars=0,streak=0,best=0;
+  state.forEach((st,i)=>{if(st.choice===null)return;if(correctAt(i)){streak++;best=Math.max(best,streak);stars+=10+Math.min(streak-1,4)*2;}else streak=0;});
+  return {stars,streak,best};
+}
+function zoneDone(round){return QUESTIONS.every((q,i)=>q.round!==round || state[i].choice!==null);}
+function updateAdventure(){
+  const round=QUESTIONS[pos].round,z=ZONES[round-1],stats=adventureStats();
+  $("zoneName").textContent=z.icon+" "+z.name;
+  $("adventureStars").textContent="⭐ "+stats.stars+" stars";
+  $("streakCount").textContent="🔥 Streak "+stats.streak;
+  const islands=$("islands");islands.replaceChildren();
+  ZONES.forEach((zone,i)=>{const b=document.createElement("button");b.className="island"+(i+1===round?" current":"");const first=QUESTIONS.findIndex(q=>q.round===i+1);b.disabled=i>0&&!zoneDone(i);b.textContent=(zoneDone(i+1)?"✅ ":"")+zone.icon+" "+zone.name;b.setAttribute("aria-label",zone.name+(b.disabled?", locked":""));b.onclick=()=>{pos=first;render();};islands.appendChild(b);});
+  const trail=$("trail");trail.replaceChildren();
+  QUESTIONS.forEach((q,i)=>{if(q.round!==round)return;const b=document.createElement("button");b.className="stone"+(i===pos?" here":"")+(state[i].choice!==null?(correctAt(i)?" won":" tried"):"");b.textContent=i===pos?"🧑‍🚀":state[i].choice!==null?(correctAt(i)?"⭐":"✓"):String(i+1);b.disabled=i>0&&state[i-1].choice===null;b.setAttribute("aria-label","Challenge "+(i+1)+(state[i].choice!==null?", completed":"")+(i===pos?", current":""));b.onclick=()=>{pos=i;render();};trail.appendChild(b);});
+  const done=state[pos].choice!==null;
+  $("pipMessage").textContent=done?(correctAt(pos)?(stats.streak>1?"A "+stats.streak+"-answer streak! Your adventure stars are growing!":"Nice work! You earned adventure stars. Move to the next stepping stone!"):"A tricky stone! Read the explanation, then keep exploring."):"Mission "+(pos+1)+": "+["solve the word clue!","choose the best reply!","explore the octopus story!","complete the airport text!","unlock Kim’s letter!"][round-1];
+  const chest=$("chestBtn");chest.classList.toggle("hidden",!zoneDone(round));chest.textContent=openedChests.has(round)?"✨ View "+z.treasure:"🎁 Open "+z.name+" treasure!";chest.onclick=()=>openTreasure(round);
+}
+function openTreasure(round){
+  const z=ZONES[round-1];openedChests.add(round);$("treasureIcon").textContent=z.badge;$("treasureTitle").textContent=z.treasure+" collected!";$("treasureText").textContent=z.tip;$("treasureDialog").showModal();chime("round");particles(40);updateAdventure();
+}
+$("closeTreasure").onclick=()=>$("treasureDialog").close();
+const totalRounds = Math.max(...QUESTIONS.map(q=>q.round));
+$("total").textContent = QUESTIONS.length;
+const roundElement = () => $(MODE === "present" ? "roundPill" : "round");
+const counterElement = () => $(MODE === "present" ? "questionPill" : "counter");
+
+function points() {
+  return state.reduce((n,s,idx)=>n+(correctAt(idx) ? 1 : 0),0);
+}
+function chime(kind) {
+  if (!soundOn) return;
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    if (!audioCtx) audioCtx = new AC();
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    const melodies = {
+      correct:[[659,0,.11],[880,.11,.15],[1046,.23,.18]],
+      wrong:[[330,0,.13],[220,.11,.19]],
+      round:[[523,0,.1],[659,.11,.1],[784,.23,.19]],
+      finish:[[523,0,.14],[659,.15,.14],[784,.31,.15],[1046,.49,.28]]
+    };
+    const now = audioCtx.currentTime;
+    (melodies[kind] || melodies.correct).forEach(([hz,delay,len])=>{
+      const osc=audioCtx.createOscillator(),gain=audioCtx.createGain();
+      osc.type=kind==="wrong"?"triangle":"sine";
+      osc.frequency.setValueAtTime(hz,now+delay);
+      gain.gain.setValueAtTime(.0001,now+delay);
+      gain.gain.exponentialRampToValueAtTime(.095,now+delay+.018);
+      gain.gain.exponentialRampToValueAtTime(.0001,now+delay+len);
+      osc.connect(gain);gain.connect(audioCtx.destination);
+      osc.start(now+delay);osc.stop(now+delay+len+.01);
+    });
+  } catch (_) {}
+}
+function particles(count) {
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const box=$("fxParticles"), colors=["#ffc85b","#f65caf","#6de0b1","#77caff","#9e76f2","#ff9d78"];
+  for(let n=0;n<count;n++){
+    const p=document.createElement("span");
+    p.style.left=(Math.random()*100)+"%";
+    p.style.background=colors[n%colors.length];
+    p.style.animationDelay=(Math.random()*.27)+"s";
+    p.style.animationDuration=(.95+Math.random()*.7)+"s";
+    box.appendChild(p);
+    p.addEventListener("animationend",()=>p.remove(),{once:true});
+  }
+}
+function animateScore() {
+  const el=$("score");
+  el.textContent=points();
+  el.classList.remove("score-pulse");
+  void el.offsetWidth;
+  el.classList.add("score-pulse");
+}
+function toastRound(round){
+  if(roundTimer)clearTimeout(roundTimer);
+  $("roundToastText").textContent=ZONES[round-1].icon+" "+ZONES[round-1].name;
+  $("roundToast").classList.remove("hidden");
+  chime("round");
+  roundTimer=setTimeout(()=>$("roundToast").classList.add("hidden"),900);
+}
+function setScreen(id){
+  ["startScreen","gameScreen","resultScreen"].forEach(x=>$(x).classList.toggle("hidden",x!==id));
+}
+function start(){
+  const name=$("nameInput").value.trim();
+  if(!name){alert("Please enter your name first.");$("nameInput").focus();return;}
+  player=name;
+  openedChests=new Set();
+  attemptId=crypto.randomUUID(); finished=false;
+  startedAt=Date.now();
+  pos=0;
+  state.forEach(s=>{Object.keys(s).forEach(k=>delete s[k]);s.choice=null;});
+  setScreen("gameScreen");
+  render();
+  toastRound(QUESTIONS[0].round);
+}
+function render(){
+  const q=QUESTIONS[pos], st=state[pos];
+  updateAdventure();
+  renderSupport(q);
+  roundElement().textContent="Round "+q.round+" / "+totalRounds+(MODE==="picture"?" · Picture questions":"");
+  counterElement().textContent="Question "+(pos+1)+" / "+QUESTIONS.length;
+  $("bar").style.width=((state.filter(s=>s.choice!==null).length/QUESTIONS.length)*100)+"%";
+  $("score").textContent=points();
+  $("kicker").textContent=q.source+" · "+(pos+1)+" of "+QUESTIONS.length;
+  if(MODE==="present"){
+    $("title").textContent=q.title;
+    $("instruction").textContent=q.instruction;
+    $("question").textContent=q.q;
+  }else{
+    $("prompt").textContent=q.prompt;
+    const photo=$("picture");
+    photo.innerHTML="";
+    if(q.image){
+      const img=document.createElement("img");img.src=q.image;img.alt=q.alt||q.picture||"Question picture";
+      photo.appendChild(img);
+    }else{photo.innerHTML=placeholder(q.picture||"Picture prompt");}
+    photo.style.animation="none";
+    void photo.offsetWidth;
+    photo.style.animation="";
+  }
+  const answerBox=$("answers");
+  answerBox.innerHTML="";
+  answerBox.classList.remove("activity");
+  if(q.type){ renderActivity(q,st,answerBox); } else q.choices.forEach((label,n)=>{
+    const b=document.createElement("button");
+    b.type="button";b.className="answer";b.textContent=label;
+    if(st.choice!==null){
+      b.disabled=true;
+      if(n===q.a)b.classList.add("good");
+      if(n===st.choice && n!==q.a)b.classList.add("bad");
+    }else{b.onclick=()=>answer(n);}
+    answerBox.appendChild(b);
+  });
+  const feedback=$("feedback");
+  feedback.textContent=st.choice===null ? "" : (correctAt(pos) ? "Correct! ⭐ " + q.explain : "Incorrect. 💡 " + (q.type ? "Answer: " + q.answer + " · " : "The correct answer is highlighted. ") + q.explain);
+  feedback.className="feedback"+(st.choice===null?"":correctAt(pos)?" success":" error");
+  feedback.setAttribute("aria-live","polite");
+  $("nextBtn").disabled=st.choice===null;
+  $("nextBtn").classList.toggle("ready",st.choice!==null);
+  $("nextBtn").textContent=pos===QUESTIONS.length-1?"See Results →":"Next →";
+  $("backBtn").disabled=pos===0;
+  const scene=$("gameScreen").querySelector(MODE==="present"?".stage":".content");
+  scene.classList.remove("fx-enter");
+  void scene.offsetWidth;
+  scene.classList.add("fx-enter");
+}
+function renderSupport(q){
+  const box=$("readingSupport");box.replaceChildren();
+  if(q.image){const img=document.createElement("img");img.src=q.image;img.alt=q.alt;img.className="source-picture";box.appendChild(img);}
+  if(q.context){const context=document.createElement("p");context.className="reading-context";context.textContent=q.context;box.appendChild(context);}
+  if(q.passage){const details=document.createElement("details"),summary=document.createElement("summary"),text=document.createElement("div");summary.textContent=q.passage==="letter"?"📖 Read Kim’s full letter":"📖 Read the full text";text.className="passage";details.open=q.gap===0;
+    let source=PASSAGES[q.passage],last=0;const rx=/\{(\d+)\}/g;let m;
+    while((m=rx.exec(source))){text.appendChild(document.createTextNode(source.slice(last,m.index)));let n=Number(m[1]);let idx=QUESTIONS.findIndex(item=>item.passage===q.passage&&item.gap===n);let span=document.createElement("span");span.className=n===q.gap?"active-gap":"";span.textContent=idx>=0&&state[idx].choice!==null?(QUESTIONS[idx].answer||QUESTIONS[idx].choices[QUESTIONS[idx].a]):"_____";text.appendChild(span);last=rx.lastIndex;}text.appendChild(document.createTextNode(source.slice(last)));details.append(summary,text);box.appendChild(details);
+  }
+  if(q.bank){const details=document.createElement("details"),summary=document.createElement("summary"),bank=document.createElement("p");summary.textContent="🧩 Word bank";details.open=true;bank.className="word-bank";bank.textContent=q.bank.join(" · ");details.append(summary,bank);box.appendChild(details);}
+  if(q.sourceImage){const details=document.createElement("details"),summary=document.createElement("summary"),img=document.createElement("img");summary.textContent="🔍 Original worksheet clue";img.src=q.sourceImage;img.alt="Original worksheet definition, Part 1 question "+q.source.split(" ").at(-1);img.className="source-clue";details.append(summary,img);box.appendChild(details);}
+}
+function renderActivity(q,st,box){
+  box.classList.add("activity");
+  if(st.choice!==null){const done=document.createElement("p");done.className="submitted";done.textContent="Your answer: "+st.response;box.appendChild(done);return;}
+  const check=document.createElement("button");check.className="btn check";check.textContent="Check answer ✓";check.disabled=true;
+  let getResponse;
+  if(q.type==="type"){
+    const input=document.createElement("input");input.id="typedAnswer";input.autocomplete="off";input.spellcheck=false;input.setAttribute("aria-label","Your answer");input.placeholder=q.round===1?"Type the matching word…":"Type one missing word…";input.value=st.draft||"";
+    input.oninput=()=>{st.draft=input.value;check.disabled=!input.value.trim();};
+    input.onkeydown=e=>{if(e.key==="Enter"&&!check.disabled)check.click();};box.appendChild(input);getResponse=()=>input.value;check.disabled=!input.value.trim();
+  }else{
+    if(!st.tokens){st.tokens=q.answer.split(" ").map((word,id)=>({word,id}));for(let i=st.tokens.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[st.tokens[i],st.tokens[j]]=[st.tokens[j],st.tokens[i]];}st.selected=[];}
+    const built=document.createElement("div"),bank=document.createElement("div");built.className="built";built.setAttribute("aria-label","Your sentence");bank.className="bank";
+    const draw=()=>{built.replaceChildren();bank.replaceChildren();
+      if(!st.selected.length){let hint=document.createElement("span");hint.textContent="Build your sentence here…";built.appendChild(hint);}
+      st.selected.forEach(id=>{let b=document.createElement("button");b.className="btn word";b.textContent=st.tokens.find(t=>t.id===id).word;b.onclick=()=>{st.selected=st.selected.filter(x=>x!==id);draw();};built.appendChild(b);});
+      st.tokens.forEach(t=>{let b=document.createElement("button");b.className="btn word";b.textContent=t.word;b.disabled=st.selected.includes(t.id);b.onclick=()=>{st.selected.push(t.id);draw();};bank.appendChild(b);});check.disabled=st.selected.length!==st.tokens.length;};
+    box.append(built,bank);getResponse=()=>st.selected.map(id=>st.tokens.find(t=>t.id===id).word).join(" ");draw();
+  }
+  check.onclick=()=>{if(st.choice!==null)return;st.response=getResponse().trim();st.choice=(q.accepted||[q.answer]).some(a=>norm(st.response)===norm(a));chime(st.choice?"correct":"wrong");if(st.choice)particles(24);render();animateScore();};box.appendChild(check);
+}
+function answer(choice){
+  if(state[pos].choice!==null)return;
+  state[pos].choice=choice;
+  const correct=choice===QUESTIONS[pos].a;
+  chime(correct?"correct":"wrong");
+  if(correct)particles(24);
+  render();
+  animateScore();
+}
+function next(){
+  if(state[pos].choice===null)return;
+  if(pos===QUESTIONS.length-1){finish();return;}
+  const prevRound=QUESTIONS[pos].round;
+  pos++;
+  render();
+  if(QUESTIONS[pos].round!==prevRound)toastRound(QUESTIONS[pos].round);
+}
+function back(){if(pos>0){pos--;render();}}
+function restart(){
+  openedChests=new Set();
+  attemptId=crypto.randomUUID(); finished=false;
+  startedAt=Date.now();
+  pos=0;state.forEach(s=>{Object.keys(s).forEach(k=>delete s[k]);s.choice=null;});setScreen("gameScreen");render();toastRound(QUESTIONS[0].round);
+}
+async function finish(){
+  if(finished || state.some(s=>s.choice===null))return;
+  finished=true;
+  const finishingId=attemptId;
+  setScreen("resultScreen");
+  const score=points();
+  $("playerResult").textContent=player;
+  $("finalPoints").textContent=score;
+  $("finalTotal").textContent=QUESTIONS.length;
+  const stats=adventureStats();
+  $("adventureResult").textContent="⭐ "+stats.stars+" adventure stars · Best streak: "+stats.best+" · All 5 worlds explored!";
+  $("treasureSummary").textContent=ZONES.map(z=>z.badge).join("  ");
+  const pct=Math.round(score/QUESTIONS.length*100);
+  $("resultMessage").textContent = pct>=85 ? "Amazing! You're a reading superstar!" : pct>=60 ? "Great effort! Keep practicing and level up!" : "Every try makes you stronger. Play again!";
+  $("resultMessage").textContent += " · " + pct + "% · " + Math.max(0,Math.round((Date.now()-startedAt)/1000)) + " seconds";
+  try { localStorage.setItem("readingTreasureLastResult",JSON.stringify({studentName:player,gameTitle:document.title,score,total:QUESTIONS.length,percentage:pct,durationSeconds:Math.max(0,Math.round((Date.now()-startedAt)/1000)),completedAt:new Date().toISOString(),attemptId:finishingId,gameUrl:location.href})); } catch (_) {}
+  chime("finish");
+  particles(100);
+
+  const preview = /\/_templates?\//.test(location.pathname);
+  if(preview){
+    $("recordStatus").textContent="Template preview — score not sent.";
+    return;
+  }
+
+  $("recordStatus").textContent="Sending score to your teacher…";
+  if(window.TeacherRecords){
+    let result;
+    try { result=await TeacherRecords.submit({
+      attemptId: finishingId,
+      completedAt:new Date().toISOString(),
+      gameUrl:location.href,
+      studentName:player,
+      gameTitle:document.title,
+      score,
+      total:QUESTIONS.length,
+      durationSeconds:startedAt ? Math.max(0,Math.round((Date.now()-startedAt)/1000)) : 0
+    });
+    } catch (_) { result={sent:false}; }
+    if(attemptId!==finishingId)return;
+    $("recordStatus").textContent=result.sent
+      ? "✅ Score sent to your teacher."
+      : "⚠️ Score saved on this device, but could not be sent right now.";
+  }else{
+    $("recordStatus").textContent="⚠️ Result kept on this device. Score could not be sent right now.";
+  }
+}
+function toggleSound(){
+  soundOn=!soundOn;
+  $("soundBtn").textContent=soundOn?"🔊 Sound On":"🔇 Sound Off";
+  $("soundBtn").setAttribute("aria-pressed",String(soundOn));
+}
+$("startBtn").addEventListener("click",start);
+$("nameInput").addEventListener("keydown",e=>{if(e.key==="Enter")start();});
+$("nextBtn").addEventListener("click",next);
+$("backBtn").addEventListener("click",back);
+$("restartBtn").addEventListener("click",restart);
+$("playAgainBtn").addEventListener("click",restart);
+$("soundBtn").addEventListener("click",toggleSound);
+
+</script>
+</body>
+</html>
