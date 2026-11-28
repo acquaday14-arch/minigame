@@ -346,5 +346,11 @@
     "description": "30 individual activities based on the supplied possessives pages: all 8 original checks, correction choices, singular/plural owners, omitted house, my/mine, shared/separate ownership and 6 sentence builders. Accepts both film’s beginning and beginning of the film.",
     "level": "A2–B1",
     "path": "./possessives-detective/"
+  },
+  {
+    "title": "Because, So & Although Quest",
+    "description": "All 28 Grade 6 worksheet questions: 12 linking-word blanks, 6 choices, 6 sentence builders and 4 corrections. Answer explanations. No timer.",
+    "level": "Grade 6 · A1–A2",
+    "path": "./because-so-although/"
   }
 ]
